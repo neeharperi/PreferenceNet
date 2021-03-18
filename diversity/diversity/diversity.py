@@ -3,18 +3,15 @@ import torch.nn.functional as F
 import pdb
 
 #allocs of size [..., num_agents, num_items]
-def get_entropy(batch, allocs, payments, args, unused=True, factor=1):
-    diversity = torch.zeros(allocs.shape[0]).to(allocs.device)
-    norm_allocs = torch.zeros(allocs.shape).to(allocs.device)
+def get_entropy(batch, allocs, payments, args):
+    
+    if args.diversity:
+        allocs = allocs.clamp_min(1e-8)
 
-    allocs = allocs.clamp_min(1e-8)
-    for i, e in enumerate(allocs):
-        norm_allocs[i] = e / e.sum()
+        norm_allocs = allocs / allocs.sum(dim=-1).reshape(allocs.shape[0], 1, 1)
+        entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
 
-    entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
+        loss = args.lambda_entropy * entropy.sum(dim=-1).sum(dim=-1)
+        return loss
 
-    for i, e in enumerate(entropy):
-        diversity[i] = factor * e.sum()
-
-    return diversity
-
+    return torch.zeros(allocs.shape[0]).to(allocs.device)
