@@ -32,7 +32,7 @@ parser.add_argument('--lagr-update-iter', type=int, default=6)
 parser.add_argument('--rgt-start', type=int, default=0)
 # Entropy
 parser.add_argument('--lambda_entropy', type=float, default=1.0)
-parser.add_argument('--entropy', action="store_true")
+parser.add_argument('--diversity', action="store_true")
 
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
 # dataset selection: specifies a configuration of agent/item/valuation

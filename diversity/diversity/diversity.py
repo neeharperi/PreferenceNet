@@ -4,7 +4,6 @@ import pdb
 
 #allocs of size [..., num_agents, num_items]
 def get_entropy(batch, allocs, payments, args):
-    
     if args.diversity:
         allocs = allocs.clamp_min(1e-8)
 
