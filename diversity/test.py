@@ -17,6 +17,11 @@ parser.add_argument('--misreport-lr', type=float, default=2e-2)
 parser.add_argument('--misreport-iter', type=int, default=25)
 parser.add_argument('--test-misreport-iter', type=int, default=1000)
 parser.add_argument('--model', default="")
+
+#Diversity
+parser.add_argument('--lambda_entropy', type=float, default=1.0)
+parser.add_argument('--diversity', action="store_true")
+
 # Plotting
 parser.add_argument('--plot-name', default='')
 parser.add_argument('--plot-num', type=int, default=0)
