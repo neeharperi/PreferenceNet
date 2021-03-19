@@ -6,11 +6,13 @@ import pdb
 def get_entropy(batch, allocs, payments, args):
     if args.diversity:
         allocs = allocs.clamp_min(1e-8)
-
-        norm_allocs = allocs / allocs.sum(dim=-1).reshape(allocs.shape[0], 1, 1)
+        norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
+        
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
 
         loss = args.lambda_entropy * entropy.sum(dim=-1).sum(dim=-1)
+
+        pdb.set_trace()
         return loss
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)
