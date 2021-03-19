@@ -12,7 +12,6 @@ def get_entropy(batch, allocs, payments, args):
 
         loss = args.lambda_entropy * entropy.sum(dim=-1).sum(dim=-1)
 
-        pdb.set_trace()
         return loss
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)
