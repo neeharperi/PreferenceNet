@@ -102,3 +102,17 @@ def get_clamp_op(item_ranges: torch.Tensor):
                 upper = item_ranges[i, j, 1]
                 batch[:, i, j] = batch[:, i, j].clamp_min(lower).clamp_max(upper)
     return clamp_op
+
+
+def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand=False):
+    """
+    Generates random allocations (uniform, unit-demand or not).
+    """
+    if unit_demand:
+        agent_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-1)
+        item_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
+        vals = torch.min(item_normalized, agent_normalized)
+    else:
+        vals = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
+
+    return vals
