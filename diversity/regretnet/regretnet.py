@@ -279,7 +279,7 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             loss_func = regret_loss \
                         + regret_quad \
                         - payment_loss \
-                        + diversity_loss \
+                        - diversity_loss # increase diversity
 
             # update model
             optimizer.zero_grad()

@@ -53,6 +53,7 @@ def dataset_override(args):
 
         if args.name == 'testing_name':
             args.name = '_'.join([str(x) for x in args.dataset] +
+                                [str(x) for x in args.diversity[1:]] +
                                  [str(args.random_seed)])
 
 
