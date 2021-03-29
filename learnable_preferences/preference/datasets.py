@@ -108,7 +108,7 @@ def get_clamp_op(item_ranges: torch.Tensor):
     return clamp_op
 
 
-def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, preference=None):
+def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, args, preference=None):
     """
     Generates random allocations (uniform, unit-demand or not).
     """

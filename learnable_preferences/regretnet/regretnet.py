@@ -185,6 +185,7 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     test_regrets = torch.Tensor().to(device)
     test_payments = torch.Tensor().to(device)
     test_preference = torch.Tensor().to(device)
+    test_entropy = torch.Tensor().to(device)
 
     plot_utils.create_plot(model.n_agents, model.n_items, args)
 
@@ -201,11 +202,13 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         regrets = misreport_util - truthful_util
         positive_regrets = torch.clamp_min(regrets, 0)
         pref = preference.get_preference(batch, allocs, payments, args, preference_net)
+        entropy = preference.get_entropy(batch, allocs, payments, args)
 
         # Record entire test data
         test_regrets = torch.cat((test_regrets, positive_regrets), dim=0)
         test_payments = torch.cat((test_payments, payments), dim=0)
         test_preference = torch.cat((test_preference, pref), dim=0)
+        test_entropy = torch.cat((test_entropy, entropy), dim=0)
 
         plot_utils.add_to_plot_cache({
             "batch": batch,
@@ -225,6 +228,8 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         "regret_max": test_regrets.sum(dim=1).max().item(),
         "preference_mean": test_preference.mean().item(),
         "preference_max": test_preference.max().item(),
+        "entropy_mean": test_entropy.mean().item(),
+        "entropy_max": test_entropy.max().item(),
     }
  
     return result
@@ -244,6 +249,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         regrets_epoch = torch.Tensor().to(device)
         payments_epoch = torch.Tensor().to(device)
         preference_epoch = torch.Tensor().to(device)
+        entropy_epoch = torch.Tensor().to(device)
 
         for i, batch in enumerate(train_loader):
             iter += 1
@@ -260,6 +266,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
 
             payment_loss = payments.sum(dim=1).mean() * payment_mult
             pref = preference.get_preference(batch, allocs, payments, args, preference_net)
+            entropy = preference.get_entropy(batch, allocs, payments, args)
 
             if epoch < args.rgt_start:
                 regret_loss = 0
@@ -269,11 +276,13 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                 regret_quad = (rho / 2.0) * (positive_regrets ** 2).mean()
     
             preference_loss = pref.mean()
+            entropy_loss = entropy.mean()
 
             # Add batch to epoch stats
             regrets_epoch = torch.cat((regrets_epoch, regrets), dim=0)
             payments_epoch = torch.cat((payments_epoch, payments), dim=0)
             preference_epoch = torch.cat((preference_epoch, pref), dim=0)
+            entropy_epoch = torch.cat((entropy_epoch, entropy), dim=0)
 
             # Calculate loss
             loss_func = regret_loss \
@@ -321,6 +330,8 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
 
             "preference_max": preference_epoch.max().item(),
             "preference_mean": preference_epoch.mean().item(),
+            "entropy_max": entropy_epoch.max().item(),
+            "entropy_mean": entropy_epoch.mean().item(),
         }
 
         pprint(train_stats)

@@ -95,12 +95,12 @@ if __name__ == "__main__":
         model = nn.DataParallel(model)
         optimizer = optim.Adam(model.module.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
     
-    train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, preference)
+    train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, args, preference)
     train_data = train_data.to(DEVICE)
     train_labels = train_labels.to(DEVICE)
     train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True)
     
-    test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, preference)
+    test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference)
     test_data = test_data.to(DEVICE)
     test_labels = test_labels.to(DEVICE)
     test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)

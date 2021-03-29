@@ -69,15 +69,9 @@ if __name__ == "__main__":
         checkpoint = torch.load(args.resume)
         model.load_state_dict(checkpoint['state_dict'], strict=False)
 
-    if not os.path.exists("result"):
-        os.mkdir("result")
-
-    # If name already exists, append a number to it
-    orig_name, i = args.name, 1
-    while os.path.exists(f'result/{args.name}'):
-        args.name = f'{orig_name}_{i}'
-        i += 1
-    os.mkdir(f"result/{args.name}")
+    if not os.path.isdir(f"result/{args.name}"):
+        os.makedirs(f"result/{args.name}")
+        
     writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
 
     train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
