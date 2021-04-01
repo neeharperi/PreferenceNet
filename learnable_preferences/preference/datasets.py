@@ -124,5 +124,5 @@ def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, a
     if preference is None:
         return vals
     else:
-        labels = preference(vals)
+        labels = preference(vals, args.preference_type, args.preference_thresh)
         return vals, labels
