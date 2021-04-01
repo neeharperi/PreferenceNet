@@ -34,7 +34,7 @@ parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
 parser.add_argument('--preference_type', default='entropy')
-parser.add_argument('--preference_thresh', type=float, default=0.5)
+parser.add_argument('--preference_thresh', type=float, default=0.685)
 
 def classificationAccuracy(model, device, validationData):
     correct = 0
@@ -62,7 +62,6 @@ def preference(allocs, type="entropy", thresh=0.68):
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-
         labels = entropy_alloc > thresh    
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
