@@ -112,12 +112,14 @@ def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, a
     """
     Generates random allocations (uniform, unit-demand or not).
     """
+    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
     if unit_demand:
-        agent_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-1)
-        item_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
-        vals = torch.min(item_normalized, agent_normalized)
+        agent_normalized = torch.softmax(random_points, dim=-1)
+        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+        item_normalized = torch.softmax(random_points_2, dim=-2)
+        vals = torch.min(item_normalized, agent_normalized)[...,0:-1,0:-1]
     else:
-        vals = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
+        vals = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
 
     if preference is None:
         return vals
