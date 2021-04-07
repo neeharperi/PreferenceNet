@@ -4,9 +4,7 @@ import torch.nn.functional as F
 from tqdm import tqdm as tqdm
 
 from regretnet.utils import optimize_misreports, tiled_misreport_util, calc_agent_util
-from preference import preference
 import torch.nn.init
-import plot_utils
 
 from pprint import pprint
 
@@ -319,7 +317,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                         'arch': arch,
                         'state_dict': model.state_dict(),
                         'args': args},
-                       f"result/{args.preference[0]}/{args.name}/{epoch}_checkpoint.pt")
+                       f"result/{args.name}/{epoch}_checkpoint.pt")
 
         # Log training stats
         train_stats = {

@@ -94,10 +94,10 @@ if __name__ == "__main__":
         checkpoint = torch.load(args.resume)
         model.load_state_dict(checkpoint['state_dict'], strict=False)
 
-    if not os.path.isdir(f"result/{args.name}"):
-        os.makedirs(f"result/{args.name}")
+    if not os.path.isdir(f"result/{args.preference[0]}/{args.name}"):
+        os.makedirs(f"result/{args.preference[0]}/{args.name}")
 
-    writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
+    writer = SummaryWriter(log_dir=f"run/{args.preference[0]}/{args.name}", comment=f"{args}")
 
     train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
     train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)

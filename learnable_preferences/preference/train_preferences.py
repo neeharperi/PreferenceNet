@@ -33,7 +33,7 @@ parser.add_argument('--resume', default="")
 parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
-parser.add_argument('--preference_type', default='classification_entropy')
+parser.add_argument('--preference_type', default='entropy_classification')
 parser.add_argument('--preference_thresh', type=float, default=0.685)
 
 def classificationAccuracy(model, device, validationData):
@@ -55,21 +55,19 @@ def classificationAccuracy(model, device, validationData):
 
     return correct / float(total)
 
-def preference(allocs, type="classification_entropy", thresh=0.68):
-    if type == "classification_entropy":
+def preference(allocs, type="entropy_classification", thresh=0.685, samples=1000, pct=0.75):
+    if type == "entropy_classification":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-        labels = entropy_alloc > thresh    
+        labels = entropy_alloc > thresh    #0.685
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
 
-    elif type == "ranking_entropy":
-        samples = 1000
-        pct = 0.75
+    elif type == "entropy_ranking":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
@@ -82,6 +80,50 @@ def preference(allocs, type="classification_entropy", thresh=0.68):
             entropy_cnt = entropy_cnt + (entropy_alloc > entropy_alloc[idx])
 
         labels = entropy_cnt > (pct * samples)
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+        return tnsr
+    
+    elif type == "tvf_classification":
+        d = 0.0
+        C = [[i for i in range(args.n_agents)]]
+        D = (torch.ones(1, args.n_items, args.n_items) * d)
+        L, n, m = allocs.shape
+        unfairness = torch.zeros(L, m)
+        for i, C_i in enumerate(C):
+            for u in range(m):
+                for v in range(m):
+                    subset_allocs_diff = (allocs[:, C_i, u] - allocs[:, C_i, v]).abs()
+                    D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
+                    unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
+        
+        tvf_alloc = unfairness.sum(dim=-1)
+        labels = tvf_alloc < thresh  #0.175
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+        return tnsr
+
+    elif type == "tvf_ranking":
+        d = 0.0
+        C = [[i for i in range(args.n_agents)]]
+        D = (torch.ones(1, args.n_items, args.n_items) * d)
+        L, n, m = allocs.shape
+        unfairness = torch.zeros(L, m)
+        for i, C_i in enumerate(C):
+            for u in range(m):
+                for v in range(m):
+                    subset_allocs_diff = (allocs[:, C_i, u] - allocs[:, C_i, v]).abs()
+                    D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
+                    unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
+        
+        tvf_alloc = unfairness.sum(dim=-1)
+        tvf_cnt = torch.zeros_like(tvf_alloc)
+        
+        for i in range(samples):
+            idx = torch.randperm(len(tvf_alloc))
+            tvf_cnt = tvf_cnt + (tvf_alloc < tvf_alloc[idx])
+
+        labels = tvf_cnt > (pct * samples)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr

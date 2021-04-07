@@ -22,6 +22,7 @@ fairness/T*.sh
 
 learnable_preferences/__pycache__/*
 learnable_preferences/preference/result/*
+learnable_preferences/preference/T*.sh
 learnable_preferences/plots/*
 learnable_preferences/result/*
 learnable_preferences/run/*
