@@ -33,7 +33,7 @@ parser.add_argument('--resume', default="")
 parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
-parser.add_argument('--preference_type', default='entropy')
+parser.add_argument('--preference_type', default='classification_entropy')
 parser.add_argument('--preference_thresh', type=float, default=0.685)
 
 def classificationAccuracy(model, device, validationData):
@@ -55,14 +55,33 @@ def classificationAccuracy(model, device, validationData):
 
     return correct / float(total)
 
-def preference(allocs, type="entropy", thresh=0.68):
-    if type == "entropy":
+def preference(allocs, type="classification_entropy", thresh=0.68):
+    if type == "classification_entropy":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
         labels = entropy_alloc > thresh    
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+        return tnsr
+
+    elif type == "ranking_entropy":
+        samples = 1000
+        pct = 0.75
+        allocs = allocs.clamp_min(1e-8)
+        norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
+        
+        entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
+        entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
+        entropy_cnt = torch.zeros_like(entropy_alloc)
+        
+        for i in range(samples):
+            idx = torch.randperm(len(entropy_alloc))
+            entropy_cnt = entropy_cnt + (entropy_alloc > entropy_alloc[idx])
+
+        labels = entropy_cnt > (pct * samples)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -85,6 +104,7 @@ if __name__ == "__main__":
     if not os.path.exists("result/{}".format(args.name)):
         os.makedirs("result/{}".format(args.name))
 
+
     BCE = nn.BCELoss()
     model = PreferenceNet(args.n_agents, args.n_items, args.hidden_dim)
 
@@ -97,7 +117,7 @@ if __name__ == "__main__":
     train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, args, preference)
     train_data = train_data.to(DEVICE)
     train_labels = train_labels.to(DEVICE)
-    train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True)
+    train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
     
     test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference)
     test_data = test_data.to(DEVICE)
@@ -121,6 +141,7 @@ if __name__ == "__main__":
             Loss = BCE(pred, label)
             epochLoss = epochLoss + Loss.item()
 
+     
             Loss.backward()
             optimizer.step()
 

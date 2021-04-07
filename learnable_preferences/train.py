@@ -67,7 +67,15 @@ if __name__ == "__main__":
         preference_net = nn.DataParallel(preference_net)
 
     checkpoint = torch.load("preference/result/{}/{}.pth".format(ckpt_name, args.preference[0]))
-    preference_net.load_state_dict(checkpoint['State_Dictionary'])
+    try:
+        preference_net.load_state_dict(checkpoint['State_Dictionary'])
+    except:
+        state_dict = {}
+
+        for key in checkpoint['State_Dictionary'].keys():
+            state_dict[".".join(key.split(".")[1:])] = checkpoint['State_Dictionary'][key]
+
+        preference_net.load_state_dict(state_dict)
     preference_net.eval().to(DEVICE)
 
     # Valuation range setup

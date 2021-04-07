@@ -2,13 +2,14 @@ import torch
 import pdb
 
 class Dataloader(object):
-    def __init__(self, data, labels=None, batch_size=64, shuffle=True):
+    def __init__(self, data, labels=None, batch_size=64, shuffle=True, args=None):
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.size = data.size(0)
         self.data = data
         self.labels = labels
         self.iter = 0
+        self.args=args
 
     def _sampler(self, size, batch_size, shuffle=True):
         if shuffle:
@@ -31,6 +32,7 @@ class Dataloader(object):
             return self.data[idx]
         else:
             return self.data[idx], self.labels[idx]
+
 
     def __len__(self):
         return (self.size - 1) // self.batch_size + 1
