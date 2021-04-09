@@ -1,1 +1,1 @@
-rsync -rv diversity fairness learnable_preferences peri@cmlsub00.umiacs.umd.edu:/cmlscratch/peri/DeepAuctions
+rsync -rv diversity fairness learnable_preferences compare_mechanism peri@cmlsub00.umiacs.umd.edu:/cmlscratch/peri/DeepAuctions
