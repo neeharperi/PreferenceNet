@@ -8,6 +8,8 @@ import numpy as np
 import datasets as ds
 from datasets import Dataloader
 from network import PreferenceNet
+from regretnet.regretnet import RegretNet, RegretNetUnitDemand
+
 import json
 import pdb 
 
@@ -35,6 +37,8 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
 parser.add_argument('--preference_type', default='entropy_classification')
 parser.add_argument('--preference_thresh', type=float, default=0.685)
+
+parser.add_argument('--regretnet_ckpt', default='none')
 
 def classificationAccuracy(model, device, validationData):
     correct = 0
@@ -156,16 +160,41 @@ if __name__ == "__main__":
         model = nn.DataParallel(model)
         optimizer = optim.Adam(model.module.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
     
-    train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, args, preference)
-    train_data = train_data.to(DEVICE)
-    train_labels = train_labels.to(DEVICE)
-    train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
-    
-    test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference)
-    test_data = test_data.to(DEVICE)
-    test_labels = test_labels.to(DEVICE)
-    test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)
+    if args.regretnet_ckpt == "none":
+        train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, args, preference)
+        train_data = train_data.to(DEVICE)
+        train_labels = train_labels.to(DEVICE)
+        train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
+        
+        test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference)
+        test_data = test_data.to(DEVICE)
+        test_labels = test_labels.to(DEVICE)
+        test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)
+    else:
+        model_ckpt = torch.load(args.regretnet_ckpt)
+        if "pv" in model_ckpt['name']:
+            regretnet_model = RegretNetUnitDemand(**(model_ckpt['arch']))
+        else:
+            regretnet_model = RegretNet(**(model_ckpt['arch']))
+        
+        state_dict = model_ckpt['state_dict']
+        regretnet_model.load_state_dict(state_dict)
+        regretnet_model.to(DEVICE)
+        regretnet_model.eval()
+        
+        item_ranges = ds.preset_valuation_range(model_ckpt['arch']['n_agents'], model_ckpt['arch']['n_items'])
+        clamp_op = ds.get_clamp_op(item_ranges)
 
+        train_data, train_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.num_examples, item_ranges, args, preference)
+        train_data = train_data.to(DEVICE)
+        train_labels = train_labels.to(DEVICE)
+        train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
+        
+        test_data, test_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.test_num_examples, item_ranges, args, preference)
+        test_data = test_data.to(DEVICE)
+        test_labels = test_labels.to(DEVICE)
+        test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)
+    
     model.to(DEVICE)
     best_accuracy = 0
     for STEP in range(args.num_epochs):

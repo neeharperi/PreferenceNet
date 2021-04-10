@@ -3,6 +3,7 @@ from argparse import ArgumentParser
 import torch
 import torch.nn as nn
 import numpy as np
+import sys
 
 from regretnet import datasets as ds
 from regretnet.regretnet import RegretNet, train_loop, test_loop, RegretNetUnitDemand
@@ -96,7 +97,10 @@ if __name__ == "__main__":
 
     if not os.path.isdir(f"result/{args.preference[0]}/{args.name}"):
         os.makedirs(f"result/{args.preference[0]}/{args.name}")
-
+    else:
+        "{} already exists.".format(f"result/{args.preference[0]}/{args.name}")
+        sys.exit()
+        
     writer = SummaryWriter(log_dir=f"run/{args.preference[0]}/{args.name}", comment=f"{args}")
 
     train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)

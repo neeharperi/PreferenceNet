@@ -1,18 +1,13 @@
 import torch
-import pdb
-
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class Dataloader(object):
-    def __init__(self, data, labels=None, batch_size=64, shuffle=True, args=None):
+    def __init__(self, data, batch_size=64, shuffle=True):
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.size = data.size(0)
         self.data = data
-        self.labels = labels
         self.iter = 0
-        self.args=args
 
     def _sampler(self, size, batch_size, shuffle=True):
         if shuffle:
@@ -30,12 +25,7 @@ class Dataloader(object):
             self.sampler = self._sampler(self.size, self.batch_size, shuffle=self.shuffle)
         self.iter = (self.iter + 1) % (len(self) + 1)
         idx = next(self.sampler)
-
-        if self.labels is None:
-            return self.data[idx]
-        else:
-            return self.data[idx], self.labels[idx]
-
+        return self.data[idx]
 
     def __len__(self):
         return (self.size - 1) // self.batch_size + 1
@@ -113,48 +103,15 @@ def get_clamp_op(item_ranges: torch.Tensor):
     return clamp_op
 
 
-def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, args, preference=None):
+def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand=False):
     """
     Generates random allocations (uniform, unit-demand or not).
     """
-    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
     if unit_demand:
-        agent_normalized = torch.softmax(random_points, dim=-1)
-        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
-        item_normalized = torch.softmax(random_points_2, dim=-2)
-        vals = torch.min(item_normalized, agent_normalized)[...,0:-1,0:-1]
+        agent_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-1)
+        item_normalized = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
+        vals = torch.min(item_normalized, agent_normalized)
     else:
-        vals = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
+        vals = torch.softmax(torch.rand(n_allocations, n_agents, n_items), dim=-2)
 
-    if preference is None:
-        return vals
-    else:
-        labels = preference(vals, args.preference_type, args.preference_thresh)
-        return vals, labels
-
-def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference=None):
-    """
-    Generates regretnet allocations (uniform, unit-demand or not).
-    #TODO: Test Functionality when considering bids and payments in addition to allocations.
-    """
-    data = generate_dataset_nxk(n_agents, n_items, num_examples, item_ranges).to(DEVICE)
-    loader = Dataloader(data, batch_size=args.batch_size, shuffle=True)
-    all_bids = []
-    all_allocs = []
-    all_payments = []
-
-    for i, batch in enumerate(loader):
-        batch = batch.to(DEVICE)
-        allocs, payments = model(batch)
-
-        all_bids.append(batch)
-        all_allocs.append(allocs)
-        all_payments.append(payments)
-    
-    vals = torch.cat(all_allocs)
-
-    if preference is None:
-        return vals
-    else:
-        labels = preference(vals, args.preference_type, args.preference_thresh)
-        return vals, labels
+    return vals
