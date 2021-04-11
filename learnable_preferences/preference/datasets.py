@@ -132,6 +132,37 @@ def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, a
         labels = preference(vals, args.preference_type, args.preference_thresh)
         return vals, labels
 
+
+def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args,
+                                         preference=None):
+    # randomly generate bids in ranges
+    random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges).to(DEVICE)
+
+    # random allocations, before normalization
+    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+
+    if unit_demand:
+        agent_normalized = torch.softmax(random_points, dim=-1)
+        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+        item_normalized = torch.softmax(random_points_2, dim=-2)
+        allocs = torch.min(item_normalized, agent_normalized)[..., 0:-1, 0:-1]
+    else:
+        allocs = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
+
+    # compute a random value [0,1] representing % util to charge as payment
+    random_frac_payments = torch.rand(n_allocations, n_agents)
+
+    # compute utils assuming bids were truthful
+    agent_utils = (random_bids * allocs).sum(dim=-1)
+
+    actual_payments = random_frac_payments * agent_utils
+
+    if preference is not None:
+        raise NotImplementedError("preferences with bids not yet implemented")
+    else:
+        return random_bids, allocs, actual_payments
+
+
 def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference=None):
     """
     Generates regretnet allocations (uniform, unit-demand or not).
