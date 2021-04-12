@@ -10,14 +10,16 @@ def get_preference(batch, allocs, payments, args, model=None):
             norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
 
             model.eval()
-            pred = model(norm_allocs)
+            pred = model(batch, norm_allocs, payments)
 
             return float(args.preference[1]) * pred
+            
         elif "tvf" in args.preference[0]:
             model.eval()
-            pred = model(allocs)
+            pred = model(batch, allocs, payments)
 
             return float(args.preference[1]) * pred
+
     return torch.zeros(allocs.shape[0]).to(allocs.device)
 
 def get_entropy(batch, allocs, payments, args):
