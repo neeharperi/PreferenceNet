@@ -5,12 +5,15 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class Dataloader(object):
-    def __init__(self, data, labels=None, batch_size=64, shuffle=True, args=None):
+    def __init__(self, bids, allocs, payments, labels, batch_size=64, shuffle=True, args=None):
         self.shuffle = shuffle
         self.batch_size = batch_size
-        self.size = data.size(0)
-        self.data = data
+        self.size = bids.size(0)
+        self.bids = bids
+        self.allocs = allocs
+        self.payments = payments
         self.labels = labels
+
         self.iter = 0
         self.args=args
 
@@ -31,10 +34,7 @@ class Dataloader(object):
         self.iter = (self.iter + 1) % (len(self) + 1)
         idx = next(self.sampler)
 
-        if self.labels is None:
-            return self.data[idx]
-        else:
-            return self.data[idx], self.labels[idx]
+        return self.bids[idx], self.allocs[idx], self.payments[idx], self.labels[idx]
 
 
     def __len__(self):
@@ -133,10 +133,9 @@ def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, a
         return vals, labels
 
 
-def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args,
-                                         preference=None):
+def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, preference):
     # randomly generate bids in ranges
-    random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges).to(DEVICE)
+    random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
 
     # random allocations, before normalization
     random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
@@ -157,13 +156,12 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
 
     actual_payments = random_frac_payments * agent_utils
 
-    if preference is not None:
-        raise NotImplementedError("preferences with bids not yet implemented")
-    else:
-        return random_bids, allocs, actual_payments
+    labels = preference(random_bids, allocs, actual_payments, args.preference_type, args.preference_thresh)
+    return random_bids, allocs, actual_payments, labels
+        
 
 
-def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference=None):
+def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference):
     """
     Generates regretnet allocations (uniform, unit-demand or not).
     #TODO: Test Functionality when considering bids and payments in addition to allocations.
@@ -182,10 +180,9 @@ def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_
         all_allocs.append(allocs)
         all_payments.append(payments)
     
-    vals = torch.cat(all_allocs)
+    random_bids = torch.cat(all_bids)
+    allocs = torch.cat(all_allocs)
+    actual_payments = torch.cat(all_payments)
 
-    if preference is None:
-        return vals
-    else:
-        labels = preference(vals, args.preference_type, args.preference_thresh)
-        return vals, labels
+    labels = preference(random_bids, allocs, actual_payments, args.preference_type, args.preference_thresh)
+    return random_bids, allocs, actual_payments, labels

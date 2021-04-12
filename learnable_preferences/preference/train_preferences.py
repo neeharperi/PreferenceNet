@@ -40,18 +40,17 @@ parser.add_argument('--preference_thresh', type=float, default=0.685)
 
 parser.add_argument('--regretnet_ckpt', default='none')
 
-def classificationAccuracy(model, device, validationData):
+def classificationAccuracy(model, validationData):
     correct = 0
     total = 0
 
     with torch.no_grad():
         model.eval()
         for data in validationData:
-            allocs, label = data
-            allocs = allocs.to(device)
-            label = label.to(device)
-
-            pred = model(allocs)
+            bids, allocs, payments, label = data
+            bids, allocs, payments, label = bids.to(DEVICE), allocs.to(DEVICE), payments.to(DEVICE), label.to(DEVICE)
+        
+            pred = model(bids, allocs, payments)
             pred = pred > 0.5
 
             correct = correct + torch.sum(pred == label)
@@ -59,7 +58,7 @@ def classificationAccuracy(model, device, validationData):
 
     return correct / float(total)
 
-def preference(allocs, type="entropy_classification", thresh=0.685, samples=1000, pct=0.75):
+def preference(random_bids, allocs, actual_payments, type="entropy_classification", thresh=0.685, samples=1000, pct=0.75):
     if type == "entropy_classification":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
@@ -161,15 +160,16 @@ if __name__ == "__main__":
         optimizer = optim.Adam(model.module.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
     
     if args.regretnet_ckpt == "none":
-        train_data, train_labels = ds.generate_random_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, args, preference)
-        train_data = train_data.to(DEVICE)
-        train_labels = train_labels.to(DEVICE)
-        train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
+        item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
+        clamp_op = ds.get_clamp_op(item_ranges)
+
+        train_bids, train_allocs, train_payments, train_labels = ds.generate_random_allocations_payments(args.num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        train_bids, train_allocs, train_payments, train_labels = train_bids.to(DEVICE), train_allocs.to(DEVICE), train_payments.to(DEVICE), train_labels.to(DEVICE)
+        train_loader = Dataloader(train_bids, train_allocs, train_payments, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
         
-        test_data, test_labels = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference)
-        test_data = test_data.to(DEVICE)
-        test_labels = test_labels.to(DEVICE)
-        test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)
+        test_bids, test_allocs, test_payments, test_labels = ds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        test_bids, test_allocs, test_payments, test_labels = test_bids.to(DEVICE), test_allocs.to(DEVICE), test_payments.to(DEVICE), test_labels.to(DEVICE)
+        test_loader = Dataloader(test_bids, test_allocs, test_payments, test_labels, batch_size=args.test_batch_size, shuffle=True, args=args)
     else:
         model_ckpt = torch.load(args.regretnet_ckpt)
         if "pv" in model_ckpt['name']:
@@ -185,28 +185,25 @@ if __name__ == "__main__":
         item_ranges = ds.preset_valuation_range(model_ckpt['arch']['n_agents'], model_ckpt['arch']['n_items'])
         clamp_op = ds.get_clamp_op(item_ranges)
 
-        train_data, train_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.num_examples, item_ranges, args, preference)
-        train_data = train_data.to(DEVICE)
-        train_labels = train_labels.to(DEVICE)
-        train_loader = Dataloader(train_data, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
+        train_bids, train_allocs, train_payments, train_labels = ds.generate_regretnet_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        train_bids, train_allocs, train_payments, train_labels = train_bids.to(DEVICE), train_allocs.to(DEVICE), train_payments.to(DEVICE), train_labels.to(DEVICE)
+
+        train_loader = Dataloader(train_bids, train_allocs, train_payments, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
         
-        test_data, test_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.test_num_examples, item_ranges, args, preference)
-        test_data = test_data.to(DEVICE)
-        test_labels = test_labels.to(DEVICE)
-        test_loader = Dataloader(test_data, test_labels, batch_size=args.test_batch_size, shuffle=True)
+        test_bids, test_allocs, test_payments, test_labels = ds.generate_regretnet_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        test_bids, test_allocs, test_payments, test_labels = test_bids.to(DEVICE), test_allocs.to(DEVICE), test_payments.to(DEVICE), test_labels.to(DEVICE)
+        test_loader = Dataloader(test_bids, test_allocs, test_payments, test_labels, batch_size=args.test_batch_size, shuffle=True, args=args)
     
     model.to(DEVICE)
     best_accuracy = 0
     for STEP in range(args.num_epochs):
         epochLoss = 0
         model.train()
-
         for batchCount, data in enumerate(train_loader, 1):
-            allocs, label = data
-            allocs = allocs.to(DEVICE)
-            label = label.to(DEVICE)
-            
-            pred = model(allocs)
+            bids, allocs, payments, label = data
+            bids, allocs, payments, label = bids.to(DEVICE), allocs.to(DEVICE), payments.to(DEVICE), label.to(DEVICE)
+        
+            pred = model(bids, allocs, payments)
 
             optimizer.zero_grad()
             Loss = BCE(pred, label)
@@ -217,7 +214,7 @@ if __name__ == "__main__":
             optimizer.step()
 
         print("Epoch " + str(STEP + 1) + " Training Loss: " + str(epochLoss/len(train_loader)) + " | Learning Rate: " + str(optimizer.param_groups[0]['lr']))
-        accuracy = classificationAccuracy(model, DEVICE, test_loader)
+        accuracy = classificationAccuracy(model, test_loader)
         print("Classification Accuracy: {}".format(accuracy) )
 
         if accuracy > best_accuracy:
@@ -226,7 +223,7 @@ if __name__ == "__main__":
                 "State_Dictionary": model.state_dict(),
                 }
 
-            torch.save(modelState, "result/{}/{}.pth".format(args.name, args.preference_type))
+            torch.save(modelState, "result/{}/{}_{}.pth".format(args.name, "synthetic" if args.regretnet_ckpt == "none" else "regretnet" ,args.preference_type))
             best_accuracy = accuracy
 
     print("Best Accuracy: {}".format(best_accuracy))
