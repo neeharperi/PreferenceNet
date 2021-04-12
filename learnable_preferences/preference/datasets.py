@@ -1,11 +1,12 @@
 import torch
+from tqdm import tqdm
 import pdb
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class Dataloader(object):
-    def __init__(self, bids, allocs, payments, labels, batch_size=64, shuffle=True, args=None):
+    def __init__(self, bids, allocs=None, payments=None, labels=None, batch_size=64, shuffle=True, args=None):
         self.shuffle = shuffle
         self.batch_size = batch_size
         self.size = bids.size(0)
@@ -33,6 +34,9 @@ class Dataloader(object):
             self.sampler = self._sampler(self.size, self.batch_size, shuffle=self.shuffle)
         self.iter = (self.iter + 1) % (len(self) + 1)
         idx = next(self.sampler)
+        
+        if self.allocs is None and self.payments is None and self.labels is None:
+            return self.bids[idx]
 
         return self.bids[idx], self.allocs[idx], self.payments[idx], self.labels[idx]
 
@@ -164,25 +168,25 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
 def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference):
     """
     Generates regretnet allocations (uniform, unit-demand or not).
-    #TODO: Test Functionality when considering bids and payments in addition to allocations.
     """
-    data = generate_dataset_nxk(n_agents, n_items, num_examples, item_ranges).to(DEVICE)
+    data = generate_dataset_nxk(n_agents, n_items, num_examples, item_ranges)
     loader = Dataloader(data, batch_size=args.batch_size, shuffle=True)
     all_bids = []
     all_allocs = []
     all_payments = []
 
-    for i, batch in enumerate(loader):
-        batch = batch.to(DEVICE)
-        allocs, payments = model(batch)
+    with torch.no_grad():
+        for i, batch in enumerate(loader):
+            batch = batch.to(DEVICE)
+            allocs, payments = model(batch)
 
-        all_bids.append(batch)
-        all_allocs.append(allocs)
-        all_payments.append(payments)
+            all_bids.append(batch)
+            all_allocs.append(allocs)
+            all_payments.append(payments)
     
-    random_bids = torch.cat(all_bids)
-    allocs = torch.cat(all_allocs)
-    actual_payments = torch.cat(all_payments)
+    random_bids = torch.cat(all_bids).cpu()
+    allocs = torch.cat(all_allocs).cpu()
+    actual_payments = torch.cat(all_payments).cpu()
 
     labels = preference(random_bids, allocs, actual_payments, args.preference_type, args.preference_thresh)
     return random_bids, allocs, actual_payments, labels

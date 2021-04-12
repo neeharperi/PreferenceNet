@@ -65,7 +65,7 @@ def preference(random_bids, allocs, actual_payments, type="entropy_classificatio
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-        labels = entropy_alloc > thresh    #0.685
+        labels = entropy_alloc > thresh    #0.685, 0.6925, 0.625
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -101,6 +101,7 @@ def preference(random_bids, allocs, actual_payments, type="entropy_classificatio
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
         
         tvf_alloc = unfairness.sum(dim=-1)
+
         labels = tvf_alloc < thresh  #0.175
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
@@ -179,18 +180,22 @@ if __name__ == "__main__":
         
         state_dict = model_ckpt['state_dict']
         regretnet_model.load_state_dict(state_dict)
+        
+        if  torch.cuda.device_count() > 1:
+            regretnet_model = nn.DataParallel(regretnet_model)
+
         regretnet_model.to(DEVICE)
         regretnet_model.eval()
         
         item_ranges = ds.preset_valuation_range(model_ckpt['arch']['n_agents'], model_ckpt['arch']['n_items'])
         clamp_op = ds.get_clamp_op(item_ranges)
 
-        train_bids, train_allocs, train_payments, train_labels = ds.generate_regretnet_allocations(args.num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        train_bids, train_allocs, train_payments, train_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.num_examples, item_ranges, args, preference)
         train_bids, train_allocs, train_payments, train_labels = train_bids.to(DEVICE), train_allocs.to(DEVICE), train_payments.to(DEVICE), train_labels.to(DEVICE)
 
         train_loader = Dataloader(train_bids, train_allocs, train_payments, train_labels, batch_size=args.batch_size, shuffle=True, args=args)
         
-        test_bids, test_allocs, test_payments, test_labels = ds.generate_regretnet_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
+        test_bids, test_allocs, test_payments, test_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.test_num_examples, item_ranges, args, preference)
         test_bids, test_allocs, test_payments, test_labels = test_bids.to(DEVICE), test_allocs.to(DEVICE), test_payments.to(DEVICE), test_labels.to(DEVICE)
         test_loader = Dataloader(test_bids, test_allocs, test_payments, test_labels, batch_size=args.test_batch_size, shuffle=True, args=args)
     
