@@ -32,3 +32,20 @@ def get_entropy(batch, allocs, payments, args):
         loss = entropy.sum(dim=-1).sum(dim=-1)
 
         return loss
+
+def get_tvf(batch, allocs, payments, args):
+    d = 0.0
+    C = [[i for i in range(args.n_agents)]]
+    D = (torch.ones(1, args.n_items, args.n_items) * d)
+    L, n, m = allocs.shape
+    unfairness = torch.zeros(L, m)
+    for i, C_i in enumerate(C):
+        for u in range(m):
+            for v in range(m):
+                subset_allocs_diff = (allocs[:, C_i, u] - allocs[:, C_i, v]).abs()
+                D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
+                unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
+    
+    loss = unfairness.sum(dim=-1)
+
+    return loss

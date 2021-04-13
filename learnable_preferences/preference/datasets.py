@@ -160,7 +160,7 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
 
     actual_payments = random_frac_payments * agent_utils
 
-    labels = preference(random_bids, allocs, actual_payments, args.preference_type, args.preference_thresh)
+    labels = preference(random_bids, allocs, actual_payments, args, args.preference_type, args.preference_thresh)
     return random_bids, allocs, actual_payments, labels
         
 
@@ -175,6 +175,7 @@ def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_
     all_allocs = []
     all_payments = []
 
+    model.eval()
     with torch.no_grad():
         for i, batch in enumerate(loader):
             batch = batch.to(DEVICE)
@@ -188,5 +189,5 @@ def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_
     allocs = torch.cat(all_allocs).cpu()
     actual_payments = torch.cat(all_payments).cpu()
 
-    labels = preference(random_bids, allocs, actual_payments, args.preference_type, args.preference_thresh)
+    labels = preference(random_bids, allocs, actual_payments, args, args.preference_type, args.preference_thresh)
     return random_bids, allocs, actual_payments, labels

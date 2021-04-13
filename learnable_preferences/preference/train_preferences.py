@@ -156,10 +156,6 @@ if __name__ == "__main__":
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
-    if  torch.cuda.device_count() > 1:
-        model = nn.DataParallel(model)
-        optimizer = optim.Adam(model.module.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
-    
     if args.regretnet_ckpt == "none":
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
         clamp_op = ds.get_clamp_op(item_ranges)
@@ -180,9 +176,6 @@ if __name__ == "__main__":
         
         state_dict = model_ckpt['state_dict']
         regretnet_model.load_state_dict(state_dict)
-        
-        if  torch.cuda.device_count() > 1:
-            regretnet_model = nn.DataParallel(regretnet_model)
 
         regretnet_model.to(DEVICE)
         regretnet_model.eval()
