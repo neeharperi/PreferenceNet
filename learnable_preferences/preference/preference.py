@@ -33,7 +33,7 @@ def get_entropy(batch, allocs, payments, args):
 
         return loss
 
-def get_tvf(batch, allocs, payments, args):
+def get_unfairness(batch, allocs, payments, args):
     batch, allocs, payments = batch.cpu(), allocs.cpu(), payments.cpu()
     d = 0.0
     C = [[i for i in range(args.n_agents)]]
