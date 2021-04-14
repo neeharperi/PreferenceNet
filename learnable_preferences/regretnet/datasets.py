@@ -54,6 +54,7 @@ def dataset_override(args):
         if args.name == 'testing_name':
             args.name = '_'.join([str(x) for x in args.dataset] +
                                 [str(x) for x in args.preference[1:]] +
+                                [str(args.preference_synthetic_pct)] +
                                  [str(args.random_seed)])
 
 
