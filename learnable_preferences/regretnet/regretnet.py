@@ -9,6 +9,7 @@ from preference import preference
 import torch.nn.init
 import plot_utils
 
+import numpy as np
 from pprint import pprint
 import pdb
 
@@ -32,19 +33,20 @@ def classificationAccuracy(model, validationData):
 
     return correct / float(total)
     
-def label_preference(random_bids, allocs, actual_payments, args, type="entropy_classification", thresh=0.685, samples=1000, pct=0.75):
-    if type == "entropy_classification":
+def label_preference(random_bids, allocs, actual_payments, args, samples=1000, pct=0.75):
+    if "entropy_classification" in args.preference[0]:
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-        labels = entropy_alloc > thresh    #0.685, 0.6925, 0.625
+        thresh = np.quantile(entropy_alloc, pct)
+        labels = entropy_alloc > thresh    
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
 
-    elif type == "entropy_ranking":
+    elif "entropy_ranking" in args.preference[0]:
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
@@ -61,7 +63,7 @@ def label_preference(random_bids, allocs, actual_payments, args, type="entropy_c
 
         return tnsr
     
-    elif type == "unfairness_classification":
+    elif "tvf_classification" in args.preference[0]:
         d = 0.0
         C = [[i for i in range(args.n_agents)]]
         D = (torch.ones(1, args.n_items, args.n_items) * d)
@@ -74,14 +76,14 @@ def label_preference(random_bids, allocs, actual_payments, args, type="entropy_c
                     D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
         
-        unfairness_alloc = unfairness.sum(dim=-1)
-
-        labels = unfairness_alloc < thresh  #0.175
+        tvf_alloc = unfairness.sum(dim=-1)
+        thresh = np.quantile(tvf_alloc, 1 - pct)
+        labels = tvf_alloc < thresh
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
 
-    elif type == "unfairness_ranking":
+    elif "tvf_ranking" in args.preference[0]:
         d = 0.0
         C = [[i for i in range(args.n_agents)]]
         D = (torch.ones(1, args.n_items, args.n_items) * d)
@@ -94,14 +96,14 @@ def label_preference(random_bids, allocs, actual_payments, args, type="entropy_c
                     D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
         
-        unfairness_alloc = unfairness.sum(dim=-1)
-        unfairness_cnt = torch.zeros_like(unfairness_alloc)
+        tvf_alloc = unfairness.sum(dim=-1)
+        tvf_cnt = torch.zeros_like(tvf_alloc)
         
         for i in range(samples):
-            idx = torch.randperm(len(unfairness_alloc))
-            unfairness_cnt = unfairness_cnt + (unfairness_alloc < unfairness_alloc[idx])
+            idx = torch.randperm(len(tvf_alloc))
+            tvf_cnt = tvf_cnt + (tvf_alloc < tvf_alloc[idx])
 
-        labels = unfairness_cnt > (pct * samples)
+        labels = tvf_cnt > (pct * samples)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -283,7 +285,7 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     test_payments = torch.Tensor().to(device)
     test_preference = torch.Tensor().to(device)
     test_entropy = torch.Tensor().to(device)
-    test_unfairness = torch.Tensor().to(device)
+    test_tvf = torch.Tensor().to(device)
 
     plot_utils.create_plot(model.n_agents, model.n_items, args)
 
@@ -301,14 +303,14 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         positive_regrets = torch.clamp_min(regrets, 0)
         pref = preference.get_preference(batch, allocs, payments, args, preference_net)
         entropy = preference.get_entropy(batch, allocs, payments, args)
-        unfairness = preference.get_unfairness(batch, allocs, payments, args)
+        tvf = preference.get_tvf(batch, allocs, payments, args)
 
         # Record entire test data
         test_regrets = torch.cat((test_regrets, positive_regrets), dim=0)
         test_payments = torch.cat((test_payments, payments), dim=0)
         test_preference = torch.cat((test_preference, pref), dim=0)
         test_entropy = torch.cat((test_entropy, entropy), dim=0)
-        test_unfairness = torch.cat((test_unfairness, unfairness), dim=0)
+        test_tvf = torch.cat((test_tvf, tvf), dim=0)
 
         plot_utils.add_to_plot_cache({
             "batch": batch,
@@ -330,14 +332,15 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         "preference_max": test_preference.max().item(),
         "entropy_mean": test_entropy.mean().item(),
         "entropy_max": test_entropy.max().item(),
-        "unfairness_mean": test_unfairness.mean().item(),
-        "unfairness_max": test_unfairness.max().item(),
+        "tvf_mean": test_tvf.mean().item(),
+        "tvf_max": test_tvf.max().item(),
     }
  
     return result
 
-def train_preference(model, optimizer, train_loader, test_loader, epoch, args):
+def train_preference(model, train_loader, test_loader, epoch, args):
     BCE = nn.BCELoss()
+    optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
     for STEP in range(args.preference_num_epochs):
         epochLoss = 0
@@ -358,21 +361,19 @@ def train_preference(model, optimizer, train_loader, test_loader, epoch, args):
     accuracy = classificationAccuracy(model, test_loader)
     print("Classification Accuracy: {}".format(accuracy) )
 
-    modelState = {
-        "experimentName": args.name,
-        "State_Dictionary": model.state_dict(),
-        }
+    modelState = {"experimentName": args.name,
+                  "state_dictionary": model.state_dict()
+                  }
 
     torch.save(modelState, f"result/{args.preference[0]}/{args.name}/{epoch}_{args.preference[0]}_checkpoint.pt")
 
-    return model, optimizer
+    return model
 
 def train_loop(model, train_loader, test_loader, args, writer, preference_net, device="cpu"):
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
-    preference_optimizer = optim.Adam(preference_net.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
     iter = 0
     rho = args.rho
@@ -385,45 +386,43 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         payments_epoch = torch.Tensor().to(device)
         preference_epoch = torch.Tensor().to(device)
         entropy_epoch = torch.Tensor().to(device)
-        unfairness_epoch = torch.Tensor().to(device)
-    
-        if "synthetic" in args.preference[0]:
-            preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
-            preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
-
-            train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(args.preference_num_examples, args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
-            preference_train_bids.append(train_bids)
-            preference_train_allocs.append(train_allocs)
-            preference_train_payments.append(train_payments)
-            preference_train_labels.append(train_labels)
-            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, args=args)
-            
-            test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(args.preference_test_num_examples, args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
-            preference_test_bids.append(test_bids)
-            preference_test_allocs.append(test_allocs)
-            preference_test_payments.append(test_payments)
-            preference_test_labels.append(test_labels)
-            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, args=args)
-        else:        
-            preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
-            preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
-
-            train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, args.preference_num_examples, preference_item_ranges, args, label_preference)
-            preference_train_bids.append(train_bids)
-            preference_train_allocs.append(train_allocs)
-            preference_train_payments.append(train_payments)
-            preference_train_labels.append(train_labels)
-            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, args=args)
-            
-            test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, args.preference_test_num_examples, preference_item_ranges, args, label_preference)
-            preference_test_bids.append(test_bids)
-            preference_test_allocs.append(test_allocs)
-            preference_test_payments.append(test_payments)
-            preference_test_labels.append(test_labels)
-            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, args=args)
+        tvf_epoch = torch.Tensor().to(device)
 
         if epoch % args.preference_update_freq == 0:
-            preference_net, preference_optimizer = train_preference(preference_net, preference_optimizer, preference_train_loader, preference_test_loader, epoch, args)
+            preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
+            preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
+            ##################################################################################
+            if args.preference_synthetic_pct > 0:
+                train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
+                preference_train_bids.append(train_bids)
+                preference_train_allocs.append(train_allocs)
+                preference_train_payments.append(train_payments)
+                preference_train_labels.append(train_labels)
+                
+                test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
+                preference_test_bids.append(test_bids)
+                preference_test_allocs.append(test_allocs)
+                preference_test_payments.append(test_payments)
+                preference_test_labels.append(test_labels)
+
+            ####################################################################################
+            if 1 - args.preference_synthetic_pct > 0:
+                train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, label_preference)
+                preference_train_bids.append(train_bids)
+                preference_train_allocs.append(train_allocs)
+                preference_train_payments.append(train_payments)
+                preference_train_labels.append(train_labels)
+                
+                test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, label_preference)
+                preference_test_bids.append(test_bids)
+                preference_test_allocs.append(test_allocs)
+                preference_test_payments.append(test_payments)
+                preference_test_labels.append(test_labels)
+            
+            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, args=args)
+            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, args=args)
+        
+            preference_net = train_preference(preference_net, preference_train_loader, preference_test_loader, epoch, args)
             preference_net.eval()
 
         for i, batch in enumerate(train_loader):
@@ -442,7 +441,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             payment_loss = payments.sum(dim=1).mean() * payment_mult
             pref = preference.get_preference(batch, allocs, payments, args, preference_net)
             entropy = preference.get_entropy(batch, allocs, payments, args)
-            unfairness = preference.get_unfairness(batch, allocs, payments, args)
+            tvf = preference.get_tvf(batch, allocs, payments, args)
 
             if epoch < args.rgt_start:
                 regret_loss = 0
@@ -459,7 +458,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             payments_epoch = torch.cat((payments_epoch, payments), dim=0)
             preference_epoch = torch.cat((preference_epoch, pref), dim=0)
             entropy_epoch = torch.cat((entropy_epoch, entropy), dim=0)
-            unfairness_epoch = torch.cat((unfairness_epoch, unfairness), dim=0)
+            tvf_epoch = torch.cat((tvf_epoch, tvf), dim=0)
 
             # Calculate loss
             loss_func = regret_loss \
@@ -509,8 +508,8 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             "preference_mean": preference_epoch.mean().item(),
             "entropy_max": entropy_epoch.max().item(),
             "entropy_mean": entropy_epoch.mean().item(),
-            "unfairness_max": unfairness_epoch.max().item(),
-            "unfairness_mean": unfairness_epoch.mean().item(),
+            "tvf_max": tvf_epoch.max().item(),
+            "tvf_mean": tvf_epoch.mean().item(),
         }
 
         pprint(train_stats)

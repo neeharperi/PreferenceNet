@@ -20,14 +20,15 @@ parser = ArgumentParser()
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--num-examples', type=int, default=160000)
 parser.add_argument('--test-num-examples', type=int, default=3000)
-parser.add_argument('--preference-num-examples', type=int, default=8000)
-parser.add_argument('--preference-test-num-examples', type=int, default=2000)
+parser.add_argument('--preference-num-examples', type=int, default=10000)
+parser.add_argument('--preference-test-num-examples', type=int, default=10000)
 parser.add_argument('--test-iter', type=int, default=5)
 parser.add_argument('--n-agents', type=int, default=1)
 parser.add_argument('--n-items', type=int, default=2)
 parser.add_argument('--num-epochs', type=int, default=100)
 parser.add_argument('--preference-num-epochs', type=int, default=10)
-parser.add_argument('--preference-update-freq', type=int, default=1)
+parser.add_argument('--preference-update_freq', type=int, default=1)
+parser.add_argument('--preference-synthetic-pct', type=float, default=0.5)
 parser.add_argument('--batch-size', type=int, default=2000)
 parser.add_argument('--test-batch-size', type=int, default=512)
 parser.add_argument('--model-lr', type=float, default=1e-3)
@@ -42,8 +43,6 @@ parser.add_argument('--lagr-update-iter', type=int, default=6)
 parser.add_argument('--rgt-start', type=int, default=0)
 # Entropy
 parser.add_argument('--preference', default=[], nargs='+')  # Fairness metric and associated arguments
-parser.add_argument('--preference_type', default='entropy_classification')
-parser.add_argument('--preference_thresh', type=float, default=0.685)
 
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
 # dataset selection: specifies a configuration of agent/item/valuation
@@ -81,7 +80,7 @@ if __name__ == "__main__":
     if not os.path.isdir(f"result/{args.preference[0]}/{args.name}"):
         os.makedirs(f"result/{args.preference[0]}/{args.name}")
     else:
-        "{} already exists.".format(f"result/{args.preference[0]}/{args.name}")
+        print("{} already exists.".format(f"result/{args.preference[0]}/{args.name}"))
         sys.exit()
         
     writer = SummaryWriter(log_dir=f"run/{args.preference[0]}/{args.name}", comment=f"{args}")
