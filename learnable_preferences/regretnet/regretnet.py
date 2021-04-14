@@ -285,7 +285,7 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     test_payments = torch.Tensor().to(device)
     test_preference = torch.Tensor().to(device)
     test_entropy = torch.Tensor().to(device)
-    test_tvf = torch.Tensor().to(device)
+    test_unfairness = torch.Tensor().to(device)
 
     plot_utils.create_plot(model.n_agents, model.n_items, args)
 
@@ -303,14 +303,14 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         positive_regrets = torch.clamp_min(regrets, 0)
         pref = preference.get_preference(batch, allocs, payments, args, preference_net)
         entropy = preference.get_entropy(batch, allocs, payments, args)
-        tvf = preference.get_tvf(batch, allocs, payments, args)
+        unfairness = preference.get_unfairness(batch, allocs, payments, args)
 
         # Record entire test data
         test_regrets = torch.cat((test_regrets, positive_regrets), dim=0)
         test_payments = torch.cat((test_payments, payments), dim=0)
         test_preference = torch.cat((test_preference, pref), dim=0)
         test_entropy = torch.cat((test_entropy, entropy), dim=0)
-        test_tvf = torch.cat((test_tvf, tvf), dim=0)
+        test_unfairness = torch.cat((test_unfairness, unfairness), dim=0)
 
         plot_utils.add_to_plot_cache({
             "batch": batch,
@@ -332,8 +332,8 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         "preference_max": test_preference.max().item(),
         "entropy_mean": test_entropy.mean().item(),
         "entropy_max": test_entropy.max().item(),
-        "tvf_mean": test_tvf.mean().item(),
-        "tvf_max": test_tvf.max().item(),
+        "unfairness_mean": test_unfairness.mean().item(),
+        "unfairness_max": test_unfairness.max().item(),
     }
  
     return result
@@ -342,10 +342,10 @@ def train_preference(model, train_loader, test_loader, epoch, args):
     BCE = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
-    for STEP in range(args.preference_num_epochs):
+    for _ in range(args.preference_num_epochs):
         epochLoss = 0
         model.train()
-        for batchCount, data in enumerate(train_loader, 1):
+        for _, data in enumerate(train_loader, 1):
             bids, allocs, payments, label = data
             bids, allocs, payments, label = bids.to(DEVICE), allocs.to(DEVICE), payments.to(DEVICE), label.to(DEVICE)
         
@@ -386,7 +386,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         payments_epoch = torch.Tensor().to(device)
         preference_epoch = torch.Tensor().to(device)
         entropy_epoch = torch.Tensor().to(device)
-        tvf_epoch = torch.Tensor().to(device)
+        unfairness_epoch = torch.Tensor().to(device)
 
         if epoch % args.preference_update_freq == 0:
             preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
@@ -441,7 +441,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             payment_loss = payments.sum(dim=1).mean() * payment_mult
             pref = preference.get_preference(batch, allocs, payments, args, preference_net)
             entropy = preference.get_entropy(batch, allocs, payments, args)
-            tvf = preference.get_tvf(batch, allocs, payments, args)
+            unfairness = preference.get_unfairness(batch, allocs, payments, args)
 
             if epoch < args.rgt_start:
                 regret_loss = 0
@@ -458,7 +458,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             payments_epoch = torch.cat((payments_epoch, payments), dim=0)
             preference_epoch = torch.cat((preference_epoch, pref), dim=0)
             entropy_epoch = torch.cat((entropy_epoch, entropy), dim=0)
-            tvf_epoch = torch.cat((tvf_epoch, tvf), dim=0)
+            unfairness_epoch = torch.cat((unfairness_epoch, unfairness), dim=0)
 
             # Calculate loss
             loss_func = regret_loss \
@@ -508,8 +508,8 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             "preference_mean": preference_epoch.mean().item(),
             "entropy_max": entropy_epoch.max().item(),
             "entropy_mean": entropy_epoch.mean().item(),
-            "tvf_max": tvf_epoch.max().item(),
-            "tvf_mean": tvf_epoch.mean().item(),
+            "unfairness_max": unfairness_epoch.max().item(),
+            "unfairness_mean": unfairness_epoch.mean().item(),
         }
 
         pprint(train_stats)
