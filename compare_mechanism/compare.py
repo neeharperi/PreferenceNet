@@ -40,74 +40,89 @@ def get_unfairness(allocs, n_agents, n_items):
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 parser = ArgumentParser()
-parser.add_argument('--modelA_ckpt', required=True)
-parser.add_argument('--modelB_ckpt', required=True)
+
 
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--test-num-examples', type=int, default=5000)
 parser.add_argument('--test-batch-size', type=int, default=512)
 
-if __name__ == "__main__":
-    args = parser.parse_args()
-    torch.manual_seed(args.random_seed)
-    np.random.seed(args.random_seed)
-
-    modelA_ckpt = torch.load(args.modelA_ckpt)
-    if "pv" in modelA_ckpt['name']:
-        modelA = RegretNetUnitDemand(**(modelA_ckpt['arch']))
-    else:
-        modelA = RegretNet(**(modelA_ckpt['arch']))
-    
-    state_dict = modelA_ckpt['state_dict']
-    modelA.load_state_dict(state_dict)
+auction_type = "mv"
+models = ["../diversity/result/1x2-{}_1_0.0_0/199_checkpoint.pt".format(auction_type),
+          "../diversity/result/1x2-{}_1_1.0_0/199_checkpoint.pt".format(auction_type),
+          "../fairness/result/1x2-{}_1_0.0_0/199_checkpoint.pt".format(auction_type),
+          "../learnable_preferences/result/entropy_ranking/1x2-{}_1_1.0_1.0_0/199_checkpoint.pt".format(auction_type),
+          "../learnable_preferences/result/tvf_ranking/1x2-{}_1_1.0_1.0_0/199_checkpoint.pt".format(auction_type)]
 
 
-    modelB_ckpt = torch.load(args.modelB_ckpt)
-    if "pv" in modelB_ckpt['name']:
-        modelB = RegretNetUnitDemand(**(modelB_ckpt['arch']))
-    else:
-        modelB = RegretNet(**(modelB_ckpt['arch']))
+args = parser.parse_args()
+torch.manual_seed(args.random_seed)
+np.random.seed(args.random_seed)
 
-    state_dict = modelB_ckpt['state_dict']
-    modelB.load_state_dict(state_dict)
+     
+# Valuation range setup
+item_ranges = ds.preset_valuation_range(1, 2)
+clamp_op = ds.get_clamp_op(item_ranges)
 
-    modelA_ckpt['arch']
-    # Valuation range setup
-    item_ranges = ds.preset_valuation_range(modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'])
-    clamp_op = ds.get_clamp_op(item_ranges)
- 
-    test_data = ds.generate_dataset_nxk(modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'], args.test_num_examples, item_ranges).to(DEVICE)
-    test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
+test_data = ds.generate_dataset_nxk(1, 2, args.test_num_examples, item_ranges).to(DEVICE)
+test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
-    modelA.to(DEVICE)
-    modelB.to(DEVICE)
+average_allocation_distance = []
+for modelA_path in models:
+    average_allocations = []
+    for modelB_path in models:
 
-    modelA.eval()
-    modelB.eval()
-    
-    total_dist = 0
-    total_entropy = 0
-    total_unfairness = 0
+        modelA_ckpt = torch.load(modelA_path)
+        if "pv" in modelA_ckpt['name']:
+            modelA = RegretNetUnitDemand(**(modelA_ckpt['arch']))
+        else:
+            modelA = RegretNet(**(modelA_ckpt['arch']))
 
-    for i, batch in enumerate(test_loader):
-        batch = batch.to(DEVICE)
-        allocs_A, _ = modelA(batch)
-        allocs_B, _ = modelB(batch)
+        state_dict = modelA_ckpt['state_dict']
+        modelA.load_state_dict(state_dict)
 
-        unfair_allocs_A = get_unfairness(allocs_A, modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'])
-        unfair_allocs_B = get_unfairness(allocs_B, modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'])
 
-        norm_allocs_A = normalize_allocs(allocs_A)
-        norm_allocs_B = normalize_allocs(allocs_B)
-        
-        entropy_A = get_entropy(norm_allocs_A)
-        entropy_B = get_entropy(norm_allocs_B)
+        modelB_ckpt = torch.load(modelB_path)
+        if "pv" in modelB_ckpt['name']:
+            modelB = RegretNetUnitDemand(**(modelB_ckpt['arch']))
+        else:
+            modelB = RegretNet(**(modelB_ckpt['arch']))
 
-        total_dist = total_dist + torch.cdist(allocs_A, allocs_B).view(-1).sum().item()
-        total_entropy = total_entropy + torch.sqrt(torch.pow(entropy_A - entropy_B, 2)).sum().item()
-        total_unfairness = total_unfairness + torch.sqrt(torch.pow(unfair_allocs_A - unfair_allocs_B, 2)).sum().item()
+        state_dict = modelB_ckpt['state_dict']
+        modelB.load_state_dict(state_dict)
 
-    print("Average Allocation Distance: {}".format(total_dist / args.test_num_examples))
-    print("Average Entropy Distance: {}".format(total_entropy / args.test_num_examples))
-    print("Average Unfairness Distance: {}".format(total_unfairness / args.test_num_examples))
+        modelA.to(DEVICE)
+        modelB.to(DEVICE)
+
+        modelA.eval()
+        modelB.eval()
+
+        total_dist = 0
+        total_entropy = 0
+        total_unfairness = 0
+
+        for i, batch in enumerate(test_loader):
+            batch = batch.to(DEVICE)
+            allocs_A, _ = modelA(batch)
+            allocs_B, _ = modelB(batch)
+
+            unfair_allocs_A = get_unfairness(allocs_A, modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'])
+            unfair_allocs_B = get_unfairness(allocs_B, modelA_ckpt['arch']['n_agents'], modelA_ckpt['arch']['n_items'])
+
+            norm_allocs_A = normalize_allocs(allocs_A)
+            norm_allocs_B = normalize_allocs(allocs_B)
+            
+            entropy_A = get_entropy(norm_allocs_A)
+            entropy_B = get_entropy(norm_allocs_B)
+
+            total_dist = total_dist + torch.cdist(allocs_A, allocs_B).view(-1).sum().item()
+            total_entropy = total_entropy + torch.sqrt(torch.pow(entropy_A - entropy_B, 2)).sum().item()
+            total_unfairness = total_unfairness + torch.sqrt(torch.pow(unfair_allocs_A - unfair_allocs_B, 2)).sum().item()
+
+        #print(modelA_path + " , " + modelB_path)
+        #print("Average Allocation Distance: {}".format(total_dist / args.test_num_examples))
+        average_allocations.append(total_dist / args.test_num_examples)
+        #print("Average Entropy Distance: {}".format(total_entropy / args.test_num_examples))
+        #print("Average Unfairness Distance: {}".format(total_unfairness / args.test_num_examples))
+    average_allocation_distance.append(average_allocations)
+print(np.matrix(average_allocation_distance))
 
