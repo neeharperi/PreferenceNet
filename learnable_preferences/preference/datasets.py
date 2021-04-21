@@ -137,7 +137,7 @@ def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, a
         return vals, labels
 
 
-def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, preference):
+def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, type, preference):
     # randomly generate bids in ranges
     random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
 
@@ -160,12 +160,12 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
 
     actual_payments = random_frac_payments * agent_utils
 
-    labels = preference(random_bids, allocs, actual_payments, args)
+    labels = preference(random_bids, allocs, actual_payments, type, args)
     return random_bids, allocs, actual_payments, labels
         
 
 
-def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, preference):
+def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_ranges, args, type, preference):
     """
     Generates regretnet allocations (uniform, unit-demand or not).
     """
@@ -189,5 +189,5 @@ def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_
     allocs = torch.cat(all_allocs).cpu()
     actual_payments = torch.cat(all_payments).cpu()
 
-    labels = preference(random_bids, allocs, actual_payments, args)
+    labels = preference(random_bids, allocs, actual_payments, type, args)
     return random_bids, allocs, actual_payments, labels

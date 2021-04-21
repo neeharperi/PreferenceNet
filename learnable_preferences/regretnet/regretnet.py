@@ -38,7 +38,7 @@ def z_score(x, mu, sigma):
     return abs(x - mu) / float(sigma)
 
 def label_flip(pct):
-    return random.randrange(100) < (100 * pct)
+    return np.random.rand() < pct
 
 def label_noise(valuation, threshold, labels, noise):
     probability = st.norm.sf([z_score(val, threshold, valuation.std()) for val in valuation])
@@ -47,43 +47,16 @@ def label_noise(valuation, threshold, labels, noise):
     perturbed_labels = [l if f == False else not l for l, f in zip(labels, flip)]
     return perturbed_labels
 
-def label_preference(random_bids, allocs, actual_payments, args, samples=1000, pct=0.75):
-    if "entropy_classification" in args.preference[0]:
+def label_valuation(random_bids, allocs, actual_payments, type, args):
+    if type == "entropy":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
-        entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-        thresh = np.quantile(entropy_alloc, pct)
-        labels = entropy_alloc > thresh    
+        valuation = entropy.sum(dim=-1).sum(dim=-1)
+        optimize = "max"
 
-        labels = label_noise(entropy_alloc, thresh, labels, args.preference_label_noise)
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
-        return tnsr
-
-    elif "entropy_ranking" in args.preference[0]:
-        allocs = allocs.clamp_min(1e-8)
-        norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
-        
-        entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
-        entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
-        thresh = np.quantile(entropy_alloc, pct)
-
-        entropy_cnt = torch.zeros_like(entropy_alloc)
-        
-        for i in range(samples):
-            idx = torch.randperm(len(entropy_alloc))
-            entropy_cnt = entropy_cnt + (entropy_alloc > entropy_alloc[idx])
-
-        labels = entropy_cnt > (pct * samples)
-
-        labels = label_noise(entropy_alloc, thresh, labels, args.preference_label_noise)
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
-        return tnsr
-    
-    elif "tvf_classification" in args.preference[0]:
+    elif type == "tvf":
         d = 0.0
         C = [[i for i in range(args.n_agents)]]
         D = (torch.ones(1, args.n_items, args.n_items) * d)
@@ -96,44 +69,64 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
                     D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
         
-        tvf_alloc = unfairness.sum(dim=-1)
-        thresh = np.quantile(tvf_alloc, 1 - pct)
-        labels = tvf_alloc < thresh
+        valuation = unfairness.sum(dim=-1)
+        optimize = "min"
 
-        labels = label_noise(tvf_alloc, thresh, labels, args.preference_label_noise)
+    elif type == "utility":
+        valuation = calc_agent_util(random_bids, allocs, actual_payments).view(-1)
+        optimize = "min"
+
+    else:
+        assert False, "Valuation type {} not supported".format(type)
+
+    return valuation, optimize
+
+def label_assignment(valuation, type, optimize, args):
+    if type == "classification":
+        thresh = np.quantile(valuation, args.preference_threshold)
+        labels = valuation > thresh if optimize == "max" else valuation < thresh 
+
+        labels = label_noise(valuation, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
-        return tnsr
-
-    elif "tvf_ranking" in args.preference[0]:
-        d = 0.0
-        C = [[i for i in range(args.n_agents)]]
-        D = (torch.ones(1, args.n_items, args.n_items) * d)
-        L, n, m = allocs.shape
-        unfairness = torch.zeros(L, m)
-        for i, C_i in enumerate(C):
-            for u in range(m):
-                for v in range(m):
-                    subset_allocs_diff = (allocs[:, C_i, u] - allocs[:, C_i, v]).abs()
-                    D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
-                    unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
+    elif type == "ranking":
+        thresh = np.quanitle(valuation, args.preference_threshold) if optimize == "max" else np.quantile(valuation, 1 - args.preference_threshold)
+        cnt = torch.zeros_like(valuation)
         
-        tvf_alloc = unfairness.sum(dim=-1)
-        thresh = np.quantile(tvf_alloc, 1 - pct)
-        tvf_cnt = torch.zeros_like(tvf_alloc)
-        
-        for i in range(samples):
-            idx = torch.randperm(len(tvf_alloc))
-            tvf_cnt = tvf_cnt + (tvf_alloc < tvf_alloc[idx])
+        for _ in range(args.preference_ranking_pairwise_samples):
+            idx = torch.randperm(len(valuation))
 
-        labels = tvf_cnt > (pct * samples)
+            if optimize == "max":
+                cnt = cnt + (valuation > valuation[idx])
+            elif optimize == "min":
+                cnt = cnt + (valuation < valuation[idx])
+            else:
+                assert False, "Optimize type {} is not supported".format(optimize)
 
-        labels = label_noise(tvf_alloc, thresh, labels, args.preference_label_noise)
+        labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
+
+        labels = label_noise(valuation, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
-        return tnsr
+    else:
+        assert False, "Assignment type {} not supported".format(type)
 
-    assert False, "Invalid Preference Type"
+    return tnsr
+
+def label_preference(random_bids, allocs, actual_payments, type, args):
+    if "entropy" in type:
+        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "entropy", args)
+    elif "tvf" in type:
+        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "tvf", args)
+    elif "utility":
+        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "utility", args)
+    #################################################################################################
+    if "classification" in type:
+        tnsr = label_assignment(valuation, "classification", optimize, args)
+    elif "ranking" in type:
+        tnsr = label_assignment(valuation, "ranking", optimize, args)
+
+    return tnsr
 
 class View(nn.Module):
     def __init__(self, shape):
@@ -390,7 +383,7 @@ def train_preference(model, train_loader, test_loader, epoch, args):
                   "state_dictionary": model.state_dict()
                   }
 
-    torch.save(modelState, f"result/{args.preference[0]}/{args.name}/{epoch}_{args.preference[0]}_checkpoint.pt")
+    torch.save(modelState, "result/{0}/{1}/{2}_{0}_checkpoint.pt".format("_".join(args.preference), args.name, epoch))
 
     return model
 
@@ -416,33 +409,42 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         if epoch % args.preference_update_freq == 0:
             preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
             preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
-            ##################################################################################
-            if args.preference_synthetic_pct > 0:
-                train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
-                preference_train_bids.append(train_bids)
-                preference_train_allocs.append(train_allocs)
-                preference_train_payments.append(train_payments)
-                preference_train_labels.append(train_labels)
-                
-                test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, label_preference)
-                preference_test_bids.append(test_bids)
-                preference_test_allocs.append(test_allocs)
-                preference_test_payments.append(test_payments)
-                preference_test_labels.append(test_labels)
+            preference_type = []
 
-            ####################################################################################
-            if 1 - args.preference_synthetic_pct > 0:
-                train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, label_preference)
-                preference_train_bids.append(train_bids)
-                preference_train_allocs.append(train_allocs)
-                preference_train_payments.append(train_payments)
-                preference_train_labels.append(train_labels)
-                
-                test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, label_preference)
-                preference_test_bids.append(test_bids)
-                preference_test_allocs.append(test_allocs)
-                preference_test_payments.append(test_payments)
-                preference_test_labels.append(test_labels)
+            for i in range(len(args.preference)):
+                if i % 2 == 0:
+                    preference_type.append((args.preference[i], float(args.preference[i+1])))
+
+            for pref in preference_type:
+                type, ratio = pref
+
+                ##################################################################################
+                if args.preference_synthetic_pct > 0:
+                    train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+                    preference_train_bids.append(train_bids)
+                    preference_train_allocs.append(train_allocs)
+                    preference_train_payments.append(train_payments)
+                    preference_train_labels.append(train_labels)
+                    
+                    test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+                    preference_test_bids.append(test_bids)
+                    preference_test_allocs.append(test_allocs)
+                    preference_test_payments.append(test_payments)
+                    preference_test_labels.append(test_labels)
+
+                ####################################################################################
+                if 1 - args.preference_synthetic_pct > 0:
+                    train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)
+                    preference_train_bids.append(train_bids)
+                    preference_train_allocs.append(train_allocs)
+                    preference_train_payments.append(train_payments)
+                    preference_train_labels.append(train_labels)
+                    
+                    test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, type, label_preference)
+                    preference_test_bids.append(test_bids)
+                    preference_test_allocs.append(test_allocs)
+                    preference_test_payments.append(test_payments)
+                    preference_test_labels.append(test_labels)
             
             preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, args=args)
             preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, args=args)
@@ -520,7 +522,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                         'arch': arch,
                         'state_dict': model.state_dict(),
                         'args': args},
-                       f"result/{args.preference[0]}/{args.name}/{epoch}_checkpoint.pt")
+                        "result/{0}/{1}/{2}_checkpoint.pt".format("_".join(args.preference), args.name, epoch))
 
         # Log training stats
         train_stats = {

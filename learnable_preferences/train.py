@@ -44,6 +44,8 @@ parser.add_argument('--rgt-start', type=int, default=0)
 # Entropy
 parser.add_argument('--preference', default=[], nargs='+')
 parser.add_argument('--preference-label-noise', type=float, default=0)
+parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1000)
+parser.add_argument('--preference-threshold', type=float, default=0.75)
 
 
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
@@ -79,13 +81,13 @@ if __name__ == "__main__":
 
     preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
 
-    if not os.path.isdir(f"result/{args.preference[0]}/{args.name}"):
-        os.makedirs(f"result/{args.preference[0]}/{args.name}")
+    if not os.path.isdir("result/{0}/{1}".format("_".join(args.preference), args.name)):
+        os.makedirs("result/{0}/{1}".format("_".join(args.preference), args.name))
     else:
-        print("{} already exists.".format(f"result/{args.preference[0]}/{args.name}"))
+        print("{} already exists.".format("result/{0}/{1}".format("_".join(args.preference), args.name)))
         sys.exit()
         
-    writer = SummaryWriter(log_dir=f"run/{args.preference[0]}/{args.name}", comment=f"{args}")
+    writer = SummaryWriter(log_dir="run/{0}/{1}".format("_".join(args.preference), args.name), comment=f"{args}")
 
     train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
     train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
