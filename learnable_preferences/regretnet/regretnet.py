@@ -8,7 +8,8 @@ from regretnet.utils import optimize_misreports, tiled_misreport_util, calc_agen
 from preference import preference
 import torch.nn.init
 import plot_utils
-
+import scipy.stats as st
+import random
 import numpy as np
 from pprint import pprint
 import pdb
@@ -32,7 +33,20 @@ def classificationAccuracy(model, validationData):
             total = total + allocs.shape[0]
 
     return correct / float(total)
-    
+
+def z_score(x, mu, sigma):
+    return abs(x - mu) / float(sigma)
+
+def label_flip(pct):
+    return random.randrange(100) < (100 * pct)
+
+def label_noise(valuation, threshold, labels, noise):
+    probability = st.norm.sf([z_score(val, threshold, valuation.std()) for val in valuation])
+    flip = [label_flip(noise * p) for p in probability]
+
+    perturbed_labels = [l if f == False else not l for l, f in zip(labels, flip)]
+    return perturbed_labels
+
 def label_preference(random_bids, allocs, actual_payments, args, samples=1000, pct=0.75):
     if "entropy_classification" in args.preference[0]:
         allocs = allocs.clamp_min(1e-8)
@@ -42,6 +56,8 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
         thresh = np.quantile(entropy_alloc, pct)
         labels = entropy_alloc > thresh    
+
+        labels = label_noise(entropy_alloc, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -52,6 +68,8 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
         
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
         entropy_alloc = entropy.sum(dim=-1).sum(dim=-1)
+        thresh = np.quantile(entropy_alloc, pct)
+
         entropy_cnt = torch.zeros_like(entropy_alloc)
         
         for i in range(samples):
@@ -59,6 +77,8 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
             entropy_cnt = entropy_cnt + (entropy_alloc > entropy_alloc[idx])
 
         labels = entropy_cnt > (pct * samples)
+
+        labels = label_noise(entropy_alloc, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -79,6 +99,8 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
         tvf_alloc = unfairness.sum(dim=-1)
         thresh = np.quantile(tvf_alloc, 1 - pct)
         labels = tvf_alloc < thresh
+
+        labels = label_noise(tvf_alloc, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
@@ -97,6 +119,7 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
         
         tvf_alloc = unfairness.sum(dim=-1)
+        thresh = np.quantile(tvf_alloc, 1 - pct)
         tvf_cnt = torch.zeros_like(tvf_alloc)
         
         for i in range(samples):
@@ -104,6 +127,8 @@ def label_preference(random_bids, allocs, actual_payments, args, samples=1000, p
             tvf_cnt = tvf_cnt + (tvf_alloc < tvf_alloc[idx])
 
         labels = tvf_cnt > (pct * samples)
+
+        labels = label_noise(tvf_alloc, thresh, labels, args.preference_label_noise)
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
         return tnsr
