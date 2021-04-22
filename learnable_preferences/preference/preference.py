@@ -11,14 +11,12 @@ def get_preference(batch, allocs, payments, args, model=None):
 
             model.eval()
             pred = model(batch, norm_allocs, payments)
-
-            return float(args.preference[1]) * pred
             
         elif "tvf" in args.preference[0]:
             model.eval()
             pred = model(batch, allocs, payments)
 
-            return float(args.preference[1]) * pred
+        return pred
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)
 

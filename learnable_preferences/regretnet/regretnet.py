@@ -44,7 +44,10 @@ def label_noise(valuation, threshold, labels, noise):
     probability = st.norm.sf([z_score(val, threshold, valuation.std()) for val in valuation])
     flip = [label_flip(noise * p) for p in probability]
 
-    perturbed_labels = [l if f == False else not l for l, f in zip(labels, flip)]
+    perturbed_labels = torch.tensor([l.item() if f == False else not l.item() for l, f in zip(labels, flip)])
+
+    print("{}% of Labels Flipped".format((100.0 * sum(labels != perturbed_labels))/len(labels)))
+
     return perturbed_labels
 
 def label_valuation(random_bids, allocs, actual_payments, type, args):
@@ -90,7 +93,7 @@ def label_assignment(valuation, type, optimize, args):
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     elif type == "ranking":
-        thresh = np.quanitle(valuation, args.preference_threshold) if optimize == "max" else np.quantile(valuation, 1 - args.preference_threshold)
+        thresh = np.quantile(valuation, args.preference_threshold) if optimize == "max" else np.quantile(valuation, 1 - args.preference_threshold)
         cnt = torch.zeros_like(valuation)
         
         for _ in range(args.preference_ranking_pairwise_samples):
@@ -410,10 +413,13 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
             preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
             preference_type = []
-
+            mixed_preference_weight = 0
             for i in range(len(args.preference)):
                 if i % 2 == 0:
                     preference_type.append((args.preference[i], float(args.preference[i+1])))
+                    mixed_preference_weight = mixed_preference_weight + float(args.preference[i+1])
+
+            assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
             for pref in preference_type:
                 type, ratio = pref
