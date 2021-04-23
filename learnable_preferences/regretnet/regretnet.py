@@ -22,10 +22,11 @@ def classificationAccuracy(model, validationData):
 
     with torch.no_grad():
         model.eval()
+
         for data in validationData:
             bids, allocs, payments, label = data
             bids, allocs, payments, label = bids.to(DEVICE), allocs.to(DEVICE), payments.to(DEVICE), label.to(DEVICE)
-        
+
             pred = model(bids, allocs, payments)
             pred = pred > 0.5
 
@@ -34,15 +35,20 @@ def classificationAccuracy(model, validationData):
 
     return correct / float(total)
 
-def z_score(x, mu, sigma):
-    return abs(x - mu) / float(sigma)
+def label_noise(valuation, labels, noise, threshold=None, dist="gaussian"):
+    def z_score(x, mu, sigma):
+        return abs(x - mu) / float(sigma)
 
-def label_flip(pct):
-    return np.random.rand() < pct
+    def label_flip(pct):
+        return np.random.rand() < pct
 
-def label_noise(valuation, threshold, labels, noise):
-    probability = st.norm.sf([z_score(val, threshold, valuation.std()) for val in valuation])
-    flip = [label_flip(noise * p) for p in probability]
+    if dist == "gaussian":
+        probability = st.norm.sf([z_score(val, threshold, valuation.std()) for val in valuation])
+        flip = [label_flip(noise * p) for p in probability]
+    elif dist == "uniform":
+        flip = [label_flip(noise * p) for p in np.ones_like(valuation)]
+    else:
+        assert False, "Distribution {} is not supported".format(dist)
 
     perturbed_labels = torch.tensor([l.item() if f == False else not l.item() for l, f in zip(labels, flip)])
 
@@ -52,6 +58,8 @@ def label_noise(valuation, threshold, labels, noise):
 
 def label_valuation(random_bids, allocs, actual_payments, type, args):
     if type == "entropy":
+        assert args.n_items > 1, "Entropy regularization requires num_items > 1"
+        
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         
@@ -79,17 +87,26 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         valuation = calc_agent_util(random_bids, allocs, actual_payments).view(-1)
         optimize = "min"
 
+    elif type == "quota":
+        assert args.n_agents > 1, "Entropy regularization requires num_agents > 1"
+
+        allocs = allocs.clamp_min(1e-8)
+        norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
+
+        valuation = torch.tensor([(torch.sum(norm_alloc > args.preference_quota) == (args.n_agents * args.n_items)).item() for norm_alloc in norm_allocs])
+        optimize = None
+
     else:
         assert False, "Valuation type {} not supported".format(type)
 
     return valuation, optimize
 
 def label_assignment(valuation, type, optimize, args):
-    if type == "classification":
+    if type == "threshold":
         thresh = np.quantile(valuation, args.preference_threshold)
         labels = valuation > thresh if optimize == "max" else valuation < thresh 
 
-        labels = label_noise(valuation, thresh, labels, args.preference_label_noise)
+        labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     elif type == "ranking":
@@ -108,7 +125,23 @@ def label_assignment(valuation, type, optimize, args):
 
         labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
 
-        labels = label_noise(valuation, thresh, labels, args.preference_label_noise)
+        labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+    
+    elif type == "bandpass":
+        low_thresh = np.quantile(valuation, args.preference_min_threshold)
+        high_thresh = np.quantile(valuation, args.preference_max_threshold)
+
+        labels = torch.tensor([low_thresh < val < high_thresh for val in valuation])
+
+        labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, low_thresh, "gaussian")
+        labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, high_thresh, "gaussian")
+
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+
+    elif type == "quota":
+        labels = label_noise(valuation, valuation, args.preference_label_noise, None, "uniform")
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     else:
@@ -117,17 +150,9 @@ def label_assignment(valuation, type, optimize, args):
     return tnsr
 
 def label_preference(random_bids, allocs, actual_payments, type, args):
-    if "entropy" in type:
-        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "entropy", args)
-    elif "tvf" in type:
-        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "tvf", args)
-    elif "utility":
-        valuation, optimize = label_valuation(random_bids, allocs, actual_payments, "utility", args)
-    #################################################################################################
-    if "classification" in type:
-        tnsr = label_assignment(valuation, "classification", optimize, args)
-    elif "ranking" in type:
-        tnsr = label_assignment(valuation, "ranking", optimize, args)
+    valuation_fn, assignment_fn = type.split("_")
+    valuation, optimize = label_valuation(random_bids, allocs, actual_payments, valuation_fn, args)
+    tnsr = label_assignment(valuation, assignment_fn, optimize, args)
 
     return tnsr
 

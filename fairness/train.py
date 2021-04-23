@@ -78,9 +78,6 @@ if __name__ == "__main__":
 
     if not os.path.isdir(f"result/{args.name}"):
         os.makedirs(f"result/{args.name}")
-    else:
-        print("{} already exists.".format(f"result/{args.preference[0]}/{args.name}"))
-        sys.exit()
         
     writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
 

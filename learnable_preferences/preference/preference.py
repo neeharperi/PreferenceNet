@@ -5,18 +5,10 @@ import pdb
 #allocs of size [..., num_agents, num_items]
 def get_preference(batch, allocs, payments, args, model=None):
     if args.preference:
-        if "entropy" in args.preference[0]:
-            allocs = allocs.clamp_min(1e-8)
-            norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
+        model.eval()
+        pred = model(batch, allocs, payments)
 
-            model.eval()
-            pred = model(batch, norm_allocs, payments)
-            
-        elif "tvf" in args.preference[0]:
-            model.eval()
-            pred = model(batch, allocs, payments)
-
-        return pred
+        return float(args.preference_lambda) * pred
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)
 

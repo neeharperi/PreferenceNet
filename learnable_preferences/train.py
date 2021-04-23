@@ -20,15 +20,10 @@ parser = ArgumentParser()
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--num-examples', type=int, default=160000)
 parser.add_argument('--test-num-examples', type=int, default=3000)
-parser.add_argument('--preference-num-examples', type=int, default=10000)
-parser.add_argument('--preference-test-num-examples', type=int, default=1000)
 parser.add_argument('--test-iter', type=int, default=5)
 parser.add_argument('--n-agents', type=int, default=1)
 parser.add_argument('--n-items', type=int, default=2)
 parser.add_argument('--num-epochs', type=int, default=100)
-parser.add_argument('--preference-num-epochs', type=int, default=20)
-parser.add_argument('--preference-update_freq', type=int, default=1)
-parser.add_argument('--preference-synthetic-pct', type=float, default=0.5)
 parser.add_argument('--batch-size', type=int, default=2000)
 parser.add_argument('--test-batch-size', type=int, default=512)
 parser.add_argument('--model-lr', type=float, default=1e-3)
@@ -41,11 +36,22 @@ parser.add_argument('--rho-incr-iter', type=int, default=5)
 parser.add_argument('--rho-incr-amount', type=float, default=1)
 parser.add_argument('--lagr-update-iter', type=int, default=6)
 parser.add_argument('--rgt-start', type=int, default=0)
-# Entropy
+# Preference
+parser.add_argument('--preference-num-examples', type=int, default=10000)
+parser.add_argument('--preference-test-num-examples', type=int, default=1000)
+
+parser.add_argument('--preference-num-epochs', type=int, default=20)
+parser.add_argument('--preference-update_freq', type=int, default=1)
+parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
+
 parser.add_argument('--preference', default=[], nargs='+')
+parser.add_argument('--preference-lambda', type=float, default=1.0)
 parser.add_argument('--preference-label-noise', type=float, default=0)
 parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1000)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
+parser.add_argument('--preference-max-threshold', type=float, default=0.45)
+parser.add_argument('--preference-min-threshold', type=float, default=0.35)
+parser.add_argument('--preference-quota', type=float, default=0.4)
 
 
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
@@ -83,9 +89,6 @@ if __name__ == "__main__":
 
     if not os.path.isdir("result/{0}/{1}".format("_".join(args.preference), args.name)):
         os.makedirs("result/{0}/{1}".format("_".join(args.preference), args.name))
-    else:
-        print("{} already exists.".format("result/{0}/{1}".format("_".join(args.preference), args.name)))
-        sys.exit()
         
     writer = SummaryWriter(log_dir="run/{0}/{1}".format("_".join(args.preference), args.name), comment=f"{args}")
 
