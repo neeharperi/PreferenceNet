@@ -88,7 +88,7 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         optimize = "min"
 
     elif type == "quota":
-        assert args.n_agents > 1, "Entropy regularization requires num_agents > 1"
+        assert args.n_agents > 1, "Quota regularization requires num_agents > 1"
 
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)

@@ -6,6 +6,7 @@ from regretnet.datasets import generate_dataset_nxk, preset_valuation_range, gen
 from regretnet.regretnet import RegretNet, train_loop, test_loop, RegretNetUnitDemand
 from regretnet.datasets import Dataloader
 import json
+import pdb
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 parser = ArgumentParser()
@@ -17,7 +18,7 @@ parser.add_argument('--misreport-lr', type=float, default=2e-2)
 parser.add_argument('--misreport-iter', type=int, default=25)
 parser.add_argument('--test-misreport-iter', type=int, default=1000)
 parser.add_argument('--model', default="")
-# Fairness
+# Preference
 parser.add_argument('--preference', nargs='+', default=[])
 
 # Plotting
