@@ -1,13 +1,15 @@
 import torch
 from tqdm import tqdm
+import numpy as np
 import pdb
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class Dataloader(object):
-    def __init__(self, bids, allocs=None, payments=None, labels=None, batch_size=64, shuffle=True, args=None):
+    def __init__(self, bids, allocs=None, payments=None, labels=None, batch_size=64, shuffle=True, balance=True, args=None):
         self.shuffle = shuffle
+        self.balance = balance
         self.batch_size = batch_size
         self.size = bids.size(0)
         self.bids = bids
@@ -18,11 +20,20 @@ class Dataloader(object):
         self.iter = 0
         self.args=args
 
-    def _sampler(self, size, batch_size, shuffle=True):
-        if shuffle:
-            idxs = torch.randperm(size)
+    def _sampler(self, size, batch_size, shuffle=True, balance=True):
+        if balance:
+            assert shuffle, "Shuffle must be true to balance the dataset"
+            idx = torch.arange(size)
+            pos = torch.tensor(np.random.choice(idx[self.labels == 1], int(0.5 * size)))
+            neg = torch.tensor(np.random.choice(idx[self.labels == 0], int(0.5 * size)))
+            balanced_idx = torch.cat((pos, neg))
+            idxs = balanced_idx[torch.randperm(len(balanced_idx))]
         else:
-            idxs = torch.arange(size)
+            if shuffle:
+                idxs = torch.randperm(size)
+            else:
+                idxs = torch.arange(size)
+
         for batch_idxs in idxs.split(batch_size):
             yield batch_idxs
 
@@ -31,7 +42,7 @@ class Dataloader(object):
 
     def __next__(self):
         if self.iter == 0:
-            self.sampler = self._sampler(self.size, self.batch_size, shuffle=self.shuffle)
+            self.sampler = self._sampler(self.size, self.batch_size, shuffle=self.shuffle, balance=self.balance)
         self.iter = (self.iter + 1) % (len(self) + 1)
         idx = next(self.sampler)
         
@@ -39,7 +50,6 @@ class Dataloader(object):
             return self.bids[idx]
 
         return self.bids[idx], self.allocs[idx], self.payments[idx], self.labels[idx]
-
 
     def __len__(self):
         return (self.size - 1) // self.batch_size + 1
@@ -116,28 +126,10 @@ def get_clamp_op(item_ranges: torch.Tensor):
                 batch[:, i, j] = batch[:, i, j].clamp_min(lower).clamp_max(upper)
     return clamp_op
 
-
-def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, args, preference=None):
+def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, type, preference):
     """
     Generates random allocations (uniform, unit-demand or not).
     """
-    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
-    if unit_demand:
-        agent_normalized = torch.softmax(random_points, dim=-1)
-        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
-        item_normalized = torch.softmax(random_points_2, dim=-2)
-        vals = torch.min(item_normalized, agent_normalized)[...,0:-1,0:-1]
-    else:
-        vals = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
-
-    if preference is None:
-        return vals
-    else:
-        labels = preference(vals, args.preference_type, args.preference_thresh)
-        return vals, labels
-
-
-def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, type, preference):
     # randomly generate bids in ranges
     random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
 

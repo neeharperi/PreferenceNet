@@ -19,7 +19,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 def classificationAccuracy(model, validationData):
     correct = 0
     total = 0
-
+    
     with torch.no_grad():
         model.eval()
 
@@ -92,9 +92,8 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
-
-        valuation = torch.tensor([(torch.sum(norm_alloc > args.preference_quota) == (args.n_agents * args.n_items)).item() for norm_alloc in norm_allocs])
-        optimize = None
+        valuation = torch.tensor([norm_alloc.min().item() for norm_alloc in norm_allocs])
+        optimize = "max"
 
     else:
         assert False, "Valuation type {} not supported".format(type)
@@ -105,8 +104,10 @@ def label_assignment(valuation, type, optimize, args):
     if type == "threshold":
         thresh = np.quantile(valuation, args.preference_threshold)
         labels = valuation > thresh if optimize == "max" else valuation < thresh 
-
-        labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
+        
+        if args.preference_label_noise > 0:
+            labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
+        
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     elif type == "ranking":
@@ -125,23 +126,35 @@ def label_assignment(valuation, type, optimize, args):
 
         labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
 
-        labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
+        if args.preference_label_noise > 0:
+            labels = label_noise(valuation, labels, args.preference_label_noise, thresh, "gaussian")
+        
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
     
     elif type == "bandpass":
-        low_thresh = np.quantile(valuation, args.preference_min_threshold)
-        high_thresh = np.quantile(valuation, args.preference_max_threshold)
+        if optimize == "max":
+            low_thresh = np.quantile(valuation, args.preference_min_threshold)
+            high_thresh = np.quantile(valuation, args.preference_max_threshold)
+            labels = torch.tensor([low_thresh < val < high_thresh for val in valuation])
+        elif optimize == "min":
+            low_thresh = np.quantile(valuation, 1-args.preference_min_threshold)
+            high_thresh = np.quantile(valuation, 1-args.preference_max_threshold)
+            labels = torch.tensor([high_thresh < val < low_thresh for val in valuation])
+        else:
+            assert False, "Optimize type {} is not supported".format(optimize)
+        
 
-        labels = torch.tensor([low_thresh < val < high_thresh for val in valuation])
-
-        labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, low_thresh, "gaussian")
-        labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, high_thresh, "gaussian")
+        if args.preference_label_noise > 0:
+            labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, low_thresh, "gaussian")
+            labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, high_thresh, "gaussian")
 
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
-
     elif type == "quota":
-        labels = label_noise(valuation, valuation, args.preference_label_noise, None, "uniform")
+        labels = valuation > args.preference_quota
+        if args.preference_label_noise > 0:
+            labels = label_noise(valuation, labels, args.preference_label_noise, None, "uniform")
+        
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     else:
@@ -152,9 +165,9 @@ def label_assignment(valuation, type, optimize, args):
 def label_preference(random_bids, allocs, actual_payments, type, args):
     valuation_fn, assignment_fn = type.split("_")
     valuation, optimize = label_valuation(random_bids, allocs, actual_payments, valuation_fn, args)
-    tnsr = label_assignment(valuation, assignment_fn, optimize, args)
+    label = label_assignment(valuation, assignment_fn, optimize, args)
 
-    return tnsr
+    return label
 
 class View(nn.Module):
     def __init__(self, shape):
@@ -452,33 +465,21 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                 ##################################################################################
                 if args.preference_synthetic_pct > 0:
                     train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
-                    preference_train_bids.append(train_bids)
-                    preference_train_allocs.append(train_allocs)
-                    preference_train_payments.append(train_payments)
-                    preference_train_labels.append(train_labels)
-                    
+                    preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+
                     test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
-                    preference_test_bids.append(test_bids)
-                    preference_test_allocs.append(test_allocs)
-                    preference_test_payments.append(test_payments)
-                    preference_test_labels.append(test_labels)
+                    preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
 
                 ####################################################################################
                 if 1 - args.preference_synthetic_pct > 0:
                     train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)
-                    preference_train_bids.append(train_bids)
-                    preference_train_allocs.append(train_allocs)
-                    preference_train_payments.append(train_payments)
-                    preference_train_labels.append(train_labels)
+                    preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
                     
                     test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, type, label_preference)
-                    preference_test_bids.append(test_bids)
-                    preference_test_allocs.append(test_allocs)
-                    preference_test_payments.append(test_payments)
-                    preference_test_labels.append(test_labels)
+                    preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
             
-            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, args=args)
-            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, args=args)
+            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
+            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=True, args=args)
         
             preference_net = train_preference(preference_net, preference_train_loader, preference_test_loader, epoch, args)
             preference_net.eval()
