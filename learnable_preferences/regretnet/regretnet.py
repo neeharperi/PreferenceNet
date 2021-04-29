@@ -132,21 +132,30 @@ def label_assignment(valuation, type, optimize, args):
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
     
     elif type == "bandpass":
-        if optimize == "max":
-            low_thresh = np.quantile(valuation, args.preference_min_threshold)
-            high_thresh = np.quantile(valuation, args.preference_max_threshold)
-            labels = torch.tensor([low_thresh < val < high_thresh for val in valuation])
-        elif optimize == "min":
-            low_thresh = np.quantile(valuation, 1-args.preference_min_threshold)
-            high_thresh = np.quantile(valuation, 1-args.preference_max_threshold)
-            labels = torch.tensor([high_thresh < val < low_thresh for val in valuation])
-        else:
-            assert False, "Optimize type {} is not supported".format(optimize)
-        
+        pass_band = []
+
+        for i in range(len(args.preference_passband)):
+            if i % 2 == 0:
+                if optimize == "max":
+                    thresh_low = np.quantile(valuation, float(args.preference_passband[i]))
+                    thresh_high = np.quantile(valuation, float(args.preference_passband[i + 1]))
+                elif optimize == "min":
+                    thresh_high = np.quantile(valuation, 1 - float(args.preference_passband[i]))
+                    thresh_low = np.quantile(valuation, 1 - float(args.preference_passband[i + 1]))
+                else:
+                    assert False, "Optimize type {} is not supported".format(optimize)
+
+                pass_band.append((thresh_low, thresh_high))
+
+        labels_band = []
+        for thresh_low, thresh_high in pass_band:
+            label = torch.tensor([(thresh_low < val < thresh_high).item() for val in valuation])
+            labels_band.append(label)
+
+        labels = torch.sum(torch.stack(labels_band), dim=0).bool()
 
         if args.preference_label_noise > 0:
-            labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, low_thresh, "gaussian")
-            labels = label_noise(valuation, labels, 0.5 * args.preference_label_noise, high_thresh, "gaussian")
+            labels = label_noise(valuation, labels, args.preference_label_noise, None, "uniform")
 
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 

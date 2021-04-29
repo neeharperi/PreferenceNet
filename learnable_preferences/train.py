@@ -49,13 +49,9 @@ parser.add_argument('--preference-lambda', type=float, default=1.0)
 parser.add_argument('--preference-label-noise', type=float, default=0)
 parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1000)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
-parser.add_argument('--preference-max-threshold', type=float, default=0.75)
-parser.add_argument('--preference-min-threshold', type=float, default=0.25)
+parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
 
-
-# parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
-# dataset selection: specifies a configuration of agent/item/valuation
 parser.add_argument('--dataset', nargs='+', default=[])
 parser.add_argument('--resume', default="")
 # architectural arguments
