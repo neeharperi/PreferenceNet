@@ -34,7 +34,6 @@ parser.add_argument('--rgt-start', type=int, default=0)
 # Entropy
 parser.add_argument('--diversity', default=[], nargs='+')  # Fairness metric and associated arguments
 
-
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
 # dataset selection: specifies a configuration of agent/item/valuation
 parser.add_argument('--dataset', nargs='+', default=[])
@@ -88,3 +87,7 @@ if __name__ == "__main__":
     result = test_loop(model, test_loader, args, device=DEVICE)
     print(f"Experiment:{args.name}")
     print(json.dumps(result, indent=4, sort_keys=True))
+
+    model_name = "{0}".format(args.name)
+    os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))
+

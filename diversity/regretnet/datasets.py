@@ -1,5 +1,6 @@
 import torch
-
+import re
+import pdb
 
 class Dataloader(object):
     def __init__(self, data, batch_size=64, shuffle=True):
@@ -34,22 +35,15 @@ class Dataloader(object):
 def dataset_override(args):
     # Preset multiple variables with dataset name
     if args.dataset:
-        if args.dataset[0].startswith('1x2'):
-            args.n_agents = 1
-            args.n_items = 2
-            if 'pv' in args.dataset[0]:
+        regex = re.search("(\d+)x(\d+)-(pv|mv)", args.dataset[0])
+
+        # Preset multiple variables with dataset name
+        if args.dataset:
+            args.n_agents = int(regex.group(1))
+            args.n_items = int(regex.group(2))
+
+            if "pv" in regex.group(3):
                 args.unit = True
-        if args.dataset[0].startswith('2x1'):
-            args.n_agents = 2
-            args.n_items = 1
-            if 'pv' in args.dataset[0]:
-                args.unit = True
-        if args.dataset[0].startswith('2x4'):
-            args.n_agents = 2
-            args.n_items = 4
-        if args.dataset[0].startswith('3x10'):
-            args.n_agents = 3
-            args.n_items = 10
 
         if args.name == 'testing_name':
             args.name = '_'.join([str(x) for x in args.dataset] +

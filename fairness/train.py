@@ -94,3 +94,6 @@ if __name__ == "__main__":
     result = test_loop(model, test_loader, args, device=DEVICE)
     print(f"Experiment:{args.name}")
     print(json.dumps(result, indent=4, sort_keys=True))
+
+    model_name = "{0}".format(args.name)
+    os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))

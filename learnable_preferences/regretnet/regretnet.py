@@ -68,7 +68,7 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         optimize = "max"
 
     elif type == "tvf":
-        d = 0.0
+        d = args.tvf_distance
         C = [[i for i in range(args.n_agents)]]
         D = (torch.ones(1, args.n_items, args.n_items) * d)
         L, n, m = allocs.shape
