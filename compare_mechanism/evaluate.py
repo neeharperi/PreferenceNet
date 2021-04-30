@@ -69,34 +69,6 @@ def label_assignment(valuation, type, optimize, args):
         labels = valuation > thresh if optimize == "max" else valuation < thresh 
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
-    elif type == "bandpass":
-        pass_band = []
-
-        for i in range(len(args.preference_passband)):
-            if i % 2 == 0:
-                if optimize == "max":
-                    thresh_low = float(args.preference_passband[i])
-                    thresh_high = float(args.preference_passband[i + 1])
-                elif optimize == "min":
-                    thresh_high = 1 - float(args.preference_passband[i])
-                    thresh_low = 1 - float(args.preference_passband[i + 1])
-                else:
-                    assert False, "Optimize type {} is not supported".format(optimize)
-
-                pass_band.append((thresh_low, thresh_high))
-
-        labels_band = []
-        for thresh_low, thresh_high in pass_band:
-            label = torch.tensor([(thresh_low < val < thresh_high).item() for val in valuation])
-            labels_band.append(label)
-
-        labels = torch.sum(torch.stack(labels_band), dim=0).bool()
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
-    elif type == "quota":
-        labels = valuation > args.preference_quota
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
     else:
         assert False, "Assignment type {} not supported".format(type)
 
@@ -116,7 +88,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model-path', required=True)
 
 parser.add_argument('--random-seed', type=int, default=0)
-parser.add_argument('--test-num-examples', type=int, default=10000)
+parser.add_argument('--test-num-examples', type=int, default=1000)
 parser.add_argument('--test-batch-size', type=int, default=2048)
 # Preference
 parser.add_argument('--preference', default=[], nargs='+', required=True)
@@ -136,7 +108,7 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 parser.add_argument('--preference-synthetic-pct', type=float, default=0.0)
 parser.add_argument('--preference-label-noise', type=float, default=0.0)
 
-parser.add_argument('--num_pts', type=int, default=100)
+parser.add_argument('--num_pts', type=int, default=101)
 
 args = parser.parse_args()
 torch.manual_seed(args.random_seed)
@@ -167,17 +139,19 @@ for i in range(len(args.preference)):
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
 allocs = pds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference=None)
-vals = label_valuation(None, allocs, None, args.preferecne[0], args)
+val_type = args.preference[0].split("_")[0]
+vals, _ = label_valuation(None, allocs, None, val_type, args)
 thresh = []
 
-for pct in np.linspace(0, 1, args.num_pts):
+for pct in np.linspace(0, 1, args.num_pts, endpoint=False):
     thresh.append(np.quantile(vals, pct))
 
 classification = []
-for th in thresh:
+for th in tqdm(thresh):
     args.preference_threshold = th
-    bids = pds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, args.preference[0], thresh, label_preference)
-    test_loader = pds.Dataloader(bids.to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=True, args=args)
+    type = val_type + "_threshold"
+    bids = pds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
+    test_loader = pds.Dataloader(bids.to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=False, args=args)
 
     model.to(DEVICE)
     model.eval()
@@ -185,13 +159,14 @@ for th in thresh:
     correct = 0
     total = 0
 
-    for i, batch in enumerate(test_loader):
-        batch = batch.to(DEVICE)
-        allocs, payments = model(batch)
+    with torch.no_grad():
+        for i, batch in enumerate(test_loader):
+            batch = batch.to(DEVICE)
+            allocs, payments = model(batch)
 
-        res =  label_valuation(batch, allocs, payments, type, args)
-        correct = correct + torch.sum(res).item()
-        total = total + res.shape[0]
+            res =  label_preference(batch.cpu(), allocs.cpu(), payments.cpu(), type, args)
+            correct = correct + torch.sum(res).item()
+            total = total + res.shape[0]
     
     acc = correct/float(total)
     print("Classification Accuracy: {} @ Threshold {}".format(acc, th))
