@@ -7,9 +7,17 @@ from preference import datasets as pds
 from regretnet.regretnet import RegretNet, RegretNetUnitDemand
 
 import argparse 
+from itertools import tee
 
 import numpy as np
 import pdb
+
+def window(iterable, size):
+    iters = tee(iterable, size)
+    for i in range(1, size):
+        for each in iters[i:]:
+            next(each, None)
+    return zip(*iters)
 
 def label_valuation(random_bids, allocs, actual_payments, type, args):
     if type == "entropy":
@@ -128,6 +136,8 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 parser.add_argument('--preference-synthetic-pct', type=float, default=0.0)
 parser.add_argument('--preference-label-noise', type=float, default=0.0)
 
+parser.add_argument('--num_pts', type=int, default=100)
+
 args = parser.parse_args()
 torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
@@ -156,9 +166,17 @@ for i in range(len(args.preference)):
 
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
-for pref in preference_type:
-    type, ratio = pref
-    bids = pds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
+allocs = pds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference=None)
+vals = label_valuation(None, allocs, None, args.preferecne[0], args)
+thresh = []
+
+for pct in np.linspace(0, 1, args.num_pts):
+    thresh.append(np.quantile(vals, pct))
+
+classification = []
+for th in thresh:
+    args.preference_threshold = th
+    bids = pds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, args.preference[0], thresh, label_preference)
     test_loader = pds.Dataloader(bids.to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=True, args=args)
 
     model.to(DEVICE)
@@ -174,5 +192,16 @@ for pref in preference_type:
         res =  label_valuation(batch, allocs, payments, type, args)
         correct = correct + torch.sum(res).item()
         total = total + res.shape[0]
+    
+    acc = correct/float(total)
+    print("Classification Accuracy: {} @ Threshold {}".format(acc, th))
+    classification.append(acc)
 
-    print("Classification Accuracy: {}".format(correct/float(total)))
+AUC = 0
+height = 1.0 / args.num_pts
+
+for st, en in window(classification, 2):
+    AUC = AUC + 0.5 * height * (st + en)
+
+
+print("AUC: {}".format(AUC))

@@ -124,7 +124,7 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
     """
     Generates random allocations (uniform, unit-demand or not).
     """
-    valid_bids = torch.tensor([])
+    valid_bids, valid_allocations = torch.tensor([]), torch.tensor([])
     while(valid_bids.shape[0] < n_allocations):
         # randomly generate bids in ranges
         random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
@@ -153,3 +153,17 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
 
     return valid_bids[:n_allocations]
         
+def generate_random_allocations(n_allocations, n_agents, n_items, unit_demand, args, preference=None):
+    """
+    Generates random allocations (uniform, unit-demand or not).
+    """
+    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+    if unit_demand:
+        agent_normalized = torch.softmax(random_points, dim=-1)
+        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+        item_normalized = torch.softmax(random_points_2, dim=-2)
+        vals = torch.min(item_normalized, agent_normalized)[...,0:-1,0:-1]
+    else:
+        vals = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
+
+    return vals
