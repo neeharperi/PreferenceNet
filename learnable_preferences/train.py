@@ -52,7 +52,7 @@ parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1
 parser.add_argument('--preference-threshold', type=float, default=0.75)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
-parser.add_argument('--tvf-distance', default=0.0)
+parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
 parser.add_argument('--resume', default="")

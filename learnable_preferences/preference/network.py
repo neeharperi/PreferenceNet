@@ -14,9 +14,9 @@ class PreferenceNet(nn.Module):
                                  nn.Linear(hidden_dim, 1), nn.BatchNorm1d(1), nn.Sigmoid())
 
     def forward(self, bids, allocs, payments):
-        bids = bids.view(bids.shape[0], -1)
-        allocs = allocs.view(allocs.shape[0], -1)
-        payments = payments.view(payments.shape[0], -1)
+        bids = bids.reshape(bids.shape[0], -1)
+        allocs = allocs.reshape(allocs.shape[0], -1)
+        payments = payments.reshape(payments.shape[0], -1)
         
         #data = allocs
         data = torch.cat([bids, allocs, payments], dim=1)

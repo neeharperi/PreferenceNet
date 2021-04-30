@@ -25,7 +25,7 @@ def get_entropy(batch, allocs, payments, args):
 
 def get_unfairness(batch, allocs, payments, args):
     batch, allocs, payments = batch.cpu(), allocs.cpu(), payments.cpu()
-    d = 0.0
+    d = args.tvf_distance
     C = [[i for i in range(args.n_agents)]]
     D = (torch.ones(1, args.n_items, args.n_items) * d)
     L, n, m = allocs.shape
