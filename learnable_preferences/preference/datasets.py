@@ -7,7 +7,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 
 class Dataloader(object):
-    def __init__(self, bids, allocs=None, payments=None, labels=None, batch_size=64, shuffle=True, balance=True, args=None):
+    def __init__(self, bids, allocs=None, payments=None, labels=None, batch_size=64, shuffle=True, balance=False, args=None):
         self.shuffle = shuffle
         self.balance = balance
         self.batch_size = batch_size
@@ -20,7 +20,7 @@ class Dataloader(object):
         self.iter = 0
         self.args=args
 
-    def _sampler(self, size, batch_size, shuffle=True, balance=True):
+    def _sampler(self, size, batch_size, shuffle=True, balance=False):
         if balance:
             assert shuffle, "Shuffle must be true to balance the dataset"
             idx = torch.arange(size)
@@ -169,7 +169,7 @@ def generate_regretnet_allocations(model, n_agents, n_items, num_examples, item_
 
     model.eval()
     with torch.no_grad():
-        for i, batch in enumerate(loader):
+        for batch in loader:
             batch = batch.to(DEVICE)
             allocs, payments = model(batch)
 
