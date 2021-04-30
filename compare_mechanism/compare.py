@@ -41,7 +41,6 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 parser = ArgumentParser()
 
-
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--test-num-examples', type=int, default=5000)
 parser.add_argument('--test-batch-size', type=int, default=512)
