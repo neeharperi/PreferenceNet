@@ -13,6 +13,13 @@ diversity/run/*
 diversity/scripts/*
 diversity/T*.sh
 
+quota/__pycache__/*
+quota/plots/*
+quota/result/*
+quota/run/*
+quota/scripts/*
+quota/T*.sh
+
 fairness/__pycache__/*
 fairness/plots/*
 fairness/result/*
