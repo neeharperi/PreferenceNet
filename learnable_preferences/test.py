@@ -20,6 +20,7 @@ parser.add_argument('--test-misreport-iter', type=int, default=1000)
 parser.add_argument('--model', default="")
 # Preference
 parser.add_argument('--preference', nargs='+', default=[])
+parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 # Plotting
 parser.add_argument('--plot-name', default='')
