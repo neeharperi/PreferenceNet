@@ -125,7 +125,7 @@ else:
 state_dict = model_ckpt['state_dict']
 model.load_state_dict(state_dict)
 
-
+assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
 item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
 clamp_op = pds.get_clamp_op(item_ranges)
 

@@ -354,7 +354,6 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     test_preference = torch.Tensor().to(device)
     test_entropy = torch.Tensor().to(device)
     test_unfairness = torch.Tensor().to(device)
-    test_quota = torch.Tensor().to(device)
 
     plot_utils.create_plot(model.n_agents, model.n_items, args)
 
@@ -373,7 +372,6 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         pref = preference.get_preference(batch, allocs, payments, args, preference_net)
         entropy = preference.get_entropy(batch, allocs, payments, args)
         unfairness = preference.get_unfairness(batch, allocs, payments, args)
-        quota = preference.get_quota(batch, allocs, payments, args)
 
         # Record entire test data
         test_regrets = torch.cat((test_regrets, positive_regrets), dim=0)
@@ -381,7 +379,6 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         test_preference = torch.cat((test_preference, pref), dim=0)
         test_entropy = torch.cat((test_entropy, entropy), dim=0)
         test_unfairness = torch.cat((test_unfairness, unfairness), dim=0)
-        test_quota = torch.cat((test_quota, quota), dim=0)
 
         plot_utils.add_to_plot_cache({
             "batch": batch,
@@ -405,8 +402,6 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
         "entropy_max": test_entropy.max().item(),
         "unfairness_mean": test_unfairness.mean().item(),
         "unfairness_max": test_unfairness.max().item(),
-        "quota_mean": test_quota.mean().item(),
-        "quota_max": test_quota.max().item(),
     }
  
     return result
@@ -460,7 +455,6 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         preference_epoch = torch.Tensor().to(device)
         entropy_epoch = torch.Tensor().to(device)
         unfairness_epoch = torch.Tensor().to(device)
-        quota_epoch = torch.Tensor().to(device)
 
         if epoch % args.preference_update_freq == 0:
             preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
@@ -516,7 +510,6 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             pref = preference.get_preference(batch, allocs, payments, args, preference_net)
             entropy = preference.get_entropy(batch, allocs, payments, args)
             unfairness = preference.get_unfairness(batch, allocs, payments, args)
-            quota = preference.get_quota(batch, allocs, payments, args)
 
             if epoch < args.rgt_start:
                 regret_loss = 0
@@ -534,7 +527,6 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             preference_epoch = torch.cat((preference_epoch, pref), dim=0)
             entropy_epoch = torch.cat((entropy_epoch, entropy), dim=0)
             unfairness_epoch = torch.cat((unfairness_epoch, unfairness), dim=0)
-            quota_epoch = torch.cat((quota_epoch, quota), dim=0)
 
             # Calculate loss
             loss_func = regret_loss \
@@ -586,8 +578,6 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             "entropy_mean": entropy_epoch.mean().item(),
             "unfairness_max": unfairness_epoch.max().item(),
             "unfairness_mean": unfairness_epoch.mean().item(),
-            "quota_max": quota_epoch.max().item(),
-            "quota_mean": quota_epoch.mean().item(),
         }
 
         pprint(train_stats)

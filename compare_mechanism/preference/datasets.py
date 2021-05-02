@@ -125,31 +125,33 @@ def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_
     Generates random allocations (uniform, unit-demand or not).
     """
     valid_bids, valid_allocations = torch.tensor([]), torch.tensor([])
-    while(valid_bids.shape[0] < n_allocations):
-        # randomly generate bids in ranges
-        random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
+    with tqdm(total=n_allocations) as pbar:
+        while(valid_bids.shape[0] < n_allocations):
+            # randomly generate bids in ranges
+            random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
 
-        # random allocations, before normalization
-        random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+            # random allocations, before normalization
+            random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
 
-        if unit_demand:
-            agent_normalized = torch.softmax(random_points, dim=-1)
-            random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
-            item_normalized = torch.softmax(random_points_2, dim=-2)
-            allocs = torch.min(item_normalized, agent_normalized)[..., 0:-1, 0:-1]
-        else:
-            allocs = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
+            if unit_demand:
+                agent_normalized = torch.softmax(random_points, dim=-1)
+                random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+                item_normalized = torch.softmax(random_points_2, dim=-2)
+                allocs = torch.min(item_normalized, agent_normalized)[..., 0:-1, 0:-1]
+            else:
+                allocs = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
 
-        # compute a random value [0,1] representing % util to charge as payment
-        random_frac_payments = torch.rand(n_allocations, n_agents)
+            # compute a random value [0,1] representing % util to charge as payment
+            random_frac_payments = torch.rand(n_allocations, n_agents)
 
-        # compute utils assuming bids were truthful
-        agent_utils = (random_bids * allocs).sum(dim=-1)
+            # compute utils assuming bids were truthful
+            agent_utils = (random_bids * allocs).sum(dim=-1)
 
-        actual_payments = random_frac_payments * agent_utils
+            actual_payments = random_frac_payments * agent_utils
 
-        labels = preference(random_bids, allocs, actual_payments, type, args)
-        valid_bids = torch.cat((valid_bids, random_bids[labels.bool()]))
+            labels = preference(random_bids, allocs, actual_payments, type, args)
+            valid_bids = torch.cat((valid_bids, random_bids[labels.bool()]))
+            pbar.update(random_bids[labels.bool()].shape[0])
 
     return valid_bids[:n_allocations]
         
