@@ -35,6 +35,19 @@ def classificationAccuracy(model, validationData):
 
     return correct / float(total)
 
+def selfTraining(model, trainData):
+    with torch.no_grad():
+        model.eval()
+
+        bids, allocs, payments = trainData
+        bids, allocs, payments = bids.to(DEVICE), allocs.to(DEVICE), payments.to(DEVICE)
+
+        pred = model(bids, allocs, payments)
+        labels = (pred > 0.5).float().cpu()
+
+    return labels
+
+
 def label_noise(valuation, labels, noise, threshold=None, dist="gaussian"):
     def z_score(x, mu, sigma):
         return abs(x - mu) / float(sigma)
@@ -449,49 +462,49 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
     preference_train_bids, preference_train_allocs, preference_train_payments, preference_train_labels = [], [], [], []
     preference_test_bids, preference_test_allocs, preference_test_payments, preference_test_labels = [], [], [], []
 
+    preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
+    preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
+
+    preference_type = []
+    mixed_preference_weight = 0
+    for i in range(len(args.preference)):
+        if i % 2 == 0:
+            preference_type.append((args.preference[i], float(args.preference[i+1])))
+            mixed_preference_weight = mixed_preference_weight + float(args.preference[i+1])
+
+    assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
+
+    for pref in preference_type:
+        type, ratio = pref
+
+        ##################################################################################
+        if args.preference_synthetic_pct > 0:
+            train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+
+            test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+            preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
+
+        ####################################################################################
+        if 1 - args.preference_synthetic_pct > 0:
+            train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)
+            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+            
+            test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, type, label_preference)
+            preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
+    
+    preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
+    preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=True, args=args)
+
+    preference_net = train_preference(preference_net, preference_train_loader, preference_test_loader, 0, args)
+    preference_net.eval()
+
     for epoch in tqdm(range(args.num_epochs)):
         regrets_epoch = torch.Tensor().to(device)
         payments_epoch = torch.Tensor().to(device)
         preference_epoch = torch.Tensor().to(device)
         entropy_epoch = torch.Tensor().to(device)
         unfairness_epoch = torch.Tensor().to(device)
-
-        if epoch % args.preference_update_freq == 0:
-            preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
-            preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
-            preference_type = []
-            mixed_preference_weight = 0
-            for i in range(len(args.preference)):
-                if i % 2 == 0:
-                    preference_type.append((args.preference[i], float(args.preference[i+1])))
-                    mixed_preference_weight = mixed_preference_weight + float(args.preference[i+1])
-
-            assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
-
-            for pref in preference_type:
-                type, ratio = pref
-
-                ##################################################################################
-                if args.preference_synthetic_pct > 0:
-                    train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
-                    preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
-
-                    test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
-                    preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
-
-                ####################################################################################
-                if 1 - args.preference_synthetic_pct > 0:
-                    train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)
-                    preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
-                    
-                    test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, type, label_preference)
-                    preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
-            
-            preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
-            preference_test_loader = pds.Dataloader(torch.cat(preference_test_bids).to(DEVICE), torch.cat(preference_test_allocs).to(DEVICE), torch.cat(preference_test_payments).to(DEVICE), torch.cat(preference_test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=True, args=args)
-        
-            preference_net = train_preference(preference_net, preference_train_loader, preference_test_loader, epoch, args)
-            preference_net.eval()
 
         for i, batch in enumerate(train_loader):
             iter += 1
@@ -547,6 +560,23 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
 
+        if epoch  % args.preference_update_freq == 0:
+            if args.preference_synthetic_pct > 0:
+                train_bids, train_allocs, train_payments = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args)
+                train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
+                preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+
+            ####################################################################################
+            if 1 - args.preference_synthetic_pct > 0:
+                train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args)
+                train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
+                preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+                
+        preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
+
+        preference_net = train_preference(preference_net, preference_train_loader, preference_test_loader, 0, args)
+        preference_net.eval()
+        
         # Log testing stats and save model
         if epoch % args.test_iter == (args.test_iter - 1):
             test_result = test_loop(model, test_loader, args, preference_net, device=device)

@@ -39,10 +39,10 @@ parser.add_argument('--lagr-update-iter', type=int, default=25)
 parser.add_argument('--rgt-start', type=int, default=0)
 # Preference
 parser.add_argument('--preference-num-examples', type=int, default=10000)
-parser.add_argument('--preference-test-num-examples', type=int, default=1000)
+parser.add_argument('--preference-test-num-examples', type=int, default=10000)
 
 parser.add_argument('--preference-num-epochs', type=int, default=20)
-parser.add_argument('--preference-update-freq', type=int, default=1)
+parser.add_argument('--preference-update-freq', type=int, default=5)
 parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
 
 parser.add_argument('--preference', default=[], nargs='+', required=True)
