@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from regretnet.utils import calc_agent_util
 from fairness import featuresets
-
+import pdb
 
 """ Total variation fairness """
 
@@ -57,6 +57,7 @@ def fairness_total_variation(batch, allocs, payments, C, D, factor):
                 # If allocation distance is greater than user distance, penalize
                 D2 = 1 - (1 - D) * factor if n == 1 else 2 - (2 - D) * factor
                 unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
+
     return unfairness
 
 

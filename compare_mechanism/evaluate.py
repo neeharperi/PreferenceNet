@@ -3,7 +3,7 @@ from tqdm import tqdm as tqdm
 
 import torch.nn.init
 from regretnet.utils import calc_agent_util
-from preference import datasets as pds
+from regretnet import datasets as ds
 from regretnet.regretnet import RegretNet, RegretNetUnitDemand
 
 import argparse 
@@ -42,7 +42,7 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
                     subset_allocs_diff = (allocs[:, C_i, u] - allocs[:, C_i, v]).abs()
                     D2 = 1 - (1 - D) if n == 1 else 2 - (2 - D)
                     unfairness[:, u] += (subset_allocs_diff.sum(dim=1) - D2[i, u, v]).clamp_min(0)
-        
+
         valuation = unfairness.sum(dim=-1)
         optimize = "min"
 
@@ -63,10 +63,58 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
     return valuation, optimize
 
-def label_assignment(valuation, type, optimize, args):
+def label_assignment(valuation, type, optimize, sample_val, args):
     if type == "threshold":
-        thresh = args.preference_threshold
+        thresh = np.quantile(sample_val, args.preference_threshold)
         labels = valuation > thresh if optimize == "max" else valuation < thresh 
+        
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+    elif type == "ranking":
+        cnt = torch.zeros_like(valuation)
+        
+        for _ in range(args.preference_ranking_pairwise_samples):
+            idx = torch.randperm(len(valuation))
+
+            if optimize == "max":
+                cnt = cnt + (valuation > valuation[idx])
+            elif optimize == "min":
+                cnt = cnt + (valuation < valuation[idx])
+            else:
+                assert False, "Optimize type {} is not supported".format(optimize)
+
+        labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
+        
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+    elif type == "bandpass":
+        pass_band = []
+
+        for i in range(len(args.preference_passband)):
+            if i % 2 == 0:
+                if optimize == "max":
+                    thresh_low = np.quantile(sample_val, float(args.preference_passband[i]))
+                    thresh_high = np.quantile(sample_val, float(args.preference_passband[i + 1]))
+                elif optimize == "min":
+                    thresh_high = np.quantile(sample_val, 1 - float(args.preference_passband[i]))
+                    thresh_low = np.quantile(sample_val, 1 - float(args.preference_passband[i + 1]))
+                else:
+                    assert False, "Optimize type {} is not supported".format(optimize)
+
+                pass_band.append((thresh_low, thresh_high))
+
+        labels_band = []
+        for thresh_low, thresh_high in pass_band:
+            label = torch.tensor([(thresh_low < val < thresh_high).item() for val in valuation])
+            labels_band.append(label)
+
+        labels = torch.sum(torch.stack(labels_band), dim=0).bool()
+
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+    elif type == "quota":
+        labels = valuation > args.preference_quota
+
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     else:
@@ -74,13 +122,12 @@ def label_assignment(valuation, type, optimize, args):
 
     return tnsr
 
-def label_preference(random_bids, allocs, actual_payments, type, args):
+def label_preference(random_bids, allocs, actual_payments, valuation_dist, type, args):
     valuation_fn, assignment_fn = type.split("_")
     valuation, optimize = label_valuation(random_bids, allocs, actual_payments, valuation_fn, args)
-    label = label_assignment(valuation, assignment_fn, optimize, args)
+    label = label_assignment(valuation, assignment_fn, optimize, valuation_dist, args)
 
     return label
-
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -88,11 +135,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model-path', required=True)
 
 parser.add_argument('--random-seed', type=int, default=0)
-parser.add_argument('--test-num-examples', type=int, default=1000)
+parser.add_argument('--test-num-examples', type=int, default=10000)
 parser.add_argument('--test-batch-size', type=int, default=2048)
 # Preference
 parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
+parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1000)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
@@ -114,7 +162,7 @@ args = parser.parse_args()
 torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
 
-pds.dataset_override(args)
+ds.dataset_override(args)
 
 model_ckpt = torch.load(args.model_path)
 if "pv" in model_ckpt['name']:
@@ -125,9 +173,12 @@ else:
 state_dict = model_ckpt['state_dict']
 model.load_state_dict(state_dict)
 
+model.to(DEVICE)
+model.eval()
+
 assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
-item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
-clamp_op = pds.get_clamp_op(item_ranges)
+item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
+clamp_op = ds.get_clamp_op(item_ranges)
 
 preference_type = []
 mixed_preference_weight = 0
@@ -138,45 +189,26 @@ for i in range(len(args.preference)):
 
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
-allocs = pds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit, args, preference=None)
-val_type = args.preference[0].split("_")[0]
-vals, _ = label_valuation(None, allocs, None, val_type, args)
-thresh = []
-
-for pct in np.linspace(0, 1, args.num_pts, endpoint=False):
-    thresh.append(np.quantile(vals, pct))
-
-classification = []
-for th in tqdm(thresh):
-    args.preference_threshold = th
-    type = val_type + "_threshold"
-    bids = pds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
-    test_loader = pds.Dataloader(bids.to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=False, args=args)
-
-    model.to(DEVICE)
-    model.eval()
-
+for type, _ in preference_type:
+    sample_allocs = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit)
+    val_type = type.split("_")[0]
+    valuation_dist, _ = label_valuation(None, sample_allocs, None, val_type, args)
+    
     correct = 0
     total = 0
+    test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
+    test_loader = ds.Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
     with torch.no_grad():
         for i, batch in enumerate(test_loader):
             batch = batch.to(DEVICE)
             allocs, payments = model(batch)
 
-            res =  label_preference(batch.cpu(), allocs.cpu(), payments.cpu(), type, args)
+            pdb.set_trace()
+            res =  label_preference(batch.cpu(), allocs.cpu(), payments.cpu(), valuation_dist.cpu(), type, args)
+            
             correct = correct + torch.sum(res).item()
             total = total + res.shape[0]
     
     acc = correct/float(total)
-    print("Classification Accuracy: {} @ Threshold {}".format(acc, th))
-    classification.append(acc)
-
-AUC = 0
-height = 1.0 / args.num_pts
-
-for st, en in window(classification, 2):
-    AUC = AUC + 0.5 * height * (st + en)
-
-
-print("AUC: {}".format(AUC))
+    print("Classification Accuracy: {}".format(acc))

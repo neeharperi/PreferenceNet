@@ -9,7 +9,7 @@ def get_quota(batch, allocs, payments, args):
     if args.quota and args.quota[0] == "quota":
         allocs = allocs.clamp_min(1e-8)
         norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
-        valuation = torch.tensor([norm_alloc.min().item() for norm_alloc in norm_allocs])
+        valuation = torch.tensor([norm_alloc.min() for norm_alloc in norm_allocs])
 
         loss = (float(args.quota[1]) * valuation).to(DEVICE)
 

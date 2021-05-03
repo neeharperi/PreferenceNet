@@ -24,10 +24,17 @@ class Dataloader(object):
         if balance:
             assert shuffle, "Shuffle must be true to balance the dataset"
             idx = torch.arange(size)
-            pos = torch.tensor(np.random.choice(idx[self.labels == 1], int(0.5 * size)))
-            neg = torch.tensor(np.random.choice(idx[self.labels == 0], int(0.5 * size)))
-            balanced_idx = torch.cat((pos, neg))
-            idxs = balanced_idx[torch.randperm(len(balanced_idx))]
+            num_pos = len(idx[self.labels == 1])
+            num_neg = len(idx[self.labels == 0])
+
+            if num_pos == 0 or num_neg == 0:
+                print("Warning: Balanced Sampling Failed!")
+                idxs = torch.randperm(size)
+            else:
+                pos = torch.tensor(np.random.choice(idx[self.labels == 1], int(0.5 * size)))
+                neg = torch.tensor(np.random.choice(idx[self.labels == 0], int(0.5 * size)))
+                balanced_idx = torch.cat((pos, neg))
+                idxs = balanced_idx[torch.randperm(len(balanced_idx))]
         else:
             if shuffle:
                 idxs = torch.randperm(size)
@@ -58,22 +65,15 @@ class Dataloader(object):
 def dataset_override(args):
     # Preset multiple variables with dataset name
     if args.dataset:
-        if args.dataset[0].startswith('1x2'):
-            args.n_agents = 1
-            args.n_items = 2
-            if 'pv' in args.dataset[0]:
+        regex = re.search("(\d+)x(\d+)-(pv|mv)", args.dataset[0])
+
+        # Preset multiple variables with dataset name
+        if args.dataset:
+            args.n_agents = int(regex.group(1))
+            args.n_items = int(regex.group(2))
+
+            if "pv" in regex.group(3):
                 args.unit = True
-        if args.dataset[0].startswith('2x1'):
-            args.n_agents = 2
-            args.n_items = 1
-            if 'pv' in args.dataset[0]:
-                args.unit = True
-        if args.dataset[0].startswith('2x4'):
-            args.n_agents = 2
-            args.n_items = 4
-        if args.dataset[0].startswith('3x10'):
-            args.n_agents = 3
-            args.n_items = 10
 
         if args.name == 'testing_name':
             args.name = '_'.join([str(x) for x in args.dataset] +
