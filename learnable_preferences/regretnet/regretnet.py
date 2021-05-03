@@ -47,7 +47,6 @@ def selfTraining(model, trainData):
 
     return labels
 
-
 def label_noise(valuation, labels, noise, threshold=None, dist="gaussian"):
     def z_score(x, mu, sigma):
         return abs(x - mu) / float(sigma)

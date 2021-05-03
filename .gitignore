@@ -35,3 +35,7 @@ learnable_preferences/result/*
 learnable_preferences/run/*
 learnable_preferences/scripts/*
 learnable_preferences/T*.sh
+
+survey/__pycache__/*
+survey/Survey/*
+survey/Data/*

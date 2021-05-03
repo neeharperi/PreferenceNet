@@ -156,8 +156,6 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 parser.add_argument('--preference-synthetic-pct', type=float, default=0.0)
 parser.add_argument('--preference-label-noise', type=float, default=0.0)
 
-parser.add_argument('--num_pts', type=int, default=101)
-
 args = parser.parse_args()
 torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
