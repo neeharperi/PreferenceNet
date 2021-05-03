@@ -32,7 +32,7 @@ Data = {"Allocations" : rounded_allocs}
 
 torch.save(Data, open("Data/survey_preference.txt", "wb"))
 
-prompt = "After Company A and Company B submitted their bids for the {ad_type}, Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2. Company B’s ad was shown to {C}% DEMOGRAPHIC1 and {D}% DEMOGRAPHIC2. Similarly, after Company C and Company D submitted their bids for the {ad_type}, Company C’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company D’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Which pair of companies bids are more fair?”"
+prompt = "Case 1: After Company A and Company B submitted their bids for the {ad_type}, Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2. Company B’s ad was shown to {C}% DEMOGRAPHIC1 and {D}% DEMOGRAPHIC2. Case 2: after Company C and Company D submitted their bids for the {ad_type}, Company C’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company D’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Which is more fair, case 1 or case 2?”"
 ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
             "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
 
