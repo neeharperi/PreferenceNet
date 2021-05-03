@@ -52,10 +52,12 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
     elif type == "quota":
         assert args.n_agents > 1, "Quota regularization requires num_agents > 1"
-
+        assert args.n_agents > 1, "Quota regularization requires num_agents > 1"
+        
         allocs = allocs.clamp_min(1e-8)
-        norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
-        valuation = torch.tensor([norm_alloc.min().item() for norm_alloc in norm_allocs])
+        norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-2)
+
+        valuation =  norm_allocs.min(-1)[0].min(-1)[0]
         optimize = "max"
 
     else:

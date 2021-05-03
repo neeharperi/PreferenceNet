@@ -30,9 +30,9 @@ def get_quota(batch, allocs, payments, args):
     with torch.no_grad():
         if args.n_agents > 1:
             allocs = allocs.clamp_min(1e-8)
-            norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
-            loss = torch.tensor([norm_alloc.min().item() for norm_alloc in norm_allocs])
+            norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-2)
 
+            loss =  norm_allocs.min(-1)[0].min(-1)[0]
             return loss
 
         return torch.zeros(allocs.shape[0]).to(allocs.device)

@@ -8,9 +8,9 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 def get_quota(batch, allocs, payments, args):
     if args.quota and args.quota[0] == "quota":
         allocs = allocs.clamp_min(1e-8)
-        norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-1)
-        valuation = torch.tensor([norm_alloc.min() for norm_alloc in norm_allocs])
+        norm_allocs = allocs / allocs.sum(dim=-2).unsqueeze(-2)
 
+        valuation =  norm_allocs.min(-1)[0].min(-1)[0]
         loss = (float(args.quota[1]) * valuation).to(DEVICE)
 
         return loss
