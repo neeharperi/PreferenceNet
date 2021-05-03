@@ -204,7 +204,6 @@ for type, _ in preference_type:
             batch = batch.to(DEVICE)
             allocs, payments = model(batch)
 
-            pdb.set_trace()
             res =  label_preference(batch.cpu(), allocs.cpu(), payments.cpu(), valuation_dist.cpu(), type, args)
             
             correct = correct + torch.sum(res).item()

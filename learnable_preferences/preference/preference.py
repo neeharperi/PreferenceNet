@@ -38,7 +38,7 @@ def get_quota(batch, allocs, payments, args):
         return torch.zeros(allocs.shape[0]).to(allocs.device)
 
 def get_unfairness(batch, allocs, payments, args):
-    with torch.no_grad()
+    with torch.no_grad():
         batch, allocs, payments = batch.cpu(), allocs.cpu(), payments.cpu()
         d = args.tvf_distance
         C = [[i for i in range(args.n_agents)]]
