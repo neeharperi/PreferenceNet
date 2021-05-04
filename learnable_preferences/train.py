@@ -3,7 +3,7 @@ from argparse import ArgumentParser
 import torch
 import torch.nn as nn
 import numpy as np
-import sys
+import shutil
 
 from preference import datasets as pds
 from regretnet import datasets as ds
@@ -38,8 +38,8 @@ parser.add_argument('--rho-incr-amount', type=float, default=1)
 parser.add_argument('--lagr-update-iter', type=int, default=25)
 parser.add_argument('--rgt-start', type=int, default=0)
 # Preference
-parser.add_argument('--preference-num-examples', type=int, default=20000)
-parser.add_argument('--preference-num-self-examples', type=int, default=1000)
+parser.add_argument('--preference-num-examples', type=int, default=50000)
+parser.add_argument('--preference-num-self-examples', type=int, default=10000)
 parser.add_argument('--preference-test-num-examples', type=int, default=10000)
 
 parser.add_argument('--preference-num-epochs', type=int, default=20)
@@ -64,6 +64,8 @@ parser.add_argument('--separate', action='store_true')
 parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
+parser.add_argument('--eval_only', action='store_true')  # not saved in arch but w/e
+
 if __name__ == "__main__":
     args = parser.parse_args()
     torch.manual_seed(args.random_seed)
@@ -71,39 +73,46 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
-
-    # Valuation range setup
-    item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
-    clamp_op = ds.get_clamp_op(item_ranges)
-    if args.unit:
-        model = RegretNetUnitDemand(args.n_agents, args.n_items, activation='relu', 
-                                    hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
-                                    n_hidden_layers=args.n_hidden_layers).to(DEVICE)
-    else:
-        model = RegretNet(args.n_agents, args.n_items, activation='relu',
-                          hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
-                          n_hidden_layers=args.n_hidden_layers, separate=args.separate).to(DEVICE)
-
-    preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
-
-    if not os.path.isdir("result/{0}/{1}".format("_".join(args.preference), args.name)):
-        os.makedirs("result/{0}/{1}".format("_".join(args.preference), args.name))
-        
-    writer = SummaryWriter(log_dir="run/{0}/{1}".format("_".join(args.preference), args.name), comment=f"{args}")
-
-    train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
-    train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
-    test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
-    test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
-
-    print("Training Args:")
-    print(json.dumps(vars(args), indent=4, sort_keys=True))
-    train_loop(model, train_loader, test_loader, args, writer, preference_net, device=DEVICE)
-    writer.close()
-
-    result = test_loop(model, test_loader, args, preference_net, device=DEVICE)
-    print(f"Experiment:{args.name}")
-    print(json.dumps(result, indent=4, sort_keys=True))
-
     model_name = "{0}/{1}".format("_".join(args.preference), args.name)
+
+    if not args.eval_only:
+        # Valuation range setup
+        item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+        clamp_op = ds.get_clamp_op(item_ranges)
+        if args.unit:
+            model = RegretNetUnitDemand(args.n_agents, args.n_items, activation='relu', 
+                                        hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
+                                        n_hidden_layers=args.n_hidden_layers).to(DEVICE)
+        else:
+            model = RegretNet(args.n_agents, args.n_items, activation='relu',
+                            hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
+                            n_hidden_layers=args.n_hidden_layers, separate=args.separate).to(DEVICE)
+
+        preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
+
+        if not os.path.isdir("result/{0}/{1}".format("_".join(args.preference), args.name)):
+            os.makedirs("result/{0}/{1}".format("_".join(args.preference), args.name))
+        
+        if os.path.isdir("run/{0}/{1}".format("_".join(args.preference), args.name)):
+            shutil.rmtree("run/{0}/{1}".format("_".join(args.preference), args.name))
+
+        writer = SummaryWriter(log_dir="run/{0}/{1}".format("_".join(args.preference), args.name), comment=f"{args}")
+
+        train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
+        train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
+        test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
+        test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
+
+        print("Training Args:")
+        print(json.dumps(vars(args), indent=4, sort_keys=True))
+        train_loop(model, train_loader, test_loader, args, writer, preference_net, device=DEVICE)
+        writer.close()
+
+        result = test_loop(model, test_loader, args, preference_net, device=DEVICE)
+        print(f"Experiment:{args.name}")
+        print(json.dumps(result, indent=4, sort_keys=True))
+        
+        os.system("python validate.py --model {0}".format(model_name))
+
+    
     os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))

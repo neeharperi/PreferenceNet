@@ -11,7 +11,7 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 parser = ArgumentParser()
 parser.add_argument('--random-seed', type=int, default=0)
-parser.add_argument('--test-num-examples', type=int, default=3000)
+parser.add_argument('--test-num-examples', type=int, default=10000)
 parser.add_argument('--batch-size', type=int, default=2048)
 parser.add_argument('--test-batch-size', type=int, default=512)
 parser.add_argument('--misreport-lr', type=float, default=2e-2)
@@ -31,11 +31,8 @@ if __name__ == "__main__":
     torch.manual_seed(args.random_seed)
     np.random.seed(args.random_seed)
 
-    if not args.model.startswith("result"):
-        args.model = os.path.join("result", args.model)
-    if os.path.isdir(args.model):
-        args.model = max([os.path.join(args.model, fn) for fn in os.listdir(args.model)], key=os.path.getctime)
-
+    args.model = "result/{}/best_checkpoint.pt".format(args.model)
+    
     checkpoint = torch.load(args.model)
     print("Architecture:")
     print(json.dumps(checkpoint['arch'], indent=4, sort_keys=True))

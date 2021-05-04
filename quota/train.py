@@ -2,7 +2,7 @@ import os
 from argparse import ArgumentParser
 import torch
 import numpy as np
-import sys 
+import shutil 
 
 from regretnet import datasets as ds
 from regretnet.regretnet import RegretNet, train_loop, test_loop, RegretNetUnitDemand
@@ -72,6 +72,9 @@ if __name__ == "__main__":
     if not os.path.isdir(f"result/{args.name}"):
         os.makedirs(f"result/{args.name}")
 
+    if os.path.isdir("run/{0}/{1}".format("_".join(args.preference), args.name)):
+        shutil.rmtree("run/{0}/{1}".format("_".join(args.preference), args.name))
+        
     writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
 
     train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)

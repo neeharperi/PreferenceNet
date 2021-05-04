@@ -408,16 +408,27 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     mean_regret = test_regrets.sum(dim=1).mean(dim=0).item()
 
     result = {
+        "payment_min": test_payments.sum(dim=1).min(dim=0)[0].item(),
         "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
-        # "regret_std": regret_var ** .5,
+        "payment_max": test_payments.sum(dim=1).max(dim=0)[0].item(),
+        
+        "regret_min": test_regrets.sum(dim=1).min().item(),
         "regret_mean": mean_regret,
         "regret_max": test_regrets.sum(dim=1).max().item(),
+        
+        "preference_min": test_preference.min().item(),
         "preference_mean": test_preference.mean().item(),
         "preference_max": test_preference.max().item(),
+
+        "entropy_min": test_entropy.min().item(),
         "entropy_mean": test_entropy.mean().item(),
         "entropy_max": test_entropy.max().item(),
+
+        "unfairness_min": test_unfairness.min().item(),
         "unfairness_mean": test_unfairness.mean().item(),
         "unfairness_max": test_unfairness.max().item(),
+
+        "quota_min": test_quota.min().item(),
         "quota_mean": test_quota.mean().item(),
         "quota_max": test_quota.max().item(),
     }
@@ -605,19 +616,29 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
 
         # Log training stats
         train_stats = {
-            "regret_max": regrets_epoch.max().item(),
+            "payment_min": payments_epoch.sum(dim=1).min().item(),
+            "payment_mean": payments_epoch.sum(dim=1).mean().item(),
+            "payment_max": payments_epoch.sum(dim=1).max().item(),
+            
+            "regret_min": regrets_epoch.min().item(),
             "regret_mean": regrets_epoch.mean().item(),
-
-            "payment": payments_epoch.sum(dim=1).mean().item(),
-
-            "preference_max": preference_epoch.max().item(),
+            "regret_max": regrets_epoch.max().item(),
+            
+            "preference_min": preference_epoch.min().item(),
             "preference_mean": preference_epoch.mean().item(),
-            "entropy_max": entropy_epoch.max().item(),
+            "preference_max": preference_epoch.max().item(),
+
+            "entropy_min": entropy_epoch.min().item(),
             "entropy_mean": entropy_epoch.mean().item(),
-            "unfairness_max": unfairness_epoch.max().item(),
+            "entropy_max": entropy_epoch.max().item(),
+
+            "unfairness_min": unfairness_epoch.min().item(),
             "unfairness_mean": unfairness_epoch.mean().item(),
-            "quota_max": quota_epoch.max().item(),
+            "unfairness_max": unfairness_epoch.max().item(),
+
+            "quota_min": quota_epoch.min().item(),
             "quota_mean": quota_epoch.mean().item(),
+            "quota_max": quota_epoch.max().item(),
         }
 
         pprint(train_stats)
