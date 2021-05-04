@@ -95,7 +95,7 @@ for rowTable in dataFrame.iterrows():
     preference_mean = rowTable[1]["test/preference_mean"]
     regret_mean = rowTable[1]["test/regret_mean"]
 
-    opt = payment_weight * (payment_mean / payment_max) + preference_weight * (preference_mean / preference_max) + regret_weight * (regret_min / regret_min)
+    opt = payment_weight * (payment_mean / min(payment_max, 1e-8)) + preference_weight * (preference_mean / min(preference_max, 1e-8)) + regret_weight * (regret_min / min(regret_mean, 1e-8))
     print("Step {}: {}".format(step, opt))
 
     if opt > optimal:

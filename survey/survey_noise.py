@@ -32,31 +32,59 @@ rounded_vals = ds.label_valuation(None, rounded_allocs, None, val_type, args)[0]
 Data = {"Allocations" : rounded_allocs,
         "Valuation" : rounded_vals}
 
-torch.save(Data, open("Data/survey_noise.txt", "wb"))
+torch.save(Data, open("Data/{}x{}_survey_noise.pth".format(args.n_agents, args.n_items), "wb"))
 
-prompt = "[{val_id}] After Company A and Company B submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Considering both companies, according to the given definition of fairness, is this fair?”"
-ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
-            "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
+if args.n_agents == 2 and args.n_items == 2:
+    prompt = "[{val_id}] After Company A and Company B submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Considering both companies, according to the given definition of fairness, is this fair?”"
+    ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
+                "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
 
-questions = open("Survey/survey_noise.txt", "w")
-params = set()
+    questions = open("Survey/{}x{}_survey_noise.txt".format(args.n_agents, args.n_items), "w")
+    params = set()
 
-for alloc, val in zip(rounded_allocs, rounded_vals):
-    val = round(val.item(), 2)
+    for alloc, val in zip(rounded_allocs, rounded_vals):
+        val = round(val.item(), 2)
 
-    X = alloc[0][0].item()
-    Y = alloc[0][1].item()
-    W = alloc[1][0].item()
-    Z = alloc[1][1].item()
+        X = alloc[0][0].item()
+        Y = alloc[0][1].item()
+        W = alloc[1][0].item()
+        Z = alloc[1][1].item()
 
-    param = (X,Y,W,Z)
+        param = (X,Y,W,Z)
 
-    if param in params:
-        continue
+        if param in params:
+            continue
 
-    params.add(param)
-    ad_type = random.choice(ad_types)
-    question = prompt.format(val_id=val, ad_type=ad_type, X=X, Y=Y, W=W, Z=Z)
-    questions.write(question + "\n")
+        params.add(param)
+        ad_type = random.choice(ad_types)
+        question = prompt.format(val_id=val, ad_type=ad_type, X=X, Y=Y, W=W, Z=Z)
+        questions.write(question + "\n")
 
-print("Number of Questions: {}".format(len(params)))
+    print("Number of Questions: {}".format(len(params)))
+
+elif args.n_agents == 1 and args.n_items == 2:
+    prompt = "[{val_id}] After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Considering the given definition of fairness, is this fair?”"
+    ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
+                "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
+
+    questions = open("Survey/{}x{}_survey_noise.txt".format(args.n_agents, args.n_items), "w")
+    params = set()
+
+    for alloc, val in zip(rounded_allocs, rounded_vals):
+        val = round(val.item(), 2)
+
+        X = alloc[0][0].item()
+        Y = alloc[0][1].item()
+
+
+        param = (X,Y)
+
+        if param in params:
+            continue
+
+        params.add(param)
+        ad_type = random.choice(ad_types)
+        question = prompt.format(val_id=val, ad_type=ad_type, X=X, Y=Y)
+        questions.write(question + "\n")
+
+    print("Number of Questions: {}".format(len(params)))
