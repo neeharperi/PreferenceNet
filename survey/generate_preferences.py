@@ -52,7 +52,7 @@ if args.n_agents == 2 and args.n_items == 2:
 
         param = (A,B,C,D,X,Y,W,Z)
         
-        if set().update([A,B,C,D]) == set().update([X,Y,W,Z]):
+        if A == X and B == Y and C == W and D == Z:
             continue
 
         if param in params:
@@ -82,7 +82,7 @@ elif args.n_agents == 1 and args.n_items == 2:
 
         param = (A,B,X,Y)
 
-        if set().update([A,B]) == set().update([X,Y]):
+        if A == X and B == Y:
             continue
 
         if param in params:
