@@ -137,7 +137,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model-path', required=True)
 
 parser.add_argument('--random-seed', type=int, default=0)
-parser.add_argument('--test-num-examples', type=int, default=10000)
+parser.add_argument('--test-num-examples', type=int, default=100000)
 parser.add_argument('--test-batch-size', type=int, default=2048)
 # Preference
 parser.add_argument('--preference', default=[], nargs='+', required=True)
@@ -210,4 +210,4 @@ for type, _ in preference_type:
             total = total + res.shape[0]
     
     acc = correct/float(total)
-    print("Classification Accuracy: {}".format(acc))
+    print("Preference Accuracy: {}".format(acc))

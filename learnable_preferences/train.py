@@ -12,6 +12,7 @@ from torch.utils.tensorboard import SummaryWriter
 from regretnet.datasets import Dataloader
 from preference.network import PreferenceNet
 import json
+import hashlib
 import pdb 
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -53,7 +54,7 @@ parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=5
 parser.add_argument('--preference-threshold', type=float, default=0.5)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
-parser.add_argument('--tvf-distance', type=float, default=0.00)
+parser.add_argument('--tvf-distance', type=float, default=0.5)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
 parser.add_argument('--resume', default="")
@@ -73,7 +74,9 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
-    model_name = "{0}/{1}".format("_".join(args.preference), args.name)
+    unique_id = hashlib.md5(json.dumps(vars(args)).encode("utf8")).hexdigest()
+
+    model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
 
     if not args.eval_only:
         # Valuation range setup
@@ -90,13 +93,14 @@ if __name__ == "__main__":
 
         preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
 
-        if not os.path.isdir("result/{0}/{1}".format("_".join(args.preference), args.name)):
-            os.makedirs("result/{0}/{1}".format("_".join(args.preference), args.name))
+        if not os.path.isdir("result/{0}".format(model_name)):
+            os.makedirs("result/{0}".format(model_name))
         
-        if os.path.isdir("run/{0}/{1}".format("_".join(args.preference), args.name)):
-            shutil.rmtree("run/{0}/{1}".format("_".join(args.preference), args.name))
+        if os.path.isdir("run/{0}".format(model_name)):
+            shutil.rmtree("run/{0}".format(model_name))
 
-        writer = SummaryWriter(log_dir="run/{0}/{1}".format("_".join(args.preference), args.name), comment=f"{args}")
+        writer = SummaryWriter(log_dir="run/{0}".format(model_name), comment=f"{args}")
+        writer.add_text('args', json.dumps(vars(args)) , 0)
 
         train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
         train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
@@ -111,8 +115,6 @@ if __name__ == "__main__":
         result = test_loop(model, test_loader, args, preference_net, device=DEVICE)
         print(f"Experiment:{args.name}")
         print(json.dumps(result, indent=4, sort_keys=True))
-        
-        os.system("python validate.py --model {0}".format(model_name))
 
-    
+    os.system("python validate.py --model {0}".format(model_name))
     os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))

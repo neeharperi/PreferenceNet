@@ -12,6 +12,8 @@ import scipy.stats as st
 import random
 import numpy as np
 from pprint import pprint
+import json
+import hashlib
 import pdb
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -436,6 +438,8 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     return result
 
 def train_preference(model, train_loader, test_loader, epoch, args):
+    unique_id = hashlib.md5(json.dumps(vars(args)).encode("utf8")).hexdigest()
+
     BCE = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
@@ -462,11 +466,13 @@ def train_preference(model, train_loader, test_loader, epoch, args):
                   "state_dictionary": model.state_dict()
                   }
 
-    torch.save(modelState, "result/{0}/{1}/{2}_{0}_checkpoint.pt".format("_".join(args.preference), args.name, epoch))
+    torch.save(modelState, "result/{0}/{1}/{2}/{3}_{0}_checkpoint.pt".format("_".join(args.preference), args.name, unique_id, epoch))
 
     return model
 
 def train_loop(model, train_loader, test_loader, args, writer, preference_net, device="cpu"):
+    unique_id = hashlib.md5(json.dumps(vars(args)).encode("utf8")).hexdigest()
+
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
 
@@ -612,7 +618,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                         'arch': arch,
                         'state_dict': model.state_dict(),
                         'args': args},
-                        "result/{0}/{1}/{2}_checkpoint.pt".format("_".join(args.preference), args.name, epoch))
+                        "result/{0}/{1}/{2}/{3}_checkpoint.pt".format("_".join(args.preference), args.name, unique_id, epoch))
 
         # Log training stats
         train_stats = {
