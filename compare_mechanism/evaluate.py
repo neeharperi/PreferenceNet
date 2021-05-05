@@ -72,23 +72,6 @@ def label_assignment(valuation, type, optimize, sample_val, args):
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
-    elif type == "ranking":
-        cnt = torch.zeros_like(valuation)
-        
-        for _ in range(args.preference_ranking_pairwise_samples):
-            idx = torch.randperm(len(valuation))
-
-            if optimize == "max":
-                cnt = cnt + (valuation > valuation[idx])
-            elif optimize == "min":
-                cnt = cnt + (valuation < valuation[idx])
-            else:
-                assert False, "Optimize type {} is not supported".format(optimize)
-
-        labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
-        
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
     elif type == "bandpass":
         pass_band = []
 
@@ -142,7 +125,6 @@ parser.add_argument('--test-batch-size', type=int, default=2048)
 # Preference
 parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
-parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=1000)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
@@ -189,11 +171,15 @@ for i in range(len(args.preference)):
 
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
-for type, _ in preference_type:
+accuracy = 0
+for type, weight in preference_type:
+    
     sample_allocs = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit)
     val_type = type.split("_")[0]
     valuation_dist, _ = label_valuation(None, sample_allocs, None, val_type, args)
-    
+
+    assert torch.sum(valuation_dist) > 0, "Valuations are all 0"
+
     correct = 0
     total = 0
     test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
@@ -210,4 +196,6 @@ for type, _ in preference_type:
             total = total + res.shape[0]
     
     acc = correct/float(total)
-    print("Preference Accuracy: {}".format(acc))
+    accuracy = accuracy + (weight * acc)
+
+print("Preference Accuracy: {}".format(accuracy))

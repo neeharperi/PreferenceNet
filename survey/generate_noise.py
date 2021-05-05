@@ -35,9 +35,9 @@ Data = {"Allocations" : rounded_allocs,
 torch.save(Data, open("Data/{}x{}_survey_noise.pth".format(args.n_agents, args.n_items), "wb"))
 
 if args.n_agents == 2 and args.n_items == 2:
-    prompt = "[{val_id}] After Company A and Company B submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Considering both companies, according to the given definition of fairness, is this fair?”"
+    prompt = "[{val_id}] After Company A and Company B submitted their bids for a {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Considering both companies, according to the given definition of fairness, is this fair?”"
     ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
-                "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
+                "newspaper ad", "magazine ad", "radio ad", "television ad", "billboard ad"]
 
     questions = open("Survey/{}x{}_survey_noise.txt".format(args.n_agents, args.n_items), "w")
     params = set()
