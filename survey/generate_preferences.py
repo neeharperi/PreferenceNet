@@ -33,7 +33,7 @@ Data = {"Allocations" : rounded_allocs}
 torch.save(Data, open("Data/{}x{}_survey_preference.pth".format(args.n_agents, args.n_items), "wb"))
 
 if args.n_agents == 2 and args.n_items == 2:
-    prompt = "Case 1: After Company A and Company B submitted their bids for a {ad_type}, Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2. Company B’s ad was shown to {C}% DEMOGRAPHIC1 and {D}% DEMOGRAPHIC2. Case 2: After Company C and Company D submitted their bids for a {ad_type}, Company C’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company D’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field.”"
+    prompt = "<table><tr><td>Case 1: After Company A and Company B submitted their bids for a {ad_type},</td><td> Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2.</td></tr><tr><td></td><td> Company B’s ad was shown to {C}% DEMOGRAPHIC1 and {D}% DEMOGRAPHIC2.</td></tr><tr><td>Case 2: After Company C and Company D submitted their bids for a {ad_type},</td><td> Company C’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.</td></tr><tr><td></td><td> Company D’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2.</td></tr></table><br>Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field."
     ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
                 "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
 
@@ -67,7 +67,7 @@ if args.n_agents == 2 and args.n_items == 2:
 
 elif args.n_agents == 1 and args.n_items == 2:
 
-    prompt = "Case 1: After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2. Case 2: After Company B submitted their bids for the {ad_type}, Company B’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field.”"
+    prompt = "Case 1: After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {A}% DEMOGRAPHIC1 and {B}% DEMOGRAPHIC2.<br>Case 2: After Company B submitted their bids for the {ad_type}, Company B’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.<br>Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field."
     ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
                 "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
 
