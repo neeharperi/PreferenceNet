@@ -35,7 +35,7 @@ Data = {"Allocations" : rounded_allocs,
 torch.save(Data, open("Data/{}x{}_survey_noise.pth".format(args.n_agents, args.n_items), "wb"))
 
 if args.n_agents == 2 and args.n_items == 2:
-    prompt = "[{val_id}] After Company A and Company B submitted their bids for a {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2. Considering both companies, according to the given definition of fairness, is this fair?”"
+    prompt = "<table><tr><td>[{val_id}] After Company A and Company B submitted their bids for a {ad_type},</td><td> Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.</td></tr><tr><td></td><td> Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2.</td></tr></table><br>Considering both companies, according to the given definition of fairness, is this fair?"
     ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
                 "newspaper ad", "magazine ad", "radio ad", "television ad", "billboard ad"]
 
@@ -63,7 +63,7 @@ if args.n_agents == 2 and args.n_items == 2:
     print("Number of Questions: {}".format(len(params)))
 
 elif args.n_agents == 1 and args.n_items == 2:
-    prompt = "[{val_id}] After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2. Considering the given definition of fairness, is this fair?”"
+    prompt = "[{val_id}] After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.<br>Considering the given definition of fairness, is this fair?"
     ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
                 "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
 
