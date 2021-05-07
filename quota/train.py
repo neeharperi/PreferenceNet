@@ -72,8 +72,8 @@ if __name__ == "__main__":
     if not os.path.isdir(f"result/{args.name}"):
         os.makedirs(f"result/{args.name}")
 
-    if os.path.isdir("run/{0}/{1}".format("_".join(args.preference), args.name)):
-        shutil.rmtree("run/{0}/{1}".format("_".join(args.preference), args.name))
+    if os.path.isdir("run/{0}".format(args.name)):
+        shutil.rmtree("run/{0}".format(args.name))
         
     writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
 
