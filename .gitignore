@@ -1,10 +1,12 @@
-dea
 .ipynb_checkpoints
 *.pyc
 *.pyo
 __pycache__/
 *.log
 out.*
+
+update.sh
+compare_mechanism/Figures/*
 
 diversity/__pycache__/*
 diversity/plots/*
