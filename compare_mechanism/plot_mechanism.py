@@ -215,11 +215,14 @@ for type, weight in preference_type:
             batch = batch.to(DEVICE)
             allocs, payments = model(batch)
 
-            valuation_dist, _ = label_valuation(None, allocs, None, val_type, args)
+            valuation_dist, _ = label_valuation(None, allocs.cpu(), None, val_type, args)
             valuation.append(valuation_dist)
 
-    sample_dist, optimize = label_valuation(None, sample_allocs, None, val_type, args)
+    sample_dist, optimize = label_valuation(None, sample_allocs.cpu(), None, val_type, args)
     min_val, max_val = torch.cat(valuation).min().item(), torch.cat(valuation).max()
+
+    min_val = min(min_val, sample_dist.min().item())
+    max_val = max(max_val, sample_dist.max().item())
     pass_band = get_thresh(sample_dist, label_type, optimize, min_val, max_val)
 
     dataFrame = pd.DataFrame.from_dict({"Valuation" : [i.item() for i in torch.cat(valuation)]})
@@ -230,5 +233,5 @@ for type, weight in preference_type:
     for st, end in pass_band:
         plt.axvspan(st, end, color='g', alpha=1.0, lw=0, zorder=0)
     
-    plt.savefig("Figures/" + args.name + ".png")
+    plt.savefig("Figures/" + type + "_" + args.name + ".png")
     plt.clf()

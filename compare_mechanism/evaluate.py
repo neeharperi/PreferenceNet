@@ -275,7 +275,7 @@ for type, weight in preference_type:
             batch = batch.to(DEVICE)
             allocs, payments = model(batch)
 
-            res = preference_net(batch, allocs, payments)            
+            res = preference_net(batch, allocs, payments)         
             correct = correct + torch.sum(res > 0.5).item()
             total = total + res.shape[0]
     
