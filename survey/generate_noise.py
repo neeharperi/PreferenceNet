@@ -35,11 +35,44 @@ Data = {"Allocations" : rounded_allocs,
 torch.save(Data, open("Data/{}x{}_survey_noise.pth".format(args.n_agents, args.n_items), "wb"))
 
 if args.n_agents == 2 and args.n_items == 2:
-    prompt = "<table><tr><td>[{val_id}] After Company A and Company B submitted their bids for a {ad_type},</td><td> Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.</td></tr><tr><td></td><td> Company B’s ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2.</td></tr></table><br>Considering both companies, according to the given definition of fairness, is this fair?"
-    ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
-                "newspaper ad", "magazine ad", "radio ad", "television ad", "billboard ad"]
+    prompt = '''Company A's ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.
+Considering the given definition of fairness, is this fair?
+<div>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px;">
+    <tbody>
+        <tr>
+            <td>Company A<br />
+            DEMOGRAPHIC1<br />
+            <progress id="file" max="100" value="{X}"> {X}% </progress><br />
+            {X}%</td>
+            <td>Company A<br />
+            DEMOGRAPHIC2<br />
+            <progress id="file" max="100" value="{Y}"> {Y}% </progress><br />
+            {Y}%</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+Company B's ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2.
+<div>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px;">
+    <tbody>
+        <tr>
+            <td>Company B<br />
+            DEMOGRAPHIC1<br />
+            <progress id="file" max="100" value="{W}"> {W}% </progress><br />
+            {W}%</td>
+            <td>Company B<br />
+            DEMOGRAPHIC2<br />
+            <progress id="file" max="100" value="{Z}"> {Z}% </progress><br />
+            {Z}%</td>
+        </tr>
+    </tbody>
+</table>
+</div>'''
 
     questions = open("Survey/{}x{}_survey_noise.txt".format(args.n_agents, args.n_items), "w")
+    questions.write("[[AdvancedFormat]]\n")
     params = set()
 
     for alloc, val in zip(rounded_allocs, rounded_vals):
@@ -56,18 +89,37 @@ if args.n_agents == 2 and args.n_items == 2:
             continue
 
         params.add(param)
-        ad_type = random.choice(ad_types)
-        question = prompt.format(val_id=val, ad_type=ad_type, X=X, Y=Y, W=W, Z=Z)
-        questions.write(question + "\n")
+        question = prompt.format(X=X, Y=Y, W=W, Z=Z)
+        questions.write("[[Question:MC]]\n")
+        questions.write(question + "\n\n")
+        questions.write("[[Choices]]\n")
+        questions.write("Yes\n")
+        questions.write("No\n\n")
+
 
     print("Number of Questions: {}".format(len(params)))
 
 elif args.n_agents == 1 and args.n_items == 2:
-    prompt = "[{val_id}] After Company A submitted their bids for the {ad_type}, Company A’s ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.<br>Considering the given definition of fairness, is this fair?"
-    ad_types = ["toy ad", "phone ad", "internet provider ad", "job posting", 
-                "newspaper ad", "magazine ad", "radio ad", "televison ad", "billboard ad"]
+    prompt = '''Company A's ad was shown to {X}% DEMOGRAPHIC1 and {Y}% DEMOGRAPHIC2.
+Considering the given definition of fairness, is this fair?
+<div>
+<table border="0" cellpadding="1" cellspacing="1" style="width:500px;">
+    <tbody>
+        <tr>
+            <td>Company A<br />
+            DEMOGRAPHIC1<br />
+            <progress id="file" max="100" value="{X}"> {X}% </progress><br />
+            {X}%</td>
+            <td>Company A<br />
+            DEMOGRAPHIC2<br />
+            <progress id="file" max="100" value="{Y}"> {Y}% </progress><br />
+            {Y}%</td>
+        </tr>
+    </tbody>
+</div>'''
 
     questions = open("Survey/{}x{}_survey_noise.txt".format(args.n_agents, args.n_items), "w")
+    questions.write("[[AdvancedFormat]]\n")
     params = set()
 
     for alloc, val in zip(rounded_allocs, rounded_vals):
@@ -83,8 +135,11 @@ elif args.n_agents == 1 and args.n_items == 2:
             continue
 
         params.add(param)
-        ad_type = random.choice(ad_types)
-        question = prompt.format(val_id=val, ad_type=ad_type, X=X, Y=Y)
-        questions.write(question + "\n")
-
+        question = prompt.format(X=X, Y=Y)
+        questions.write("[[Question:MC]]\n")
+        questions.write(question + "\n\n")
+        questions.write("[[Choices]]\n")
+        questions.write("Yes\n")
+        questions.write("No\n\n")
     print("Number of Questions: {}".format(len(params)))
+

@@ -508,17 +508,17 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         ##################################################################################
         if args.preference_synthetic_pct > 0:
             train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
-            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
-
             test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(ratio * args.preference_synthetic_pct * args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+
+            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
             preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
 
         ####################################################################################
         if 1 - args.preference_synthetic_pct > 0:
-            train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)
-            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
-            
+            train_bids, train_allocs, train_payments, train_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 - args.preference_synthetic_pct) * args.preference_num_examples), preference_item_ranges, args, type, label_preference)            
             test_bids, test_allocs, test_payments, test_labels = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int(ratio * (1 -args.preference_synthetic_pct) * args.preference_test_num_examples), preference_item_ranges, args, type, label_preference)
+
+            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
             preference_test_bids.append(test_bids), preference_test_allocs.append(test_allocs), preference_test_payments.append(test_payments), preference_test_labels.append(test_labels)
 
     preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
