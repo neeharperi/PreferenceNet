@@ -158,7 +158,7 @@ parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
-parser.add_argument('--tvf-distance', type=float, default=0.0)
+parser.add_argument('--tvf-distance', type=float, default=0.5)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
 # architectural arguments
@@ -190,7 +190,7 @@ model.to(DEVICE)
 model.eval()
 
 assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
-item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
+item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
 clamp_op = ds.get_clamp_op(item_ranges)
 
 preference_type = []

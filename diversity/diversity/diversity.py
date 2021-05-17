@@ -11,7 +11,8 @@ def get_entropy(batch, allocs, payments, args):
         entropy = -1.0 * norm_allocs * torch.log(norm_allocs)
 
         loss = float(args.diversity[1]) * entropy.sum(dim=-1).sum(dim=-1)
-
+        
+        loss = loss.unsqueeze(1).repeat(1, args.n_items)
         return loss
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)

@@ -33,7 +33,11 @@ parser.add_argument('--lagr-update-iter', type=int, default=25)
 parser.add_argument('--rgt-start', type=int, default=0)
 # Entropy
 parser.add_argument('--diversity', default=[], nargs='+')  # Fairness metric and associated arguments
-
+parser.add_argument('--diversity-start', type=int, default=0)  # Epoch to start minimizing fairness
+parser.add_argument('--rho-diversity', type=float, default=1.0)
+parser.add_argument('--rho-incr-iter-diversity', type=int, default=5)
+parser.add_argument('--rho-incr-amount-diversity', type=float, default=0.)
+parser.add_argument('--lagr-update-iter-diversity', type=int, default=10)
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
 # dataset selection: specifies a configuration of agent/item/valuation
 parser.add_argument('--dataset', nargs='+', default=[])

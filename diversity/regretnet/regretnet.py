@@ -233,12 +233,13 @@ def test_loop(model, loader, args, device='cpu'):
 def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
+    diversity_mults = torch.ones((1, model.n_items)).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
 
     iter = 0
     rho = args.rho
-
+    rho_diversity = args.rho_diversity
 
     for epoch in tqdm(range(args.num_epochs)):
         regrets_epoch = torch.Tensor().to(device)
@@ -268,7 +269,8 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                 regret_loss = (regret_mults * positive_regrets).mean()
                 regret_quad = (rho / 2.0) * (positive_regrets ** 2).mean()
     
-            diversity_loss = entropy.mean()
+            diversity_loss = (diversity_mults * entropy).mean()
+            diversity_quad = (rho_diversity / 2.0) * (entropy ** 2).mean()
 
             # Add batch to epoch stats
             regrets_epoch = torch.cat((regrets_epoch, regrets), dim=0)
@@ -279,7 +281,8 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             loss_func = regret_loss \
                         + regret_quad \
                         - payment_loss \
-                        - diversity_loss # increase diversity
+                        - diversity_loss \
+                        + diversity_quad # increase diversity
 
             # update model
             optimizer.zero_grad()
@@ -293,6 +296,11 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                     regret_mults += rho * positive_regrets.mean(dim=0)
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
+            if iter % args.lagr_update_iter_diversity == 0:
+                with torch.no_grad():
+                    diversity_mults += rho_diversity * entropy.mean(dim=0)
+            if iter % args.rho_incr_iter_diversity == 0:
+                rho_diversity += args.rho_incr_amount_diversity
 
         # Log testing stats and save model
         if epoch % args.test_iter == (args.test_iter - 1):
@@ -331,6 +339,7 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
         mult_stats = {
             "regret_mult": regret_mults.mean().item(),
             "payment_mult": payment_mult,
+            "diversity_mult": diversity_mults.mean().item(),
         }
 
         pprint(mult_stats)

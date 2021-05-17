@@ -233,11 +233,13 @@ def test_loop(model, loader, args, device='cpu'):
 def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
+    quota_mults = torch.ones((1, model.n_items)).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
 
     iter = 0
     rho = args.rho
+    rho_quota = args.rho_quota
 
 
     for epoch in tqdm(range(args.num_epochs)):
@@ -268,7 +270,8 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                 regret_loss = (regret_mults * positive_regrets).mean()
                 regret_quad = (rho / 2.0) * (positive_regrets ** 2).mean()
     
-            quota_loss = min_quota.mean()
+            quota_loss = (quota_mults * min_quota).mean()
+            quota_quad = (rho_quota / 2.0) * (min_quota ** 2).mean()
 
             # Add batch to epoch stats
             regrets_epoch = torch.cat((regrets_epoch, regrets), dim=0)
@@ -279,7 +282,8 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             loss_func = regret_loss \
                         + regret_quad \
                         - payment_loss \
-                        - quota_loss # increase quota
+                        - quota_loss \
+                        + quota_quad # increase quota
 
             # update model
             optimizer.zero_grad()
@@ -293,6 +297,11 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                     regret_mults += rho * positive_regrets.mean(dim=0)
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
+            if iter % args.lagr_update_iter_quota == 0:
+                with torch.no_grad():
+                    quota_mults += rho_quota * min_quota.mean(dim=0)
+            if iter % args.rho_incr_iter_quota == 0:
+                rho_quota += args.rho_incr_amount_quota
 
         # Log testing stats and save model
         if epoch % args.test_iter == (args.test_iter - 1):
@@ -331,6 +340,7 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
         mult_stats = {
             "regret_mult": regret_mults.mean().item(),
             "payment_mult": payment_mult,
+            "quota_mult": quota_mults.mean().item(),
         }
 
         pprint(mult_stats)

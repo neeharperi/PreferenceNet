@@ -3,7 +3,7 @@ from tqdm import tqdm as tqdm
 
 import torch.nn.init
 
-from regretnet.utils import calc_agent_util
+from regretnet.utils import calc_agent_util, optimize_misreports
 from regretnet import datasets as ds
 from regretnet.regretnet import RegretNet, RegretNetUnitDemand
 from preference.network import PreferenceNet
@@ -124,7 +124,8 @@ def label_assignment(valuation, type, optimize, args):
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
     elif type == "quota":
-        labels = valuation > args.preference_quota
+        thresh = args.preference_quota / args.n_agents
+        labels = valuation > thresh
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
 
@@ -192,7 +193,11 @@ parser.add_argument('--model-path', required=True)
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--test-num-examples', type=int, default=100000)
 parser.add_argument('--test-batch-size', type=int, default=2048)
-
+parser.add_argument('--misreport-lr', type=float, default=1e-1)
+parser.add_argument('--misreport-iter', type=int, default=25)
+parser.add_argument('--test-misreport-iter', type=int, default=1000)
+parser.add_argument('--n-agents', type=int, default=1)
+parser.add_argument('--n-items', type=int, default=2)
 # Preference
 parser.add_argument('--preference-num-examples', type=int, default=60000)
 parser.add_argument('--preference-test-num-examples', type=int, default=20000)
@@ -204,7 +209,7 @@ parser.add_argument('--preference-num-epochs', type=int, default=50)
 parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
 parser.add_argument('--preference-passband', default=[], nargs='+')
-parser.add_argument('--preference-quota', type=float, default=0.4)
+parser.add_argument('--preference-quota', type=float, default=0.8)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
@@ -223,8 +228,13 @@ torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
 
 ds.dataset_override(args)
-
 model_ckpt = torch.load(args.model_path)
+
+assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
+item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+clamp_op = ds.get_clamp_op(item_ranges)
+model_ckpt['arch']['clamp_op'] = clamp_op
+
 if "pv" in model_ckpt['name']:
     model = RegretNetUnitDemand(**(model_ckpt['arch']))
 else:
@@ -235,10 +245,6 @@ model.load_state_dict(state_dict)
 
 model.to(DEVICE)
 model.eval()
-
-assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
-item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
-clamp_op = ds.get_clamp_op(item_ranges)
 
 preference_type = []
 mixed_preference_weight = 0
@@ -253,11 +259,18 @@ accuracy = 0
 for type, weight in preference_type:
     preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
 
-    preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items)
+    preference_item_ranges = pds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
     preference_clamp_op = pds.get_clamp_op(preference_item_ranges)
 
     train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
     test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+    
+    try_cnt = 1
+    while torch.sum(train_labels) != 0 or torch.sum(test_labels != 0):
+        print("No Positive Examples, Resampling Try {}".format(try_cnt))
+        try_cnt = try_cnt + 1
+        train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
+        test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args, type, label_preference)
 
     preference_train_loader = pds.Dataloader((train_bids).to(DEVICE), (train_allocs).to(DEVICE), (train_payments).to(DEVICE), (train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
     preference_test_loader = pds.Dataloader((test_bids).to(DEVICE), (test_allocs).to(DEVICE), (test_payments).to(DEVICE), (test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=False, args=args)
@@ -270,14 +283,13 @@ for type, weight in preference_type:
     test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
     test_loader = ds.Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
-    with torch.no_grad():
-        for i, batch in enumerate(test_loader):
-            batch = batch.to(DEVICE)
-            allocs, payments = model(batch)
+    for i, batch in enumerate(test_loader):
+        batch = batch.to(DEVICE)
 
-            res = preference_net(batch, allocs, payments)         
-            correct = correct + torch.sum(res > 0.5).item()
-            total = total + res.shape[0]
+        allocs, payments = model(batch)
+        res = preference_net(batch, allocs, payments)         
+        correct = correct + torch.sum(res > 0.5).item()
+        total = total + res.shape[0]
     
     acc = correct/float(total)
     accuracy = accuracy + (weight * acc)

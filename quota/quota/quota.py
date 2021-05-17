@@ -13,6 +13,7 @@ def get_quota(batch, allocs, payments, args):
         valuation =  norm_allocs.min(-1)[0].min(-1)[0]
         loss = (float(args.quota[1]) * valuation).to(DEVICE)
 
+        loss = loss.unsqueeze(1).repeat(1, args.n_items)
         return loss
 
     return torch.zeros(allocs.shape[0]).to(allocs.device)

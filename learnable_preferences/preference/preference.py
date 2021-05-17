@@ -8,8 +8,11 @@ def get_preference(batch, allocs, payments, args, model=None):
         model.eval()
         pred = model(batch, allocs, payments)
 
-        return float(args.preference_lambda) * pred
-
+        loss = float(args.preference_lambda) * pred
+        
+        loss = loss.unsqueeze(1).repeat(1, args.n_items)
+        return loss
+        
     return torch.zeros(allocs.shape[0]).to(allocs.device)
 
 def get_entropy(batch, allocs, payments, args):
