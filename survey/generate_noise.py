@@ -83,6 +83,17 @@ Company B's ad was shown to {W}% DEMOGRAPHIC1 and {Z}% DEMOGRAPHIC2.
         W = alloc[1][0].item()
         Z = alloc[1][1].item()
 
+        setA = set()
+        setB = set()
+
+        setA.add(X)
+        setA.add(Y)
+        setB.add(W)
+        setB.add(Z)
+
+        if setA == setB:
+            continue
+        
         param = (X,Y,W,Z)
 
         if param in params:

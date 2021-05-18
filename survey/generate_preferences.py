@@ -107,7 +107,20 @@ Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the 
 
         param = (A,B,C,D,X,Y,W,Z)
         
-        if A == X and B == Y and C == W and D == Z:
+        setA = set()
+        setB = set()
+
+        setA.add(A)
+        setA.add(B)
+        setA.add(C)
+        setA.add(D)
+
+        setB.add(X)
+        setB.add(Y)
+        setB.add(W)
+        setB.add(Z)
+
+        if setA == setB:
             continue
 
         if param in params:
@@ -179,7 +192,15 @@ Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the 
 
         param = (A,B,X,Y)
 
-        if A == X and B == Y:
+        setA = set()
+        setB = set()
+
+        setA.add(A)
+        setA.add(B)
+        setB.add(X)
+        setB.add(Y)
+
+        if setA == setB:
             continue
 
         if param in params:
