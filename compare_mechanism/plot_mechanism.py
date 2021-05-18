@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd 
 import seaborn as sns
 import matplotlib.pyplot as plt
+
+import os
 import pdb
 
 def window(iterable, size):
@@ -54,7 +56,6 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         optimize = "min"
 
     elif type == "quota":
-        assert args.n_agents > 1, "Quota regularization requires num_agents > 1"
         assert args.n_agents > 1, "Quota regularization requires num_agents > 1"
         
         allocs = allocs.clamp_min(1e-8)
@@ -158,7 +159,7 @@ parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-threshold', type=float, default=0.75)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.4)
-parser.add_argument('--tvf-distance', type=float, default=0.5)
+parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
 # architectural arguments
@@ -170,6 +171,9 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
 parser.add_argument('--preference-label-noise', type=float, default=0)
 parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
+
+if not os.path.isdir("Figures"):
+    os.mkdir("Figures")
 
 args = parser.parse_args()
 torch.manual_seed(args.random_seed)

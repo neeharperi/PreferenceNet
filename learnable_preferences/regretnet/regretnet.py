@@ -598,16 +598,9 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                 rho_preference += args.rho_incr_amount_preference
 
         if epoch  % args.preference_update_freq == 0 and args.preference_update_freq != -1:
-            if args.preference_synthetic_pct > 0:
-                train_bids, train_allocs, train_payments = pds.generate_random_allocations_payments(int(args.preference_synthetic_pct * args.preference_num_self_examples), args.n_agents, args.n_items, args.unit, preference_item_ranges, args)
-                train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
-                preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
-
-            ####################################################################################
-            if 1 - args.preference_synthetic_pct > 0:
-                train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_self_examples), preference_item_ranges, args)
-                train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
-                preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
+            train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_self_examples), preference_item_ranges, args)
+            train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
+            preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
                 
             preference_train_loader = pds.Dataloader(torch.cat(preference_train_bids).to(DEVICE), torch.cat(preference_train_allocs).to(DEVICE), torch.cat(preference_train_payments).to(DEVICE), torch.cat(preference_train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=False, args=args)
                 

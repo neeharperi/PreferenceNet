@@ -262,13 +262,6 @@ for type, weight in preference_type:
     train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_num_examples), args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
     test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
 
-    try_cnt = 1
-    while torch.sum(train_labels) == 0 or torch.sum(test_labels) == 0:
-        print("No Positive Examples, Resampling Try {}".format(try_cnt))
-        try_cnt = try_cnt + 1
-        train_bids, train_allocs, train_payments, train_labels = pds.generate_random_allocations_payments(int(args.preference_num_examples), args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
-        test_bids, test_allocs, test_payments, test_labels = pds.generate_random_allocations_payments(int(args.preference_test_num_examples), args.n_agents, args.n_items, args.unit, item_ranges, args, type, label_preference)
-
     preference_train_loader = pds.Dataloader((train_bids).to(DEVICE), (train_allocs).to(DEVICE), (train_payments).to(DEVICE), (train_labels).to(DEVICE), batch_size=args.batch_size, shuffle=True, balance=True, args=args)
     preference_test_loader = pds.Dataloader((test_bids).to(DEVICE), (test_allocs).to(DEVICE), (test_payments).to(DEVICE), (test_labels).to(DEVICE), batch_size=args.test_batch_size, shuffle=True, balance=False, args=args)
 
