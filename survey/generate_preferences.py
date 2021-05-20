@@ -20,7 +20,7 @@ parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 args = parser.parse_args()
 
 ds.dataset_override(args)
-item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
+item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
 clamp_op = ds.get_clamp_op(item_ranges)
 
 random_bids, allocs, actual_payments = ds.generate_random_allocations_payments(args.num_examples, args.n_agents, args.n_items, True, item_ranges, args)
@@ -88,7 +88,7 @@ if args.n_agents == 2 and args.n_items == 2:
     </tbody>
 </table>
 </div><br>
-Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field.'''
+Which is more fair, Case 1 or Case 2?'''
 
     questions = open("Survey/{}x{}_survey_preference.txt".format(args.n_agents, args.n_items), "w")
     questions.write("[[AdvancedFormat]]\n")
@@ -134,8 +134,6 @@ Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the 
         questions.write("[[Choices]]\n")
         questions.write("Case 1\n")
         questions.write("Case 2\n")
-        questions.write("Other\n\n")
-
 
     print("Number of Questions: {}".format(len(params)))
 
@@ -178,7 +176,7 @@ elif args.n_agents == 1 and args.n_items == 2:
     </tbody>
 </table>
 </div><br>
-Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the provided text field.'''
+Which is more fair, Case 1 or Case 2?'''
     
     questions = open("Survey/{}x{}_survey_preference.txt".format(args.n_agents, args.n_items), "w")
     questions.write("[[AdvancedFormat]]\n")
@@ -213,6 +211,6 @@ Which is more fair, Case 1, Case 2, or other? If other, please elaborate in the 
         questions.write("[[Choices]]\n")
         questions.write("Case 1\n")
         questions.write("Case 2\n")
-        questions.write("Other\n\n")
+
     print("Number of Questions: {}".format(len(params)))
 

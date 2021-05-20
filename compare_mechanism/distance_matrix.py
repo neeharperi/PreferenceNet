@@ -41,8 +41,11 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 parser = ArgumentParser()
 
-
 parser.add_argument('--random-seed', type=int, default=0)
+parser.add_argument('--n-agents', type=int, default=1)
+parser.add_argument('--n-items', type=int, default=2)
+parser.add_argument('--dataset', nargs='+', default=[], required=True)
+
 parser.add_argument('--test-num-examples', type=int, default=5000)
 parser.add_argument('--test-batch-size', type=int, default=512)
 
@@ -57,14 +60,6 @@ models = ["../diversity/result/1x2-{}_1_0.0_0/199_checkpoint.pt".format(auction_
 args = parser.parse_args()
 torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
-
-     
-# Valuation range setup
-item_ranges = ds.preset_valuation_range(1, 2)
-clamp_op = ds.get_clamp_op(item_ranges)
-
-test_data = ds.generate_dataset_nxk(1, 2, args.test_num_examples, item_ranges).to(DEVICE)
-test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
 average_allocation_distance = []
 for modelA_path in models:
@@ -95,6 +90,13 @@ for modelA_path in models:
 
         modelA.eval()
         modelB.eval()
+
+        # Valuation range setup
+        item_ranges = ds.preset_valuation_range(1, 2, args.dataset)
+        clamp_op = ds.get_clamp_op(item_ranges)
+
+        test_data = ds.generate_dataset_nxk(1, 2, args.test_num_examples, item_ranges).to(DEVICE)
+        test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
         total_dist = 0
         total_entropy = 0

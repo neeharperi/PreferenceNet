@@ -50,9 +50,10 @@ parser.add_argument('--preference-test-num-examples', type=int, default=10000)
 
 parser.add_argument('--preference-num-epochs', type=int, default=20)
 parser.add_argument('--preference-update-freq', type=int, default=5)
-parser.add_argument('--preference-synthetic-pct', type=float, default=0.0)
+parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
 
 parser.add_argument('--preference', default=[], nargs='+', required=True)
+parser.add_argument('--preference-file')
 parser.add_argument('--preference-lambda', type=float, default=1.0)
 parser.add_argument('--preference-label-noise', type=float, default=0)
 parser.add_argument('--preference-ranking-pairwise-samples', type=int, default=5000)

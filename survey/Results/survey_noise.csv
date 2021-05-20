@@ -1,0 +1,3928 @@
+StartDate,EndDate,Status,IPAddress,Progress,Duration (in seconds),Finished,RecordedDate,ResponseId,RecipientLastName,RecipientFirstName,RecipientEmail,ExternalReference,LocationLatitude,LocationLongitude,DistributionChannel,UserLanguage,Q3,Q4,Q5,Q6,Q7,Q8,Q9,Q10,Q11,Q12,Q13,Q15,Q16,Q17,Q18,Q19,Q20,Q21,Q22,Q23,Q24,Q25,Q26,Q27,Q28,Q29,Q30,Q31,Q32,Q33,Q34,Q35,Q36,Q37,Q38,Q39,Q40,Q41,Q42,Q43,Q44,Q45,Q46,Q47,Q48,Q49,Q50,Q51,Q52,Q53,Q54,Q55,Q56,Q57,Q58,Q59,Q60,Q61,Q62,Q63,Q64,Q65,Q66,Q67,Q68,Q69,Q70,Q71,Q72,Q73,Q74,Q75,Q76,Q77,Q78,Q79,Q80,Q81,Q82,Q83,Q84,Q85,Q86,Q87,Q88,Q89,Q90,Q91,Q92,Q328,CintID,Q_TerminateFlag,cintID
+Start Date,End Date,Response Type,IP Address,Progress,Duration (in seconds),Finished,Recorded Date,Response ID,Recipient Last Name,Recipient First Name,Recipient Email,External Data Reference,Location Latitude,Location Longitude,Distribution Channel,User Language,"Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+ 
+ 
+
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 40.0% 
+
+			40.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 60.0% 
+
+			60.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 35.0% 
+
+			35.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 65.0% 
+
+			65.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 50.0% 
+
+			50.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 50.0% 
+
+			50.0%
+		
+	
+
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 70.0% 
+
+			70.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 30.0% 
+
+			30.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 60.0% 
+
+			60.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 40.0% 
+
+			40.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 45.0% 
+
+			45.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 55.0% 
+
+			55.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+ 
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 65.0% 
+
+			65.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 35.0% 
+
+			35.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+ 
+
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 55.0% 
+
+			55.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 45.0% 
+
+			45.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+ 
+
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 30.0% 
+
+			30.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 70.0% 
+
+			70.0%
+		
+	
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+ 
+
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 75.0% 
+
+			75.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 25.0% 
+
+			25.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+ 
+
+
+	
+		
+			Company A
+
+			DEMOGRAPHIC1
+
+			 25.0% 
+
+			25.0%
+			Company A
+
+			DEMOGRAPHIC2
+
+			 75.0% 
+
+			75.0%
+		
+	
+
+
+
+ 
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 75.0% 
+
+75.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 25.0% 
+
+25.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 30.0% DEMOGRAPHIC1 and 70.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 30.0% 
+
+30.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 70.0% 
+
+70.0%
+
+
+
+
+Company B's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Company B's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 75.0% 
+
+75.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 25.0% 
+
+25.0%
+
+
+
+
+Company B's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 70.0% DEMOGRAPHIC1 and 30.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 70.0% 
+
+70.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 30.0% 
+
+30.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 75.0% 
+
+75.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 25.0% 
+
+25.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Company B's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Company B's ad was shown to 55.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 55.0% 
+
+55.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 65.0% DEMOGRAPHIC1 and 35.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 65.0% 
+
+65.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 35.0% 
+
+35.0%
+
+
+
+
+Company B's ad was shown to 50.0% DEMOGRAPHIC1 and 45.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 45.0% 
+
+45.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 45.0% DEMOGRAPHIC1 and 55.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 45.0% 
+
+45.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 55.0% 
+
+55.0%
+
+
+
+
+Company B's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 50.0% DEMOGRAPHIC1 and 50.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 50.0% 
+
+50.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 50.0% 
+
+50.0%
+
+
+
+
+Company B's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 60.0% DEMOGRAPHIC1 and 40.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 60.0% 
+
+60.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 40.0% 
+
+40.0%
+
+
+
+
+Company B's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 35.0% DEMOGRAPHIC1 and 65.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 35.0% 
+
+35.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 65.0% 
+
+65.0%
+
+
+
+
+Company B's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 75.0% 
+
+75.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 25.0% 
+
+25.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 25.0% DEMOGRAPHIC1 and 75.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 25.0% 
+
+25.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 75.0% 
+
+75.0%
+
+
+
+
+Company B's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Company A's ad was shown to 40.0% DEMOGRAPHIC1 and 60.0% DEMOGRAPHIC2.
+
+
+
+
+Company A
+
+DEMOGRAPHIC1
+
+ 40.0% 
+
+40.0%
+Company A
+
+DEMOGRAPHIC2
+
+ 60.0% 
+
+60.0%
+
+
+
+
+Company B's ad was shown to 75.0% DEMOGRAPHIC1 and 25.0% DEMOGRAPHIC2.
+
+
+
+
+Company B
+
+DEMOGRAPHIC1
+
+ 75.0% 
+
+75.0%
+Company B
+
+DEMOGRAPHIC2
+
+ 25.0% 
+
+25.0%
+
+
+
+
+Considering the given definition of fairness, is this fair?","Thanks for submitting answers to those questions. 
+Can you describe what method or process you used to make your decisions?",CintID,Q_TerminateFlag,cintID
+"{""ImportId"":""startDate"",""timeZone"":""America/Denver""}","{""ImportId"":""endDate"",""timeZone"":""America/Denver""}","{""ImportId"":""status""}","{""ImportId"":""ipAddress""}","{""ImportId"":""progress""}","{""ImportId"":""duration""}","{""ImportId"":""finished""}","{""ImportId"":""recordedDate"",""timeZone"":""America/Denver""}","{""ImportId"":""_recordId""}","{""ImportId"":""recipientLastName""}","{""ImportId"":""recipientFirstName""}","{""ImportId"":""recipientEmail""}","{""ImportId"":""externalDataReference""}","{""ImportId"":""locationLatitude""}","{""ImportId"":""locationLongitude""}","{""ImportId"":""distributionChannel""}","{""ImportId"":""userLanguage""}","{""ImportId"":""QID410""}","{""ImportId"":""QID411""}","{""ImportId"":""QID412""}","{""ImportId"":""QID413""}","{""ImportId"":""QID414""}","{""ImportId"":""QID415""}","{""ImportId"":""QID416""}","{""ImportId"":""QID417""}","{""ImportId"":""QID418""}","{""ImportId"":""QID419""}","{""ImportId"":""QID420""}","{""ImportId"":""QID666""}","{""ImportId"":""QID667""}","{""ImportId"":""QID668""}","{""ImportId"":""QID669""}","{""ImportId"":""QID670""}","{""ImportId"":""QID671""}","{""ImportId"":""QID672""}","{""ImportId"":""QID673""}","{""ImportId"":""QID674""}","{""ImportId"":""QID675""}","{""ImportId"":""QID676""}","{""ImportId"":""QID677""}","{""ImportId"":""QID678""}","{""ImportId"":""QID679""}","{""ImportId"":""QID680""}","{""ImportId"":""QID681""}","{""ImportId"":""QID682""}","{""ImportId"":""QID683""}","{""ImportId"":""QID684""}","{""ImportId"":""QID685""}","{""ImportId"":""QID686""}","{""ImportId"":""QID687""}","{""ImportId"":""QID688""}","{""ImportId"":""QID689""}","{""ImportId"":""QID690""}","{""ImportId"":""QID691""}","{""ImportId"":""QID692""}","{""ImportId"":""QID693""}","{""ImportId"":""QID694""}","{""ImportId"":""QID695""}","{""ImportId"":""QID696""}","{""ImportId"":""QID697""}","{""ImportId"":""QID698""}","{""ImportId"":""QID699""}","{""ImportId"":""QID700""}","{""ImportId"":""QID701""}","{""ImportId"":""QID702""}","{""ImportId"":""QID703""}","{""ImportId"":""QID704""}","{""ImportId"":""QID705""}","{""ImportId"":""QID706""}","{""ImportId"":""QID707""}","{""ImportId"":""QID708""}","{""ImportId"":""QID709""}","{""ImportId"":""QID710""}","{""ImportId"":""QID711""}","{""ImportId"":""QID712""}","{""ImportId"":""QID713""}","{""ImportId"":""QID714""}","{""ImportId"":""QID715""}","{""ImportId"":""QID716""}","{""ImportId"":""QID717""}","{""ImportId"":""QID718""}","{""ImportId"":""QID719""}","{""ImportId"":""QID720""}","{""ImportId"":""QID721""}","{""ImportId"":""QID722""}","{""ImportId"":""QID723""}","{""ImportId"":""QID724""}","{""ImportId"":""QID725""}","{""ImportId"":""QID726""}","{""ImportId"":""QID727""}","{""ImportId"":""QID728""}","{""ImportId"":""QID729""}","{""ImportId"":""QID730""}","{""ImportId"":""QID731""}","{""ImportId"":""QID732""}","{""ImportId"":""QID733""}","{""ImportId"":""QID734""}","{""ImportId"":""QID735""}","{""ImportId"":""QID736""}","{""ImportId"":""QID737""}","{""ImportId"":""QID738""}","{""ImportId"":""QID739""}","{""ImportId"":""QID740""}","{""ImportId"":""QID741""}","{""ImportId"":""QID742""}","{""ImportId"":""QID743""}","{""ImportId"":""QID745_TEXT""}","{""ImportId"":""CintID""}","{""ImportId"":""Q_TerminateFlag""}","{""ImportId"":""cintID_CEDsg1osqg""}"
+2021-05-19 11:02:40,2021-05-19 11:09:32,IP Address,109.153.83.237,100,412,True,2021-05-19 11:09:33,R_27BTeRhOT1V51iG,,,,,52.4391021728515625,-1.50390625,anonymous,EN,,,Yes,No,Yes,Yes,,Yes,No,No,No,,Yes,,Yes,No,,,No,,Yes,,,Yes,,,,,,,,,Yes,Yes,,No,,,,No,No,,No,,,,,No,,Yes,No,,,,,,,,,No,No,,,,,,,Yes,,No,,,No,,,No,,No,Yes,,,No,No,No,No,No,No,,No,test,8dba632d-657f-edc9-aefc-5491ed15d1f3,,
+2021-05-19 11:10:05,2021-05-19 11:10:54,IP Address,109.153.83.237,100,49,True,2021-05-19 11:10:55,R_Z3FLISnLYQlqgYF,,,,,52.4391021728515625,-1.50390625,anonymous,EN,Yes,Yes,No,Yes,,No,Yes,,,Yes,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,a375a002-aabc-2ee7-61d3-975ec2d61edc,,
+2021-05-19 12:03:12,2021-05-19 12:03:52,IP Address,65.26.231.255,100,39,True,2021-05-19 12:03:52,R_A7FUC60aJbY5o6B,,,,,42.989593505859375,-88.0876007080078125,anonymous,EN,No,No,No,,,Yes,No,Yes,No,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,a34844f8-1326-984c-2329-736365fbab31,,
+2021-05-19 12:02:58,2021-05-19 12:04:44,IP Address,172.118.121.80,100,105,True,2021-05-19 12:04:44,R_1kLVuUXebRfg0pt,,,,,33.926300048828125,-118.0034027099609375,anonymous,EN,,,Yes,,Yes,No,Yes,No,Yes,Yes,Yes,,Yes,Yes,Yes,,,,Yes,Yes,,Yes,Yes,,,,,Yes,,Yes,Yes,,Yes,Yes,Yes,No,,,,,,,,No,Yes,,,Yes,,,,Yes,,,,Yes,,,,No,Yes,No,Yes,,,Yes,,,,,,,Yes,Yes,,,,,,,,Yes,,,No,,,Yes,No,"the process of using my intelligence. ",8cdbfd01-8a4a-224d-b0d0-caf032173ef1,,
+2021-05-19 12:02:44,2021-05-19 12:07:16,IP Address,107.77.208.208,100,272,True,2021-05-19 12:07:17,R_3OeSFqPvgNfZuZC,,,,,41.850006103515625,-87.71649932861328125,anonymous,EN,,Yes,Yes,Yes,Yes,Yes,,,Yes,Yes,Yes,No,,No,No,No,Yes,,Yes,,Yes,,,,Yes,,,,No,,,,Yes,,,,Yes,No,,No,,,No,,No,,,,Yes,,,,,,No,,,,,No,No,,,,Yes,,No,,,No,Yes,No,,Yes,No,,No,Yes,,,,No,,,,No,,,,NA,477a0528-a8a5-d22b-11f9-325148ed00fc,,
+2021-05-19 12:04:17,2021-05-19 12:07:24,IP Address,104.136.241.33,100,186,True,2021-05-19 12:07:24,R_BVpElDPhBAtjRpn,,,,,28.479705810546875,-82.5561981201171875,anonymous,EN,Yes,,Yes,No,,Yes,No,Yes,No,,No,,,,Yes,Yes,,,,,,Yes,,No,Yes,,,No,,,No,,Yes,,,,,No,,,No,No,No,,No,,,No,,No,,No,No,No,,No,,,,,No,No,No,,,,,,,No,,,No,,No,No,No,,No,No,,,No,,,,,,,The percentage distributions.,ee032994-0cf9-88f8-6845-1e2812243c64,,
+2021-05-19 12:03:38,2021-05-19 12:07:49,IP Address,24.148.6.21,100,250,True,2021-05-19 12:07:49,R_SI7KdkKpwlJ2nyV,,,,,41.9409027099609375,-87.6531982421875,anonymous,EN,,,Yes,No,Yes,,No,Yes,No,No,No,,,,,,Yes,,,Yes,Yes,,,,,Yes,Yes,,No,,Yes,No,,,,,,,Yes,Yes,Yes,,,Yes,Yes,Yes,,No,,No,Yes,,Yes,,No,,,,,,Yes,,,Yes,Yes,,No,,,,,,No,,No,,,,No,,,,,No,No,No,No,,,"i watched the percentages ",aaf22380-bba5-82b8-9951-14d9e2c70f71,,
+2021-05-19 12:03:10,2021-05-19 12:07:55,IP Address,99.144.141.17,100,285,True,2021-05-19 12:07:56,R_1JXCwHGF6CwFywo,,,,,35.2136993408203125,-81.12200164794921875,anonymous,EN,Yes,Yes,Yes,,,Yes,Yes,Yes,,No,Yes,Yes,Yes,,,,,Yes,,Yes,Yes,No,No,Yes,Yes,Yes,,,No,,Yes,,,Yes,,,,,Yes,,Yes,No,Yes,Yes,No,Yes,,Yes,Yes,,,,,Yes,,,,,,,,,,,,,,Yes,,,,,,,,,Yes,,,,Yes,Yes,,,No,No,,,Yes,"Common sense ",cb598c73-14f5-508f-32a2-bb72c315a0a1,,
+2021-05-19 12:02:43,2021-05-19 12:09:25,IP Address,69.249.56.143,100,401,True,2021-05-19 12:09:25,R_Ut4tUgAwtoBEKml,,,,,39.93609619140625,-75.2624969482421875,anonymous,EN,Yes,No,Yes,No,,,No,Yes,No,,Yes,No,Yes,Yes,,Yes,,,,Yes,,,,,Yes,,Yes,,,,Yes,No,Yes,Yes,,Yes,Yes,,Yes,Yes,Yes,,,,,,Yes,,,,No,Yes,Yes,No,No,,,Yes,,Yes,,,,,,,,,No,,,,,Yes,,No,,,,,No,,Yes,,,No,,,,I went with what seemed fair to me,bdfa4a18-c6c2-9d75-91c9-7dd15c89f2da,,
+2021-05-19 12:06:38,2021-05-19 12:09:27,IP Address,24.115.105.184,100,168,True,2021-05-19 12:09:27,R_2rO3CSctCLRCWq5,,,,,40.9730072021484375,-76.9116973876953125,anonymous,EN,,,Yes,Yes,,No,Yes,Yes,No,Yes,Yes,,No,,Yes,Yes,Yes,Yes,,,,No,,,,No,,,Yes,,,,,No,No,,,Yes,,No,Yes,,,,,No,,,,,,No,Yes,,No,,,,,,,Yes,,Yes,,,Yes,,,,No,No,Yes,,,Yes,,No,,Yes,No,Yes,,,,Yes,Yes,,,Looking at the charts,b4b42b83-e692-91e3-df52-1c9f5ed44e59,,
+2021-05-19 12:07:36,2021-05-19 12:09:36,IP Address,99.144.69.217,100,119,True,2021-05-19 12:09:36,R_u4VYDwziWMMacp3,,,,,35.089202880859375,-80.81939697265625,anonymous,EN,No,,Yes,No,,No,No,No,No,,No,,,Yes,,,,,Yes,Yes,,,Yes,Yes,Yes,,,,,,,Yes,Yes,,,,,Yes,Yes,Yes,Yes,,Yes,,Yes,Yes,Yes,,,,,,,Yes,,,,,,Yes,,Yes,Yes,,Yes,,,,Yes,,,,,,Yes,Yes,,,Yes,Yes,Yes,Yes,Yes,,,Yes,,,,"don't know, it was confusing",2ed9efa8-7b69-52cb-b279-d8f281143362,,
+2021-05-19 12:07:12,2021-05-19 12:11:51,IP Address,107.134.9.227,100,278,True,2021-05-19 12:11:51,R_3rIYczCbT4DkBoG,,,,,35.456298828125,-94.329803466796875,anonymous,EN,Yes,,Yes,No,Yes,Yes,No,,,No,No,,Yes,,,,Yes,Yes,,Yes,,,,,,,,Yes,,Yes,,,,,,,Yes,Yes,,,Yes,,Yes,Yes,,Yes,,No,Yes,,,,,,Yes,,,,,Yes,,No,,,,,,No,,Yes,No,Yes,No,Yes,,No,Yes,,,,,,Yes,,No,,No,,,what i thought looked like it was fair or not by the way they were close enough,54c841cc-c5b0-f8bc-a31d-76e3e803f13c,,
+2021-05-19 12:09:31,2021-05-19 12:12:23,IP Address,47.227.117.254,100,172,True,2021-05-19 12:12:24,R_25MeZhR5Wi69maf,,,,,39.7436065673828125,-86.1157989501953125,anonymous,EN,No,No,Yes,,No,No,No,No,,,No,Yes,,,Yes,Yes,Yes,Yes,Yes,Yes,Yes,,,Yes,Yes,,,Yes,Yes,Yes,Yes,Yes,Yes,,,,,Yes,,,Yes,,,,,,Yes,Yes,Yes,,,Yes,,Yes,,Yes,Yes,,,Yes,,,,,,Yes,Yes,,,,Yes,,,,,,,,,,,,,,,,Yes,,,tried to follow the examples given,fbf3d409-f871-a10e-9bd8-e3d8f886c0ff,,
+2021-05-19 12:09:11,2021-05-19 12:13:03,IP Address,73.236.86.50,100,232,True,2021-05-19 12:13:04,R_pK6Hkb1UmGG9Q09,,,,,40.6338043212890625,-79.62030029296875,anonymous,EN,,,Yes,No,No,No,No,,No,No,No,,No,,,,,Yes,Yes,Yes,,,Yes,,,Yes,,,,No,No,,Yes,Yes,No,,,,Yes,,,,,,,,,Yes,Yes,,,,,,,Yes,Yes,,,,,No,No,,,,,Yes,No,,,Yes,No,,No,Yes,,No,,,,Yes,Yes,No,,,,No,Yes,"nothing at all ",f6ef95b2-f9e1-e4da-8763-a2c4d293c96f,,
+2021-05-19 12:06:17,2021-05-19 12:13:55,IP Address,152.97.137.138,100,458,True,2021-05-19 12:13:55,R_1f2xJDdc6zvMk5O,,,,,35.944793701171875,-85.44170379638671875,anonymous,EN,No,No,Yes,No,Yes,,,,No,No,No,,,,Yes,Yes,,No,Yes,,Yes,,,No,,,,No,,Yes,,,No,,,,No,,,Yes,,,,,No,,No,,,,No,,Yes,Yes,,,,No,,,,No,,,,,No,No,,,,,No,,,,,No,,,No,,No,,,No,,,No,The amount of disparity between the two groups given the percentages,5bbd518a-8005-e4fb-d65b-669666f4b458,,
+2021-05-19 12:09:04,2021-05-19 12:15:17,IP Address,47.142.219.80,100,372,True,2021-05-19 12:15:18,R_1CsgOJYFB6S2YN8,,,,,34.9535064697265625,-120.4347991943359375,anonymous,EN,,,Yes,No,No,No,No,,No,No,No,,Yes,,,Yes,,No,,,,,,,Yes,Yes,,No,,Yes,,,Yes,,,No,,No,,No,,No,No,,Yes,,,No,,,,No,,,No,No,No,,,,,No,,,,No,,,,No,,No,,,,,No,No,No,,No,No,,No,,,,No,,no,0277bf46-c256-ce14-1f97-885c3c3cf7b3,,
+2021-05-19 12:11:48,2021-05-19 12:15:18,IP Address,24.190.200.154,100,210,True,2021-05-19 12:15:19,R_vOn1Fq5Zw8d4uQN,,,,,40.6327056884765625,-73.63330078125,anonymous,EN,No,,Yes,No,,No,No,No,No,,No,,,,,,Yes,No,No,,,,No,Yes,Yes,,Yes,,,,,,,,No,,No,,,,Yes,No,,No,,Yes,Yes,,No,No,Yes,,,No,No,,No,No,No,,No,No,,,Yes,,,,No,No,No,,No,,,,,,,,,,,,,,,,No,Adding up the percentages,81884793-634b-3a9c-e042-70a31af2db66,,
+2021-05-19 12:11:27,2021-05-19 12:15:24,IP Address,67.163.52.144,100,236,True,2021-05-19 12:15:24,R_PvBgU2e4d8pqkO5,,,,,41.9965972900390625,-88.29630279541015625,anonymous,EN,No,,Yes,No,No,No,,No,No,,,No,Yes,No,,,Yes,,,,No,No,No,,,,,No,,,No,No,,,Yes,No,,No,,,No,,,,,No,,No,,No,,,,,No,No,No,,No,,,,No,No,,,,No,,No,,,,,,,No,,,,No,,,,No,No,No,,,"All companies shall be equal. ",72c071a8-66b6-0ffe-a879-46eb500c5658,,
+2021-05-19 12:12:07,2021-05-19 12:16:42,IP Address,184.56.166.49,100,274,True,2021-05-19 12:16:42,R_33DqmNU8Zh8cGXm,,,,,37.6450958251953125,-84.77030181884765625,anonymous,EN,No,,Yes,,Yes,,No,Yes,,No,No,Yes,,Yes,,Yes,Yes,,,,Yes,,Yes,,,Yes,,No,,,,No,,,No,,,,No,No,No,,Yes,Yes,,,,,,No,No,No,,,,,No,,,,,,,,No,,,,,,No,,,,No,No,No,No,,,No,,Yes,,No,,,No,,"Gut reaction ",a1de0118-7c40-40a4-b6c9-36f56ffa34ed,,
+2021-05-19 12:05:57,2021-05-19 12:16:52,IP Address,67.233.165.188,100,654,True,2021-05-19 12:16:53,R_3QVnbOCTapoGxZv,,,,,29.0106964111328125,-82.03549957275390625,anonymous,EN,No,No,Yes,No,No,No,,,No,,No,No,,,No,No,,No,,,No,,No,,,,,,No,No,No,,,,No,No,,No,,No,,No,,,,,,No,No,No,No,,,No,,,,,No,,,,,,No,No,No,,,,No,,,,,,No,,No,,No,,,No,,,No,No,,"Comparing amounts of company A to each demographic group, they are not fair if the amounts are not the same.  Comparing company B the same way with the same outcome.  Then I compared demographic groups from each company and the same rule applied.",6b77fbe7-661e-54e9-1c36-cc5c19b75216,,
+2021-05-19 12:09:04,2021-05-19 12:16:56,IP Address,142.196.227.17,100,471,True,2021-05-19 12:16:57,R_3P6xTCNDNVqmpj4,,,,,28.65289306640625,-81.210601806640625,anonymous,EN,Yes,,Yes,Yes,No,,Yes,Yes,,Yes,Yes,Yes,,No,,Yes,,,,,,,,,,,Yes,,Yes,Yes,Yes,,,,,,,,Yes,,,,,,No,No,No,No,Yes,,,,,,,No,,No,,,,,,Yes,,,,Yes,,,No,,No,No,No,Yes,Yes,Yes,,,,,,,No,,,,Yes,"the truth, random",c1364b2f-53a0-3a44-5efe-7c1dd6cbe6de,,
+2021-05-19 12:15:59,2021-05-19 12:18:22,IP Address,76.177.108.148,100,142,True,2021-05-19 12:18:22,R_pctMTJTc8HyPhkJ,,,,,37.985107421875,-84.17240142822265625,anonymous,EN,No,No,Yes,No,No,,,,No,No,No,No,No,,,,,,No,,,,No,No,,No,,,,,No,,No,,,,No,No,,No,,,,No,,No,No,No,,,No,,No,,,No,,No,No,,,No,,,,,No,,,No,,,No,No,,No,,No,No,No,,,,No,,,,,,I couldn't understand the premise.,70a1f8dc-ab14-a1d5-c90d-cf8ac551902a,,
+2021-05-19 12:07:02,2021-05-19 12:18:23,IP Address,24.151.70.76,100,680,True,2021-05-19 12:18:24,R_2TGgADBulbpl72h,,,,,41.394805908203125,-73.32140350341796875,anonymous,EN,,,Yes,,No,Yes,No,Yes,No,No,No,,,,Yes,,,,No,Yes,,Yes,,Yes,Yes,Yes,,Yes,Yes,,,No,,,,,No,Yes,,,,Yes,,Yes,,,,,,,,,No,,No,,Yes,,,No,,No,,,,,Yes,Yes,No,,,,,,Yes,,Yes,No,,,No,,Yes,Yes,Yes,,,,No,"
+If the numbers were close then it was fair",83ca2670-aec2-9f18-a1a1-11e179771ab9,,
+2021-05-19 12:07:19,2021-05-19 12:18:24,IP Address,70.20.227.77,100,665,True,2021-05-19 12:18:25,R_1Lpdg65anXk1qAZ,,,,,40.2165985107421875,-75.256500244140625,anonymous,EN,,,Yes,No,No,No,No,No,,No,No,No,,,No,,No,No,,No,,No,,,,No,,,No,No,No,,No,,,,,No,,,,,,No,,No,,,,,,,,No,,,,,No,,No,No,No,No,No,No,No,,,,,,No,,No,,,No,,,,,No,,No,No,No,,,Followed given definition of fairness as given by instructions,9718c9a9-45c8-703b-7378-fe3389baf26a,,
+2021-05-19 12:11:22,2021-05-19 12:20:00,IP Address,72.191.168.57,100,517,True,2021-05-19 12:20:00,R_1Cgqvhza2CaQyGK,,,,,31.853302001953125,-106.43810272216796875,anonymous,EN,,No,Yes,No,No,Yes,No,Yes,,,No,,,,Yes,,,,,,Yes,,,,,,,,No,,,No,,,Yes,No,,,Yes,No,,,,No,,,,No,,,,Yes,Yes,No,,No,No,No,,No,,,,Yes,,No,,Yes,No,,No,No,,,,,Yes,No,,,No,,,No,No,No,,Yes,,"i compared team A demographic 1 with team B demographic 1, and A2 with B2. If there percentages were within approximately 10 %, I marked it fair",cde87840-318d-0427-8091-4fc366f584b5,,
+2021-05-19 12:07:21,2021-05-19 12:21:23,IP Address,173.16.238.248,100,841,True,2021-05-19 12:21:23,R_2pMDkUR7FweyfCC,,,,,31.5791015625,-84.21379852294921875,anonymous,EN,No,No,Yes,No,,,No,,No,No,No,,,,,,Yes,Yes,No,Yes,,Yes,,,,,No,No,No,No,,,,,,No,No,No,,,No,,,,,,,No,,,,,,No,,No,,Yes,,,No,,,No,,No,No,,,No,Yes,Yes,,,No,No,No,,,Yes,No,,,,,,No,,,I used the 50-50 rule in determining decisions,827fe711-428b-5e00-14c0-d054132e76e7,,
+2021-05-19 12:13:35,2021-05-19 12:22:35,IP Address,173.168.133.158,100,540,True,2021-05-19 12:22:35,R_BV4MYd27puLd97j,,,,,28.038604736328125,-82.369598388671875,anonymous,EN,,,Yes,No,,,No,,,,No,,,,,,,,,,,,,,,,,No,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,a reasonable interpretation of how often an ad was seen by the two demographics.,7be32407-0f93-6b56-8bd6-13c8a67ebbf6,,
+2021-05-19 12:15:43,2021-05-19 12:24:37,IP Address,174.131.40.37,100,534,True,2021-05-19 12:24:38,R_2qdF5V46Pi7S1yi,,,,,33.973907470703125,-81.2344970703125,anonymous,EN,No,No,Yes,No,,Yes,,Yes,No,,No,,No,Yes,No,No,Yes,,,,Yes,No,No,,,No,,,No,No,,,,,,No,,No,,No,,,,,,,No,No,No,,,,,,,No,,,,No,No,No,No,,No,No,,,,,,,,,No,,No,No,No,,,No,,,,,No,,,"I used deduction based on the samples I was given in the study.  If any percentage was less than 50 or 45, I considered the process unfair.",91aeb573-ddbb-ed09-c6a2-8285876375b2,,
+2021-05-19 12:09:55,2021-05-19 12:26:11,IP Address,99.66.218.56,100,976,True,2021-05-19 12:26:12,R_ePSFzUh0LB2RVgl,,,,,33.4940948486328125,-84.38089752197265625,anonymous,EN,,No,Yes,No,No,Yes,,,No,No,No,,Yes,,,,Yes,No,,,Yes,,,,Yes,No,,No,No,,,,,,No,,,Yes,Yes,,,Yes,,,No,,,Yes,No,,,No,Yes,,,,,No,No,,,,,,No,No,,,,,,,,No,No,,No,,No,,Yes,Yes,,,,,Yes,No,No,I added the 2 together and made a decision on that number.,88c2eb57-4106-9086-aa86-dce9d16348a2,,
+2021-05-19 12:16:01,2021-05-19 12:27:06,IP Address,184.54.111.146,100,665,True,2021-05-19 12:27:07,R_12FqRK0RtVyJx0h,,,,,39.2899017333984375,-84.5290985107421875,anonymous,EN,No,No,Yes,No,No,,No,No,,,No,No,No,,No,No,Yes,,No,,Yes,,,,No,,,No,No,,,,,Yes,,No,No,No,,,,,,,,No,,No,No,,No,No,No,No,No,No,No,,,,,No,,,,No,,,No,,No,,,,,,,,,,,No,,,,No,,,,i compared both As and both Bs,b6dbb674-de03-e8c2-b3a5-81f064daea82,,
+2021-05-19 12:27:22,2021-05-19 12:29:13,IP Address,73.20.177.145,100,110,True,2021-05-19 12:29:13,R_Djx7CykVkKJxrPz,,,,,33.4723968505859375,-82.088897705078125,anonymous,EN,Yes,Yes,No,Yes,Yes,Yes,Yes,,,,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,11974809-e925-bdd7-ffd8-7fbc3bc35afb,,
+2021-05-19 12:27:32,2021-05-19 12:31:03,IP Address,99.38.108.184,100,211,True,2021-05-19 12:31:04,R_1dyQIv9DOKc8th6,,,,,32.784698486328125,-117.02030181884765625,anonymous,EN,,No,Yes,,No,,No,No,No,No,No,,,,No,,,No,No,,,No,,,,,No,No,No,,No,,,No,No,,,,No,,No,No,,No,,No,No,,No,,,,,No,No,,No,,,,,No,,,,,,,,No,,,,,,,,No,No,No,No,,No,,No,No,,,No,if one demographic was larger than the other one then it couldn't be fair,23a5fc85-b637-0a18-cd54-cb8e0e1d9f73,,
+2021-05-19 12:29:44,2021-05-19 12:32:57,IP Address,73.156.95.107,100,192,True,2021-05-19 12:32:57,R_1mKJctzKO9ib4Hh,,,,,26.5558929443359375,-82.02140045166015625,anonymous,EN,No,No,Yes,No,No,No,,,No,,No,,Yes,,,,,Yes,No,,,Yes,No,No,,No,No,No,,,No,,,,Yes,,No,No,,,,,No,No,,,No,,,,,No,No,,,,No,,Yes,Yes,,,,,,,,No,,,,,,No,,No,No,,No,Yes,,,,,Yes,No,,,No,an equal opertunity employer,30b7f45a-c815-37f3-df8b-c39ce9e979b5,,
+2021-05-19 12:28:32,2021-05-19 12:34:57,IP Address,107.77.208.171,100,385,True,2021-05-19 12:34:57,R_1DOrmACywKk8M79,,,,,41.850006103515625,-87.71649932861328125,anonymous,EN,No,No,Yes,No,No,,No,,,No,No,Yes,,,,,,No,,No,Yes,,Yes,Yes,No,,,,,,,,,Yes,No,,No,Yes,,,Yes,Yes,,,,,,,Yes,Yes,,Yes,Yes,,No,Yes,Yes,,,,No,,,,,,,,,No,,,,,,,,,Yes,,No,,No,No,No,,Yes,No,No,"The swing difference should be similar ",33236567-949b-99f8-4bb6-5208a066a5ba,,
+2021-05-19 12:29:39,2021-05-19 12:36:42,IP Address,65.191.56.45,100,422,True,2021-05-19 12:36:42,R_2rTQfj5XGICDoqc,,,,,35.8220062255859375,-80.26149749755859375,anonymous,EN,Yes,,Yes,No,Yes,,No,,No,No,No,,,Yes,,,,,Yes,,,,,No,,,,Yes,,Yes,No,No,,Yes,,,,No,,,Yes,,,,,,,,No,No,No,,,,No,No,No,,No,,No,,,,,No,Yes,Yes,,No,,No,,,No,,,,Yes,,,No,,,,No,No,No,Yes,If the numbers were pretty close together for each demographic for each company then i counted it as fair. If they were very different I counted it as not fair.,1b44ea36-4e17-29b5-2ce7-dd6f14eb75c0,,
+2021-05-19 12:08:53,2021-05-19 12:37:20,IP Address,172.58.230.131,100,1707,True,2021-05-19 12:37:21,R_3hinkUsokf1TpLi,,,,,40.831207275390625,-73.90670013427734375,anonymous,EN,No,No,Yes,No,,Yes,No,,No,,No,Yes,Yes,Yes,,Yes,Yes,,,,,,,,Yes,,,,,Yes,,Yes,Yes,Yes,,,,No,,No,,,,Yes,,,,,,No,,,,,No,No,,Yes,,,,No,No,,,No,No,No,No,,,No,No,,,,,,,,,,Yes,,,No,No,No,No,what was closer  in numbers,ced431df-6b63-5a3f-bc0e-06ffece35b11,,
+2021-05-19 12:10:14,2021-05-19 12:38:09,IP Address,69.11.194.88,100,1675,True,2021-05-19 12:38:10,R_3dGoNqiWg1QVZsQ,,,,,37.1038055419921875,-113.5764007568359375,anonymous,EN,,No,Yes,No,,,No,Yes,No,No,No,,,,No,Yes,Yes,,,,Yes,Yes,,,,,,,,,,,No,,,,,No,,,,,,No,Yes,No,,No,,No,,,No,,No,No,,,,No,Yes,,No,No,No,No,,,No,No,,,,No,,,No,No,,,No,,Yes,No,,,No,,,"Comparisons were in sight, methods were well defined to make decisions
+",ffc2f0ea-55a7-8541-aa3b-c7e91811651d,,
+2021-05-19 12:42:43,2021-05-19 12:46:25,IP Address,99.39.119.182,100,222,True,2021-05-19 12:46:26,R_6VRM4Es6uiDd8Fr,,,,,30.5153961181640625,-97.6688995361328125,anonymous,EN,Yes,,Yes,No,Yes,,No,No,No,,No,Yes,,No,,No,Yes,,Yes,No,,,,,No,,,No,,,,No,No,,No,,,No,No,No,Yes,,,,,,Yes,Yes,No,,Yes,,Yes,,,,No,,,,No,,,,No,,,,Yes,,,Yes,,No,,No,Yes,,,,,No,,,,,No,,,"The percentages so be equal some what looking at both situations not just one. ",2bf3d639-ce2f-7bc0-9be8-e1d822e1fbc8,,
+2021-05-19 12:42:57,2021-05-19 12:47:30,IP Address,45.49.80.157,100,272,True,2021-05-19 12:47:31,R_3lxFZjC7aKK4872,,,,,34.16900634765625,-118.37129974365234375,anonymous,EN,Yes,No,No,,No,No,No,,,No,Yes,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,16e2892a-adfe-3af5-8afb-bec9754e1cdd,,
+2021-05-19 12:42:48,2021-05-19 12:49:47,IP Address,107.242.125.28,100,418,True,2021-05-19 12:49:47,R_2R9yWg1AkhiBZmU,,,,,32.711700439453125,-96.999298095703125,anonymous,EN,No,No,Yes,No,,Yes,No,,,No,No,Yes,,,,Yes,Yes,,Yes,Yes,,,Yes,,,,,,Yes,,Yes,,,,,,,,No,Yes,Yes,,No,No,,,Yes,,Yes,Yes,Yes,,,,,,,,,No,,Yes,No,,No,No,,,Yes,,,No,No,,Yes,,Yes,No,Yes,,,,Yes,,,,,,,No method. Just what I thought was fair,5d49587e-f953-eb38-21af-6f62993acd86,,
+2021-05-19 12:10:40,2021-05-19 12:55:15,IP Address,70.125.13.213,100,2674,True,2021-05-19 12:55:15,R_ZlNV6An7IiejMd3,,,,,27.8672943115234375,-82.70909881591796875,anonymous,EN,,No,Yes,No,No,No,No,,No,,No,,,Yes,,,Yes,,,,Yes,,,,,,,,No,Yes,,No,Yes,,Yes,No,No,,No,Yes,,,,,,Yes,No,,Yes,,,No,,,Yes,,,,,Yes,,,No,,,,,Yes,No,,No,,No,No,,No,,,,,No,,,Yes,Yes,No,,,Yes,none............,be9777c1-e369-0e85-ff10-40bc68d05730,,
+2021-05-19 13:14:31,2021-05-19 13:17:47,IP Address,166.205.97.141,100,195,True,2021-05-19 13:17:47,R_WwcKlu71T1tJafv,,,,,29.7953033447265625,-95.49680328369140625,anonymous,EN,,,Yes,Yes,Yes,Yes,,Yes,Yes,Yes,Yes,,Yes,Yes,,Yes,,Yes,,,,,,Yes,Yes,Yes,,Yes,Yes,,Yes,,,Yes,Yes,Yes,,Yes,,,,Yes,,,Yes,,Yes,,,,Yes,,,,,,,Yes,,,,,,Yes,Yes,Yes,,,,,,Yes,,Yes,Yes,Yes,,,Yes,,,,,Yes,,Yes,,Yes,,Comparing,17d076b2-82f0-3331-bf63-41fb18352f42,,
+2021-05-19 13:14:45,2021-05-19 13:18:19,IP Address,174.253.160.122,100,213,True,2021-05-19 13:18:20,R_XHu8VlVspAI6qvT,,,,,28.32989501953125,-82.285003662109375,anonymous,EN,,Yes,Yes,No,Yes,Yes,Yes,Yes,,,No,Yes,,,,,Yes,,,,,Yes,,,,,,,,,Yes,No,,Yes,,,,,Yes,,,Yes,Yes,,,Yes,,No,,Yes,Yes,No,No,,,,,,No,,No,No,No,Yes,No,,,No,,,,,No,,,,,,No,No,No,,,,No,No,,No,,The percents,965bf773-6a0a-bd5f-34a2-c070c87c4285,,
+2021-05-19 13:14:39,2021-05-19 13:22:16,IP Address,174.247.19.232,100,457,True,2021-05-19 13:22:16,R_3CPpF6I1THtXA1K,,,,,35.136199951171875,-80.767303466796875,anonymous,EN,No,No,Yes,,No,,No,,No,No,No,No,Yes,,Yes,,,,,,,Yes,,No,,No,No,No,,,No,,,Yes,Yes,,,,,No,,No,,,,,No,No,,,,,No,No,,,,,No,Yes,,,No,,,No,,,,No,No,,,,No,,No,No,,,,,,,Yes,No,No,,No,Unsure.  The instructions were difficult to decipher.,21bf2f37-7291-6a8c-d0e6-1894d667c1f9,,
+2021-05-19 13:14:43,2021-05-19 13:23:49,IP Address,47.25.98.26,100,546,True,2021-05-19 13:23:50,R_ZgjMrM0ZU7pvWq5,,,,,39.198699951171875,-119.75260162353515625,anonymous,EN,No,No,Yes,Yes,Yes,,Yes,,No,,No,,,,Yes,Yes,,,,No,,Yes,,,,,,,,Yes,,No,Yes,,,,,No,,No,Yes,,,,No,,,,Yes,No,,,No,Yes,No,,,,,,,,,Yes,Yes,No,,,No,Yes,,Yes,,No,,,,,Yes,Yes,No,No,Yes,,Yes,,No,,,If the percentage was low first it wasn’t fair. If the percentage was high first it was fair.,ac135ff2-7e40-2aa8-7c23-68388ac6cd04,,
+2021-05-19 13:23:11,2021-05-19 13:26:24,IP Address,68.225.54.235,100,192,True,2021-05-19 13:26:24,R_1F8Pd9RXal4tsaD,,,,,32.083892822265625,-110.90039825439453125,anonymous,EN,Yes,No,Yes,No,,Yes,Yes,,Yes,,Yes,,,No,,,,,No,Yes,No,,,Yes,,Yes,Yes,,,,Yes,,,,,,Yes,,No,Yes,Yes,,Yes,Yes,Yes,No,,,,,,,,No,,,Yes,No,,No,,Yes,,,,No,Yes,No,,,,Yes,,,,,,Yes,,,Yes,,Yes,,,,No,,Yes,wow,bf9c1aa8-db16-1de6-f379-2db763e56847,,
+2021-05-19 13:23:02,2021-05-19 13:30:24,IP Address,206.107.197.33,100,442,True,2021-05-19 13:30:25,R_2c57B3wTNbj3U0O,,,,,38.4319000244140625,-120.5718994140625,anonymous,EN,No,No,Yes,,,Yes,,Yes,No,No,No,,,,No,,,,,No,,,,Yes,,Yes,Yes,No,,No,,No,Yes,Yes,,,No,,No,,,,No,,,Yes,,No,,Yes,No,,No,No,,,No,,,,No,,,,No,,No,No,No,,No,,No,,,No,Yes,,,,,,,No,,,,,,"Each demographic had to have same % or no more than 5% difference in percentage. ",fedec80a-f232-c915-b1db-fff5ed0bc2f5,,
+2021-05-19 13:22:48,2021-05-19 13:33:07,IP Address,66.177.95.73,100,619,True,2021-05-19 13:33:07,R_1rx1w6mn1QPLtaS,,,,,30.1172027587890625,-81.41190338134765625,anonymous,EN,,,Yes,Yes,,Yes,Yes,Yes,Yes,Yes,Yes,,,Yes,Yes,,,No,,,Yes,,,,,,,Yes,Yes,Yes,Yes,No,,,,,Yes,Yes,No,Yes,,,No,,,,Yes,,,,,,Yes,,,Yes,Yes,No,No,,,Yes,,,No,No,,Yes,Yes,No,,No,,,No,,,,,,,No,,,,,,,No,after the 1st survey I pretty much gave a fair approval is they were in the 10% range,25496bc4-261f-6ce7-2615-5c620a3c9534,,
+2021-05-19 13:34:55,2021-05-19 13:40:35,IP Address,172.58.201.172,100,340,True,2021-05-19 13:40:36,R_1PUCuU1gJhwBw0y,,,,,40.0345001220703125,-75.11930084228515625,anonymous,EN,No,No,Yes,,No,,No,No,No,,No,No,,No,No,No,,,,No,,,,No,No,,,,No,No,No,No,No,No,,,,,,No,,,No,,,,,,No,,No,,,No,,,No,No,,,,,,,,,No,No,,No,No,,No,,No,No,,No,,,,No,,,,,No,,,"Yes I can...50 to 50 is fair...or...an equal amount such as 70 to 30 and 30 to 70, and so forth",19f25dea-8e31-cae1-9d3b-6ad91eb23e05,,
+2021-05-19 13:36:00,2021-05-19 13:45:49,IP Address,108.51.74.61,100,588,True,2021-05-19 13:45:49,R_0lDmKALP6eBkq0p,,,,,38.920806884765625,-77.03600311279296875,anonymous,EN,No,,Yes,No,No,,,No,No,No,No,,No,,No,,,,No,,No,No,,,No,,,No,,No,No,No,,,,,No,No,,No,,,No,,No,No,,,,No,,No,,,,No,,No,,,,No,,No,,,,,No,,,No,No,,,,No,,,No,No,,No,,,No,,,,fairness is 50/50,6783a56b-c7ab-35a7-ecba-92a8572a7784,,
+2021-05-19 13:46:31,2021-05-19 13:49:52,IP Address,47.35.206.88,100,201,True,2021-05-19 13:49:52,R_2y2zDQoliBbu5YN,,,,,35.00439453125,-82.430999755859375,anonymous,EN,,,Yes,No,No,No,No,,Yes,No,Yes,Yes,,,No,,,Yes,No,Yes,,,No,,Yes,Yes,Yes,,,Yes,,,No,,,,,,,No,No,,,Yes,,,,,Yes,,,Yes,,,,,,,,No,No,No,,,,,,,,No,Yes,No,,,,,,,Yes,No,Yes,Yes,,No,,No,,No,No,Addition,5ad9df85-c9d5-4ad4-b554-e8f28350e671,,
+2021-05-19 13:46:44,2021-05-19 13:53:54,IP Address,107.77.198.113,100,430,True,2021-05-19 13:53:55,R_1iqBBVsRwLggVqp,,,,,32.6587066650390625,-97.1616973876953125,anonymous,EN,No,Yes,Yes,No,,,Yes,,No,No,No,Yes,No,No,Yes,,,,Yes,,,,,No,Yes,,Yes,,No,Yes,No,,,Yes,,,,No,Yes,Yes,,,,Yes,,,No,Yes,,No,,,No,,,,,No,Yes,No,,,,,,,No,,,,,,No,Yes,,,,,,No,No,,,Yes,,,,,Yes,is a good method and makes me take better decisions,89ff1a5b-dcd0-88cf-938a-2dd41d5f91ab,,
+2021-05-19 12:29:48,2021-05-19 13:56:07,IP Address,68.235.133.143,100,5178,True,2021-05-19 13:56:07,R_2VJz5AoDVGvJOhn,,,,,34.9053955078125,-98.367401123046875,anonymous,EN,Yes,Yes,Yes,Yes,Yes,,No,,,No,No,,,,,Yes,,,,,Yes,No,,,Yes,,,,Yes,Yes,,Yes,Yes,,Yes,,Yes,,,Yes,Yes,,,Yes,,Yes,,Yes,,,,,Yes,Yes,,,No,,Yes,,,,,,No,Yes,,,,Yes,,,,,Yes,No,Yes,,No,,Yes,Yes,Yes,,,Yes,,,,similarity,376f8df1-33ab-4db7-0720-ba44fdeb8701,,

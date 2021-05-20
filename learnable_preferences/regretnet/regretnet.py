@@ -111,6 +111,26 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
         valuation =  norm_allocs.min(-1)[0].min(-1)[0]
         optimize = "max"
+    
+    elif type == "human":
+        if args.preference_file is None:
+            assert False, "Preference File Required"
+        
+        file = torch.load(args.preference_file)
+        gt_allocs = torch.stack(list(file.keys()))
+        gt_labels = torch.tensor([(file[key]["Yes"] / float(1 + file[key]["Yes"] + file[key]["No"])) > args.preference_threshold for key in file.keys()])
+        
+        norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
+        rounded_allocs = 5 * torch.round(20 * norm_allocs)
+
+        valuation = []    
+        for i, alloc in enumerate(rounded_allocs):
+            idx = torch.argmin(torch.cdist(gt_allocs, alloc).sum(dim=-1).sum(dim=-1)).item()
+
+            valuation.append(gt_labels[idx])
+
+        valuation = torch.tensor(valuation)
+        optimize = None    
 
     else:
         assert False, "Valuation type {} not supported".format(type)
@@ -184,6 +204,10 @@ def label_assignment(valuation, type, optimize, args):
             labels = label_noise(valuation, labels, args.preference_label_noise, None, "uniform")
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+
+    elif type == "preference":
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in valuation]).float()
 
     else:
         assert False, "Assignment type {} not supported".format(type)
