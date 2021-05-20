@@ -41,3 +41,4 @@ learnable_preferences/T*.sh
 survey/__pycache__/*
 survey/Survey/*
 survey/Data/*
+survey/Results/*
