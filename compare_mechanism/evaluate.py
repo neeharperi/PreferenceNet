@@ -68,6 +68,26 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         valuation =  norm_allocs.min(-1)[0].min(-1)[0]
         optimize = "max"
 
+    elif type == "human":
+        if args.preference_file is None:
+            assert False, "Preference File Required"
+        
+        file = torch.load(args.preference_file)
+        gt_allocs = torch.stack(list(file.keys()))
+        gt_labels = torch.tensor([(file[key]["Yes"] / float(1e-8 + file[key]["Yes"] + file[key]["No"])) > args.preference_threshold for key in file.keys()])
+        
+        norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
+        rounded_allocs = 5 * torch.round(20 * norm_allocs)
+
+        valuation = []    
+        for i, alloc in tqdm(enumerate(rounded_allocs), total = rounded_allocs.shape[0]):
+            idx = torch.argmin(torch.cdist(gt_allocs, alloc).sum(dim=-1).sum(dim=-1)).item()
+
+            valuation.append(gt_labels[idx])
+
+        valuation = torch.tensor(valuation)
+        optimize = None
+        
     else:
         assert False, "Valuation type {} not supported".format(type)
 
@@ -128,6 +148,9 @@ def label_assignment(valuation, type, optimize, args):
         labels = valuation > thresh
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
+
+    elif type == "preference":
+        tnsr = torch.tensor([torch.tensor(int(i)) for i in valuation]).float()
 
     else:
         assert False, "Assignment type {} not supported".format(type)
@@ -207,6 +230,7 @@ parser.add_argument('--model-lr', type=float, default=1e-3)
 parser.add_argument('--preference-num-epochs', type=int, default=50)
 
 parser.add_argument('--preference', default=[], nargs='+', required=True)
+parser.add_argument('--preference-file')
 parser.add_argument('--preference-threshold', type=float, default=0.75)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.8)

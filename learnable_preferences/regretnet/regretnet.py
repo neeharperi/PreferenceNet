@@ -118,13 +118,13 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
         
         file = torch.load(args.preference_file)
         gt_allocs = torch.stack(list(file.keys()))
-        gt_labels = torch.tensor([(file[key]["Yes"] / float(1 + file[key]["Yes"] + file[key]["No"])) > args.preference_threshold for key in file.keys()])
+        gt_labels = torch.tensor([(file[key]["Yes"] / float(1e-8 + file[key]["Yes"] + file[key]["No"])) > args.preference_threshold for key in file.keys()])
         
         norm_allocs = allocs / allocs.sum(dim=-1).unsqueeze(-1)
         rounded_allocs = 5 * torch.round(20 * norm_allocs)
 
         valuation = []    
-        for i, alloc in enumerate(rounded_allocs):
+        for i, alloc in tqdm(enumerate(rounded_allocs), total = rounded_allocs.shape[0]):
             idx = torch.argmin(torch.cdist(gt_allocs, alloc).sum(dim=-1).sum(dim=-1)).item()
 
             valuation.append(gt_labels[idx])
@@ -622,7 +622,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                 rho_preference += args.rho_incr_amount_preference
 
         if epoch  % args.preference_update_freq == 0 and args.preference_update_freq != -1:
-            train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, int((1 - args.preference_synthetic_pct) * args.preference_num_self_examples), preference_item_ranges, args)
+            train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, args.preference_num_self_examples, preference_item_ranges, args)
             train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
             preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
                 

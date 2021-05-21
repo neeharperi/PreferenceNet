@@ -10,8 +10,8 @@ import pdb
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--model', required=True)
-parser.add_argument('--payment-weight', type=float, default=0.2)
-parser.add_argument('--preference-weight', type=float, default=0.3)
+parser.add_argument('--payment-weight', type=float, default=0.4)
+parser.add_argument('--preference-weight', type=float, default=0.1)
 parser.add_argument('--regret-weight', type=float, default=0.5)
 args = parser.parse_args()
 
@@ -76,6 +76,7 @@ folder = "run/" + args.model
 file = [f for f in os.listdir(folder)][0]
 dataFrame = tflog2pandas(folder + "/" + file)
 bestStep = None
+maxStep = None
 optimal = 0
 
 payment_max = 0
@@ -100,7 +101,11 @@ for rowTable in dataFrame.iterrows():
     if opt > optimal:
         optimal = opt
         bestStep = step
+    
+    maxStep = step
 
-best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
+
+#best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
+best_model = "result/" + args.model + "/{}_checkpoint.pt".format(maxStep)
 print(best_model)
 shutil.copy(best_model, "result/" + args.model + "/best_checkpoint.pt")
