@@ -10,8 +10,8 @@ import pdb
 parser = argparse.ArgumentParser()
 
 parser.add_argument('--model', required=True)
-parser.add_argument('--payment-weight', type=float, default=0.4)
-parser.add_argument('--preference-weight', type=float, default=0.1)
+parser.add_argument('--payment-weight', type=float, default=0.1)
+parser.add_argument('--preference-weight', type=float, default=0.4)
 parser.add_argument('--regret-weight', type=float, default=0.5)
 args = parser.parse_args()
 
@@ -105,7 +105,7 @@ for rowTable in dataFrame.iterrows():
     maxStep = step
 
 
-#best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
-best_model = "result/" + args.model + "/{}_checkpoint.pt".format(maxStep)
+best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
+#best_model = "result/" + args.model + "/{}_checkpoint.pt".format(maxStep)
 print(best_model)
 shutil.copy(best_model, "result/" + args.model + "/best_checkpoint.pt")

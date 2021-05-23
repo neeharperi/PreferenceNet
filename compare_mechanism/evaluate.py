@@ -95,26 +95,8 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
 def label_assignment(valuation, type, optimize, args):
     if type == "threshold":
-        thresh = np.quantile(valuation, args.preference_threshold)
-        labels = valuation > thresh if optimize == "max" else valuation < thresh 
-        
-        tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
-
-    elif type == "ranking":
         thresh = np.quantile(valuation, args.preference_threshold) if optimize == "max" else np.quantile(valuation, 1 - args.preference_threshold)
-        cnt = torch.zeros_like(valuation)
-        
-        for _ in range(args.preference_ranking_pairwise_samples):
-            idx = torch.randperm(len(valuation))
-
-            if optimize == "max":
-                cnt = cnt + (valuation > valuation[idx])
-            elif optimize == "min":
-                cnt = cnt + (valuation < valuation[idx])
-            else:
-                assert False, "Optimize type {} is not supported".format(optimize)
-
-        labels = cnt > (args.preference_threshold * args.preference_ranking_pairwise_samples)
+        labels = valuation > thresh if optimize == "max" else valuation < thresh 
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
     
@@ -227,11 +209,11 @@ parser.add_argument('--preference-test-num-examples', type=int, default=20000)
 parser.add_argument('--batch-size', type=int, default=2048)
 parser.add_argument('--model-lr', type=float, default=1e-3)
 
-parser.add_argument('--preference-num-epochs', type=int, default=50)
+parser.add_argument('--preference-num-epochs', type=int, default=20)
 
 parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--preference-file')
-parser.add_argument('--preference-threshold', type=float, default=0.75)
+parser.add_argument('--preference-threshold', type=float, default=0.8)
 parser.add_argument('--preference-passband', default=[], nargs='+')
 parser.add_argument('--preference-quota', type=float, default=0.8)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
@@ -244,7 +226,7 @@ parser.add_argument('--separate', action='store_true')
 parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
-parser.add_argument('--preference-synthetic-pct', type=float, default=0.0)
+parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
 parser.add_argument('--preference-label-noise', type=float, default=0.0)
 
 args = parser.parse_args()
@@ -297,16 +279,17 @@ for type, weight in preference_type:
     test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
     test_loader = ds.Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
-    for i, batch in enumerate(test_loader):
-        batch = batch.to(DEVICE)
+    with torch.no_grad():
+        for i, batch in enumerate(test_loader):
+            batch = batch.to(DEVICE)
 
-        allocs, payments = model(batch)
-        res = preference_net(batch, allocs, payments)         
-        correct = correct + torch.sum(res > 0.5).item()
-        total = total + res.shape[0]
-    
-    acc = correct/float(total)
-    accuracy = accuracy + (weight * acc)
-    print("{} Preference Accuracy: {}".format(type, acc))
+            allocs, payments = model(batch)
+            res = preference_net(batch, allocs, payments)         
+            correct = correct + torch.sum(res > 0.5).item()
+            total = total + res.shape[0]
+        
+        acc = correct/float(total)
+        accuracy = accuracy + (weight * acc)
+        print("{} Preference Accuracy: {}".format(type, acc))
 
 print("Preference Accuracy: {}".format(accuracy))

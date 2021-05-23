@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
 
-    if not args.eval_only:
+    if args.eval_only:
         # Valuation range setup
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
         clamp_op = ds.get_clamp_op(item_ranges)

@@ -71,7 +71,7 @@ def label_valuation(random_bids, allocs, actual_payments, type, args):
 
 def label_assignment(valuation, type, optimize, sample_val, args):
     if type == "threshold":
-        thresh = np.quantile(sample_val, args.preference_threshold)
+        thresh = np.quantile(sample_val, args.preference_threshold) if optimize == "max" else np.quantile(sample_val, 1 - args.preference_threshold)
         labels = valuation > thresh if optimize == "max" else valuation < thresh 
         
         tnsr = torch.tensor([torch.tensor(int(i)) for i in labels]).float()
