@@ -207,7 +207,8 @@ for i in range(len(args.preference)):
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
 for type, weight in preference_type:
-    _, sample_allocs, _ = ds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args)    val_type, label_type = type.split("_")
+    _, sample_allocs, _ = ds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args)
+    val_type, label_type = type.split("_")
     test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
     test_loader = ds.Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
@@ -228,12 +229,12 @@ for type, weight in preference_type:
     pass_band = get_thresh(sample_dist, label_type, optimize, min_val, max_val)
 
     dataFrame = pd.DataFrame.from_dict({"Valuation" : [i.item() for i in torch.cat(valuation)]})
-    ax = sns.histplot(data=dataFrame, x="Valuation", kde=False, zorder=1000)
+    ax = sns.histplot(data=dataFrame, x="Valuation", kde=False, zorder=1000, color="darkgreen")
 
-    plt.axvspan(min_val, max_val, color='r', alpha=1.0, lw=0, zorder=0)
+    plt.axvspan(min_val, max_val, color='lightcoral', alpha=1.0, lw=0, zorder=0)
 
     for st, end in pass_band:
-        plt.axvspan(st, end, color='g', alpha=1.0, lw=0, zorder=0)
+        plt.axvspan(st, end, color='lightgrey', alpha=1.0, lw=0, zorder=0)
     
     plt.savefig("Figures/" + type + "_" + args.name + ".png")
     plt.clf()
