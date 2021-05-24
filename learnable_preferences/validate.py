@@ -105,7 +105,7 @@ for rowTable in dataFrame.iterrows():
     maxStep = step
 
 
-best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
-#best_model = "result/" + args.model + "/{}_checkpoint.pt".format(maxStep)
+#best_model = "result/" + args.model + "/{}_checkpoint.pt".format(bestStep)
+best_model = "result/" + args.model + "/{}_checkpoint.pt".format(maxStep)
 print(best_model)
 shutil.copy(best_model, "result/" + args.model + "/best_checkpoint.pt")

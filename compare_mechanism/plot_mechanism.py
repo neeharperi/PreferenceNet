@@ -121,7 +121,7 @@ def label_preference(random_bids, allocs, actual_payments, valuation_dist, type,
 def get_thresh(sample_val, type, optimize, min_val = 0, max_val = 1):
     pass_band = []
     if type == "threshold":
-        pass_band = [(min_val, np.quantile(sample_val, args.preference_threshold))] if optimize == "min" else [(np.quantile(sample_val, args.preference_threshold), max_val)]
+        pass_band = [(min_val, np.quantile(sample_val, 1 - float(args.preference_threshold)))] if optimize == "min" else [(np.quantile(sample_val, float(args.preference_threshold)), max_val)]
 
     elif type == "bandpass":
         pass_band = []
@@ -140,7 +140,7 @@ def get_thresh(sample_val, type, optimize, min_val = 0, max_val = 1):
                 pass_band.append((thresh_low, thresh_high))
 
     elif type == "quota":
-        pass_band = [(args.preference_quota, max_val)]
+        pass_band = [(args.preference_quota / args.n_agents, max_val)]
     else:
         assert False, "Assignment type {} not supported".format(type)
 
@@ -207,9 +207,7 @@ for i in range(len(args.preference)):
 assert mixed_preference_weight == 1, "Preference weights don't sum to 1."
 
 for type, weight in preference_type:
-    sample_allocs = ds.generate_random_allocations(args.test_num_examples, args.n_agents, args.n_items, args.unit)
-    val_type, label_type = type.split("_")
-
+    _, sample_allocs, _ = ds.generate_random_allocations_payments(args.test_num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args)    val_type, label_type = type.split("_")
     test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
     test_loader = ds.Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 

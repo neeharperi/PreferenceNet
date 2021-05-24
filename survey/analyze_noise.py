@@ -6,6 +6,7 @@ import random
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.font_manager
 import numpy as np
 import re
 import pdb
@@ -51,7 +52,7 @@ for key in result.keys():
     TVF[val]["Yes"] = TVF[val]["Yes"] + sum(response == "Yes")
     TVF[val]["No"] = TVF[val]["No"] + sum(response == "No")
 
-noise_dist = {"TVF": [], "Percent" : []}
+noise_dist = {"TVF Score": [], "Noise Ratio" : [], "Majority" : []}
 for val in TVF.keys():
 
     noise = min(TVF[val]["Yes"], TVF[val]["No"])
@@ -59,11 +60,17 @@ for val in TVF.keys():
 
     percent =  noise / float(total)
 
-    noise_dist["TVF"].append(val)
-    noise_dist["Percent"].append(percent)
+    noise_dist["TVF Score"].append(val)
+    noise_dist["Noise Ratio"].append(percent)
+    noise_dist["Majority"].append("Positive Example" if TVF[val]["Yes"] > TVF[val]["No"] else "Negative Example")
 
 noise_dist = pd.DataFrame.from_dict(noise_dist)
-ax = sns.barplot(x="TVF", y="Percent", data=noise_dist, color="lightblue")
-plt.savefig("Results/preference_noise.pdf")
+plt.xlabel('xlabel', fontsize=16)
+plt.ylabel('ylabel', fontsize=16)
+
+
+ax = sns.barplot(x="TVF Score", y="Noise Ratio", data=noise_dist, hue="Majority", dodge=False, palette=sns.color_palette("Set2"))
+
+plt.savefig("Results/preference_noise.png")
 
 

@@ -21,7 +21,7 @@ parser = ArgumentParser()
 
 parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--num-examples', type=int, default=160000)
-parser.add_argument('--test-num-examples', type=int, default=10000)
+parser.add_argument('--test-num-examples', type=int, default=20000)
 parser.add_argument('--test-iter', type=int, default=5)
 parser.add_argument('--n-agents', type=int, default=1)
 parser.add_argument('--n-items', type=int, default=2)
@@ -38,17 +38,17 @@ parser.add_argument('--rho-incr-iter', type=int, default=2500)
 parser.add_argument('--rho-incr-amount', type=float, default=1)
 parser.add_argument('--lagr-update-iter', type=int, default=25)
 parser.add_argument('--rgt-start', type=int, default=0)
-parser.add_argument('--preference-start', type=int, default=0)  # Epoch to start minimizing fairness
-parser.add_argument('--rho-preference', type=float, default=1.0)
-parser.add_argument('--rho-incr-iter-preference', type=int, default=5)
-parser.add_argument('--rho-incr-amount-preference', type=float, default=0.)
-parser.add_argument('--lagr-update-iter-preference', type=int, default=10)
+#parser.add_argument('--preference-start', type=int, default=0)  # Epoch to start minimizing fairness
+#parser.add_argument('--rho-preference', type=float, default=1.0)
+#parser.add_argument('--rho-incr-iter-preference', type=int, default=5)
+#parser.add_argument('--rho-incr-amount-preference', type=float, default=0.)
+#parser.add_argument('--lagr-update-iter-preference', type=int, default=10)
 # Preference
-parser.add_argument('--preference-num-examples', type=int, default=50000)
+parser.add_argument('--preference-num-examples', type=int, default=80000)
 parser.add_argument('--preference-num-self-examples', type=int, default=5000)
-parser.add_argument('--preference-test-num-examples', type=int, default=10000)
+parser.add_argument('--preference-test-num-examples', type=int, default=20000)
 
-parser.add_argument('--preference-num-epochs', type=int, default=20)
+parser.add_argument('--preference-num-epochs', type=int, default=50)
 parser.add_argument('--preference-update-freq', type=int, default=5)
 parser.add_argument('--preference-synthetic-pct', type=float, default=1.0)
 
@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
     model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
 
-    if args.eval_only:
+    if not args.eval_only:
         # Valuation range setup
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
         clamp_op = ds.get_clamp_op(item_ranges)
@@ -104,6 +104,9 @@ if __name__ == "__main__":
         
         if os.path.isdir("run/{0}".format(model_name)):
             shutil.rmtree("run/{0}".format(model_name))
+
+        if os.path.isdir("run/{0}_plot".format(model_name)):
+            shutil.rmtree("run/{0}_plot".format(model_name))
 
         writer = SummaryWriter(log_dir="run/{0}".format(model_name), comment=f"{args}")
         writer.add_text('args', json.dumps(vars(args)) , 0)

@@ -151,7 +151,7 @@ def label_assignment(valuation, type, optimize, args):
         thresh = np.quantile(valuation, args.preference_threshold) if optimize == "max" else np.quantile(valuation, 1 - args.preference_threshold)
         cnt = torch.zeros_like(valuation)
         
-        for _ in range(args.preference_ranking_pairwise_samples):
+        for _ in tqdm(range(args.preference_ranking_pairwise_samples)):
             idx = torch.randperm(len(valuation))
 
             if optimize == "max":
@@ -471,7 +471,7 @@ def train_preference(model, train_loader, test_loader, epoch, args):
     BCE = nn.BCELoss()
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
-    for _ in range(args.preference_num_epochs):
+    for _ in tqdm(range(args.preference_num_epochs)):
         epochLoss = 0
         model.train()
         for _, data in enumerate(train_loader, 1):
@@ -503,13 +503,13 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
 
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
-    preference_mults = torch.ones((1, model.n_items)).to(device)
+    #preference_mults = torch.ones((1, model.n_items)).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
 
     iter = 0
     rho = args.rho
-    rho_preference = args.rho_preference
+    #rho_preference = args.rho_preference
 
     preference_train_bids, preference_train_allocs, preference_train_payments, preference_train_labels = [], [], [], []
     preference_test_bids, preference_test_allocs, preference_test_payments, preference_test_labels = [], [], [], []
@@ -585,8 +585,9 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                 regret_loss = (regret_mults * positive_regrets).mean()
                 regret_quad = (rho / 2.0) * (positive_regrets ** 2).mean()
     
-            preference_loss = (preference_mults * pref).mean()
-            preference_quad = (rho_preference / 2.0) * (pref ** 2).mean()
+            #preference_loss = (preference_mults * pref).mean()
+            #preference_quad = (rho_preference / 2.0) * (pref ** 2).mean()
+            preference_loss = pref.mean()
 
             # Add batch to epoch stats
             regrets_epoch = torch.cat((regrets_epoch, regrets), dim=0)
@@ -600,8 +601,8 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
             loss_func = regret_loss \
                         + regret_quad \
                         - payment_loss \
-                        - preference_loss \
-                        + preference_quad # increase preference
+                        - preference_loss
+                        #+ preference_quad # increase preference
             
             # update model
             optimizer.zero_grad()
@@ -615,13 +616,13 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
                     regret_mults += rho * positive_regrets.mean(dim=0)
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
-            if iter % args.lagr_update_iter_preference == 0:
-                with torch.no_grad():
-                    preference_mults += rho_preference * entropy.mean(dim=0)
-            if iter % args.rho_incr_iter_preference == 0:
-                rho_preference += args.rho_incr_amount_preference
+            #if iter % args.lagr_update_iter_preference == 0:
+            #    with torch.no_grad():
+            #        preference_mults += rho_preference * entropy.mean(dim=0)
+            #if iter % args.rho_incr_iter_preference == 0:
+            #    rho_preference += args.rho_incr_amount_preference
 
-        if epoch  % args.preference_update_freq == 0 and args.preference_update_freq != -1:
+        if epoch % args.preference_update_freq == 0 and args.preference_update_freq != -1:
             train_bids, train_allocs, train_payments = pds.generate_regretnet_allocations(model, args.n_agents, args.n_items, args.preference_num_self_examples, preference_item_ranges, args)
             train_labels = selfTraining(preference_net, (train_bids, train_allocs, train_payments))
             preference_train_bids.append(train_bids), preference_train_allocs.append(train_allocs), preference_train_payments.append(train_payments), preference_train_labels.append(train_labels)
@@ -684,7 +685,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
         mult_stats = {
             "regret_mult": regret_mults.mean().item(),
             "payment_mult": payment_mult,
-            "preference_mult": preference_mults.mean().item(),
+            #"preference_mult": preference_mults.mean().item(),
         }
 
         pprint(mult_stats)
