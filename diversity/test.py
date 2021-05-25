@@ -29,8 +29,10 @@ if __name__ == "__main__":
     torch.manual_seed(args.random_seed)
     np.random.seed(args.random_seed)
 
+    model_name = args.model
     if not args.model.startswith("result"):
         args.model = os.path.join("result", args.model)
+
     if os.path.isdir(args.model):
         args.model = max([os.path.join(args.model, fn) for fn in os.listdir(args.model)], key=os.path.getctime)
 
@@ -64,3 +66,6 @@ if __name__ == "__main__":
     result = test_loop(model, test_loader, args, device=DEVICE)
     print(f"Experiment:{checkpoint['name']}")
     print(json.dumps(result, indent=4, sort_keys=True))
+
+    with open("result/{}/test_result.json".format(model_name), 'w') as f:
+        json.dump(result, f)

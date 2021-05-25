@@ -89,7 +89,6 @@ if __name__ == "__main__":
 
     torch.save(vars(args), "result/{0}/args.pth".format(model_name))
 
-    #if not args.eval_only:
     if not os.path.isfile("result/{0}/{1}_checkpoint.pt".format(model_name, args.num_epochs - 1)):
         # Valuation range setup
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)

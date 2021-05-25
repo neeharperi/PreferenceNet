@@ -56,45 +56,47 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
-
-    # Valuation range setup
-    item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
-    clamp_op = ds.get_clamp_op(item_ranges)
-    if args.unit:
-        model = RegretNetUnitDemand(args.n_agents, args.n_items, activation='relu', 
-                                    hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
-                                    n_hidden_layers=args.n_hidden_layers).to(DEVICE)
-    else:
-        model = RegretNet(args.n_agents, args.n_items, activation='relu',
-                          hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
-                          n_hidden_layers=args.n_hidden_layers, separate=args.separate).to(DEVICE)
-
-    if args.resume:
-        checkpoint = torch.load(args.resume)
-        model.load_state_dict(checkpoint['state_dict'], strict=False)
-
-    if not os.path.isdir(f"result/{args.name}"):
-        os.makedirs(f"result/{args.name}")
-
-    if os.path.isdir("run/{0}".format(args.name)):
-        shutil.rmtree("run/{0}".format(args.name))
-        
-    writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
-
-    train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
-    train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
-    test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
-    test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
-
-    print("Training Args:")
-    print(json.dumps(vars(args), indent=4, sort_keys=True))
-    train_loop(model, train_loader, test_loader, args, writer, device=DEVICE)
-    writer.close()
-
-    result = test_loop(model, test_loader, args, device=DEVICE)
-    print(f"Experiment:{args.name}")
-    print(json.dumps(result, indent=4, sort_keys=True))
-
     model_name = "{0}".format(args.name)
+
+    if not os.path.isfile("result/{0}/{1}_checkpoint.pt".format(model_name, args.num_epochs - 1)):
+        # Valuation range setup
+        item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+        clamp_op = ds.get_clamp_op(item_ranges)
+        if args.unit:
+            model = RegretNetUnitDemand(args.n_agents, args.n_items, activation='relu', 
+                                        hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
+                                        n_hidden_layers=args.n_hidden_layers).to(DEVICE)
+        else:
+            model = RegretNet(args.n_agents, args.n_items, activation='relu',
+                            hidden_layer_size=args.hidden_layer_size, clamp_op=clamp_op,
+                            n_hidden_layers=args.n_hidden_layers, separate=args.separate).to(DEVICE)
+
+        if args.resume:
+            checkpoint = torch.load(args.resume)
+            model.load_state_dict(checkpoint['state_dict'], strict=False)
+
+        if not os.path.isdir(f"result/{args.name}"):
+            os.makedirs(f"result/{args.name}")
+
+        if os.path.isdir("run/{0}".format(args.name)):
+            shutil.rmtree("run/{0}".format(args.name))
+            
+        writer = SummaryWriter(log_dir=f"run/{args.name}", comment=f"{args}")
+
+        train_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.num_examples, item_ranges).to(DEVICE)
+        train_loader = Dataloader(train_data, batch_size=args.batch_size, shuffle=True)
+        test_data = ds.generate_dataset_nxk(args.n_agents, args.n_items, args.test_num_examples, item_ranges).to(DEVICE)
+        test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
+
+        print("Training Args:")
+        print(json.dumps(vars(args), indent=4, sort_keys=True))
+        train_loop(model, train_loader, test_loader, args, writer, device=DEVICE)
+        writer.close()
+
+        result = test_loop(model, test_loader, args, device=DEVICE)
+        print(f"Experiment:{args.name}")
+        print(json.dumps(result, indent=4, sort_keys=True))
+
+    print("Testing Model")
     os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))
 
