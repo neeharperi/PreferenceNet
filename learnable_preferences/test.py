@@ -30,10 +30,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
     torch.manual_seed(args.random_seed)
     np.random.seed(args.random_seed)
-
-    args.model = "result/{}/best_checkpoint.pt".format(args.model)
     
-    checkpoint = torch.load(args.model)
+    checkpoint = torch.load("result/{}/best_checkpoint.pt".format(args.model))
     print("Architecture:")
     print(json.dumps(checkpoint['arch'], indent=4, sort_keys=True))
     print("Training Args:")
@@ -61,5 +59,9 @@ if __name__ == "__main__":
     test_loader = Dataloader(test_data, batch_size=args.test_batch_size, shuffle=True)
 
     result = test_loop(model, test_loader, args, device=DEVICE)
+    
     print(f"Experiment:{checkpoint['name']}")
     print(json.dumps(result, indent=4, sort_keys=True))
+
+    with open("result/{}/test_result.json".format(args.model), 'w') as f:
+        json.dump(result, f)

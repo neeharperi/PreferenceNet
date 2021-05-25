@@ -84,7 +84,10 @@ if __name__ == "__main__":
 
     model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
 
-    if not args.eval_only:
+    torch.save(vars(args), "result/{0}/args.pth".format(model_name))
+
+    #if not args.eval_only:
+    if not os.path.isfile("result/{0}/{1}_checkpoint.pt".format(model_name, args.num_epochs - 1)):
         # Valuation range setup
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
         clamp_op = ds.get_clamp_op(item_ranges)
@@ -125,5 +128,8 @@ if __name__ == "__main__":
         print(f"Experiment:{args.name}")
         print(json.dumps(result, indent=4, sort_keys=True))
 
+    print("Validate Model")
     os.system("python validate.py --model {0}".format(model_name))
+    
+    print("Test Model")
     os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))
