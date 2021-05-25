@@ -53,22 +53,27 @@ args = parser.parse_args()
 torch.manual_seed(args.random_seed)
 np.random.seed(args.random_seed)
 
-pv_models = ["../learnable_preferences/result/human_preference_1.0/2x2-pv_1_synthetic_1.0_noise_0_0/4cb1d46d17e0e3bb27fc9ceda81e7771/best_checkpoint.pt",
-"../learnable_preferences/result/tvf_ranking_1.0/2x2-pv_1_synthetic_1.0_noise_0_0/8f16d4d1a7be7516283d1635503f7b6a/best_checkpoint.pt",
-"../learnable_preferences/result/entropy_ranking_1.0/2x2-pv_1_synthetic_1.0_noise_0_0/f7e46528db16c2bcbd1b583adf47b419/best_checkpoint.pt",
-"../learnable_preferences/result/quota_quota_1.0/2x2-pv_1_synthetic_1.0_noise_0_0/601c6ffe12fed39d92a05f6dd8074725/best_checkpoint.pt"
-]
-
-mv_models = ["./learnable_preferences/result/human_preference_1.0/2x2-mv_1_synthetic_1.0_noise_0_0/e32a0e109d3abbd395ba29432309d062/best_checkpoint.pt",
-"../learnable_preferences/result/tvf_ranking_1.0/2x2-mv_1_synthetic_1.0_noise_0_0/f92f60c6098564d9dfd9e362f486af1a/best_checkpoint.pt",
-"../learnable_preferences/result/entropy_ranking_1.0/2x2-mv_1_synthetic_1.0_noise_0_0/6cb34d8b3c556fb93ee0aea695b1b197/best_checkpoint.pt",
-"../learnable_preferences/result/quota_quota_1.0/2x2-mv_1_synthetic_1.0_noise_0_0/f6272491af5e09af2bf9d16ad65e01a6/best_checkpoint.pt"
-]
-
+constraint = ["human_preference_1.0", "tvf_ranking_1.0", "entropy_ranking_1.0", "quota_quota_1.0"]
+sz = "2x2"
 if "pv" in args.dataset[0]:
-    models = pv_models
+    auc = "pv"
 else:
-    models = pv_models
+    auc = "mv"
+
+models = []
+for constr in constraint:
+        if constr == "tvf_ranking_1.0":
+            preference = "tvf_threshold 1.0"
+
+        if constr == "entropy_ranking_1.0":
+            preference = "tvf_threshold 1.0"
+
+        if constr == "quota_quota_1.0":
+            preference = "quota_quota 1.0"
+
+        id = os.listdir("../learnable_preferences/result/{}/{}-{}_1_synthetic_1.0_noise_0_0".format(constr, sz, auc))[0]
+        model_path = "../learnable_preferences/result/{}/{}-{}_1_synthetic_1.0_noise_0_0/{}/best_checkpoint.pt".format(constr, sz, auc, id)
+        models.append(model_path)
 
 average_allocation_distance = []
 for modelA_path in models:

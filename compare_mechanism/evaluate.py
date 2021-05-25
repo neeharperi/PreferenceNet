@@ -144,6 +144,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--model-path', required=True)
 
 parser.add_argument('--random-seed', type=int, default=0)
+parser.add_argument('--n_agents', type=int, default=1)
+parser.add_argument('--n_items', type=int, default=2)
+
 parser.add_argument('--test-num-examples', type=int, default=100000)
 parser.add_argument('--test-batch-size', type=int, default=2048)
 # Preference
@@ -183,7 +186,7 @@ model.load_state_dict(state_dict)
 model.to(DEVICE)
 model.eval()
 
-assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
+assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents ({} vs. {}) and n_items ({} vs. {}) in args".format(model_ckpt["arch"]["n_agents"], args.n_agents ,model_ckpt["arch"]["n_items"], args.n_items)
 item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
 clamp_op = ds.get_clamp_op(item_ranges)
 

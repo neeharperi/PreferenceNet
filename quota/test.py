@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if not args.model.startswith("result"):
         args.model = os.path.join("result", args.model)
     if os.path.isdir(args.model):
-        args.model = max([os.path.join(args.model, fn) for fn in os.listdir(args.model)], key=os.path.getctime)
+        args.model = max([os.path.join(args.model, fn) for fn in os.listdir(args.model) if "checkpoint" in fn], key=os.path.getctime)
 
     checkpoint = torch.load(args.model)
     print("Architecture:")
