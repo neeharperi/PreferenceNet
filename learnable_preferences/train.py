@@ -84,6 +84,9 @@ if __name__ == "__main__":
 
     model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
 
+    if not os.path.isdir("result/{0}".format(model_name)):
+        os.makedirs("result/{0}".format(model_name))
+
     torch.save(vars(args), "result/{0}/args.pth".format(model_name))
 
     #if not args.eval_only:
@@ -101,9 +104,6 @@ if __name__ == "__main__":
                             n_hidden_layers=args.n_hidden_layers, separate=args.separate).to(DEVICE)
 
         preference_net = PreferenceNet(args.n_agents, args.n_items, args.hidden_layer_size).to(DEVICE)
-
-        if not os.path.isdir("result/{0}".format(model_name)):
-            os.makedirs("result/{0}".format(model_name))
         
         if os.path.isdir("run/{0}".format(model_name)):
             shutil.rmtree("run/{0}".format(model_name))
