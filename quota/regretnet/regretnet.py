@@ -217,29 +217,50 @@ def test_loop(model, loader, args, device='cpu'):
     plot_utils.save_plot(args)
 
     mean_regret = test_regrets.sum(dim=1).mean(dim=0).item()
+    std_regret = test_regrets.sum(dim=1).std(dim=0).item()
 
+    #result = {
+    #    "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
+    #    # "regret_std": regret_var ** .5,
+    #    "regret_mean": mean_regret,
+    #    "regret_max": test_regrets.sum(dim=1).max().item(),
+    #    "quota_mean": test_quota.mean().item(),
+    #    "quota_max": test_quota.max().item(),
+    #}
     result = {
+        "payment_min": test_payments.sum(dim=1).min(dim=0)[0].item(),
         "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
-        # "regret_std": regret_var ** .5,
+        "payment_max": test_payments.sum(dim=1).max(dim=0)[0].item(),
+        "payment_std": test_payments.sum(dim=1).std(dim=0).item(),
+        
+        "regret_min": test_regrets.sum(dim=1).min().item(),
         "regret_mean": mean_regret,
         "regret_max": test_regrets.sum(dim=1).max().item(),
+        "regret_std": std_regret,
+
+        "quota_min": test_quota.min().item(),
         "quota_mean": test_quota.mean().item(),
         "quota_max": test_quota.max().item(),
+        "quota_std": test_quota.std().item(),
     }
- 
+
     return result
 
 
 def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
-    quota_mults = torch.ones((1, model.n_items)).to(device)
+    
+    if not args.no_lagrange:
+        quota_mults = torch.ones((1, model.n_items)).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
 
     iter = 0
     rho = args.rho
-    rho_quota = args.rho_quota
+    
+    if not args.no_lagrange:
+        rho_quota = args.rho_quota
 
 
     for epoch in tqdm(range(args.num_epochs)):
@@ -270,20 +291,29 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                 regret_loss = (regret_mults * positive_regrets).mean()
                 regret_quad = (rho / 2.0) * (positive_regrets ** 2).mean()
     
-            quota_loss = (quota_mults * min_quota).mean()
-            quota_quad = (rho_quota / 2.0) * (min_quota ** 2).mean()
+            if not args.no_lagrange:
+                quota_loss = (quota_mults * min_quota).mean()
+                quota_quad = (rho_quota / 2.0) * (min_quota ** 2).mean()
+            else:
+                quota_loss = (min_quota).mean()
 
             # Add batch to epoch stats
             regrets_epoch = torch.cat((regrets_epoch, regrets), dim=0)
             payments_epoch = torch.cat((payments_epoch, payments), dim=0)
             quota_epoch = torch.cat((quota_epoch, min_quota), dim=0)
 
-            # Calculate loss
-            loss_func = regret_loss \
-                        + regret_quad \
-                        - payment_loss \
-                        - quota_loss \
-                        + quota_quad # increase quota
+            if not args.no_lagrange:
+                # Calculate loss
+                loss_func = regret_loss \
+                            + regret_quad \
+                            - payment_loss \
+                            - quota_loss \
+                            + quota_quad # increase quota
+            else:
+                loss_func = regret_loss \
+                            + regret_quad \
+                            - payment_loss \
+                            - quota_loss
 
             # update model
             optimizer.zero_grad()
@@ -297,11 +327,13 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
                     regret_mults += rho * positive_regrets.mean(dim=0)
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
-            if iter % args.lagr_update_iter_quota == 0:
-                with torch.no_grad():
-                    quota_mults += rho_quota * min_quota.mean(dim=0)
-            if iter % args.rho_incr_iter_quota == 0:
-                rho_quota += args.rho_incr_amount_quota
+
+            if not args.no_lagrange:
+                if iter % args.lagr_update_iter_quota == 0:
+                    with torch.no_grad():
+                        quota_mults += rho_quota * min_quota.mean(dim=0)
+                if iter % args.rho_incr_iter_quota == 0:
+                    rho_quota += args.rho_incr_amount_quota
 
         # Log testing stats and save model
         if epoch % args.test_iter == (args.test_iter - 1):
@@ -337,11 +369,17 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
         for key, value in train_stats.items():
             writer.add_scalar(f'train/{key}', value, global_step=epoch)
 
-        mult_stats = {
-            "regret_mult": regret_mults.mean().item(),
-            "payment_mult": payment_mult,
-            "quota_mult": quota_mults.mean().item(),
-        }
+        if not args.no_lagrange:
+            mult_stats = {
+                "regret_mult": regret_mults.mean().item(),
+                "payment_mult": payment_mult,
+                "quota_mult": quota_mults.mean().item(),
+            }
+        else:
+            mult_stats = {
+                "regret_mult": regret_mults.mean().item(),
+                "payment_mult": payment_mult,
+            }
 
         pprint(mult_stats)
 

@@ -49,6 +49,8 @@ parser.add_argument('--separate', action='store_true')
 parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
+parser.add_argument('--no-lagrange', action='store_true')  # not saved in arch but w/e
+
 if __name__ == "__main__":
     args = parser.parse_args()
     torch.manual_seed(args.random_seed)
@@ -56,8 +58,16 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
+    if args.no_lagrange:
+        args.name = args.name + "_no_lagrange"
+
     model_name = "{0}".format(args.name)
 
+    if not os.path.isdir("result/{0}".format(model_name)):
+        os.makedirs("result/{0}".format(model_name))
+
+    torch.save(vars(args), "result/{0}/args.pth".format(model_name))
+    
     if not os.path.isfile("result/{0}/{1}_checkpoint.pt".format(model_name, args.num_epochs - 1)):
         # Valuation range setup
         item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
@@ -74,9 +84,6 @@ if __name__ == "__main__":
         if args.resume:
             checkpoint = torch.load(args.resume)
             model.load_state_dict(checkpoint['state_dict'], strict=False)
-
-        if not os.path.isdir(f"result/{args.name}"):
-            os.makedirs(f"result/{args.name}")
 
         if os.path.isdir("run/{0}".format(args.name)):
             shutil.rmtree("run/{0}".format(args.name))
@@ -97,6 +104,9 @@ if __name__ == "__main__":
         print(f"Experiment:{args.name}")
         print(json.dumps(result, indent=4, sort_keys=True))
 
+    print("Validate Model")
+    os.system("python validate.py --model {0}".format(model_name))
+    
     print("Testing Model")
     os.system("python test.py --plot-name {0}_plot --model {0}".format(model_name))
 

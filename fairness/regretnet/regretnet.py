@@ -220,22 +220,42 @@ def test_loop(model, loader, args, device='cpu'):
     plot_utils.save_plot(args)
 
     mean_regret = test_regrets.sum(dim=1).mean(dim=0).item()
+    std_regret = test_regrets.sum(dim=1).std(dim=0).item()
+
     # mean_sq_regret = (test_regrets ** 2).sum(dim=1).mean(dim=0).item()
     # TODO: idk why sometimes the variance is a very small negative number, but this is a hacky fix
     # regret_var = max(mean_sq_regret - mean_regret ** 2, 0)
-    result = {
-        "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
-        # "regret_std": regret_var ** .5,
-        "regret_mean": mean_regret,
-        "regret_max": test_regrets.sum(dim=1).max().item(),
-        "unfairness_mean": test_unfairs.mean().item(),
-        "unfairness_max": test_unfairs.max().item(),
-        "variation_max": test_variations.max().item(),
-    }
+    #result = {
+    #    "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
+    #    # "regret_std": regret_var ** .5,
+    #    "regret_mean": mean_regret,
+    #    "regret_max": test_regrets.sum(dim=1).max().item(),
+    #    "unfairness_mean": test_unfairs.mean().item(),
+    #    "unfairness_max": test_unfairs.max().item(),
+    #    "variation_max": test_variations.max().item(),
+    #}
     # for i in range(model.n_agents):
     #     agent_regrets = test_regrets[:, i]
     #     result[f"regret_agt{i}_std"] = (((agent_regrets ** 2).mean() - agent_regrets.mean() ** 2) ** .5).item()
     #     result[f"regret_agt{i}_mean"] = agent_regrets.mean().item()
+    
+    result = {
+        "payment_min": test_payments.sum(dim=1).min(dim=0)[0].item(),
+        "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
+        "payment_max": test_payments.sum(dim=1).max(dim=0)[0].item(),
+        "payment_std": test_payments.sum(dim=1).std(dim=0).item(),
+        
+        "regret_min": test_regrets.sum(dim=1).min().item(),
+        "regret_mean": mean_regret,
+        "regret_max": test_regrets.sum(dim=1).max().item(),
+        "regret_std": std_regret,
+
+        "unfairness_min": test_unfairs.min().item(),
+        "unfairness_mean": test_unfairs.mean().item(),
+        "unfairness_max": test_unfairs.max().item(),
+        "unfairness_std": test_unfairs.std().item(),
+    }
+    
     return result
 
 
@@ -244,13 +264,17 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
 
     regret_mults = 5.0 * torch.ones((1, model.n_agents)).to(device)
     payment_mult = 1
-    fair_mults = torch.ones((1, model.n_items)).to(device)
+    
+    if not args.no_lagrange:
+        fair_mults = torch.ones((1, model.n_items)).to(device)
 
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr)
 
     iter = 0
     rho = args.rho
-    rho_fair = args.rho_fair
+    
+    if not args.no_lagrange:
+        rho_fair = args.rho_fair
 
     # local_optimum_model = None
 
@@ -298,8 +322,11 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             #     unfairness_quad = 0
             #     unfairness_loss = 0
             # else:
-            unfairness_loss = (fair_mults * unfairness).mean()
-            unfairness_quad = (rho_fair / 2.0) * (unfairness ** 2).mean()
+            if not args.no_lagrange:
+                unfairness_loss = (fair_mults * unfairness).mean()
+                unfairness_quad = (rho_fair / 2.0) * (unfairness ** 2).mean()
+            else:
+                unfairness_loss = (unfairness).mean()
 
             # Price of fairness
             # price_of_fair = torch.zeros(batch.shape[0]).to(device)
@@ -320,13 +347,19 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             unfairness_epoch = torch.cat((unfairness_epoch, unfairness), dim=0)
             # price_of_fair_epoch = torch.cat((price_of_fair_epoch, price_of_fair), dim=0)
 
-            # Calculate loss
-            loss_func = regret_loss \
-                        + regret_quad \
-                        - payment_loss \
-                        + unfairness_loss \
-                        + unfairness_quad \
-                        # + pricefair_loss
+            if not args.no_lagrange:
+                # Calculate loss
+                loss_func = regret_loss \
+                            + regret_quad \
+                            - payment_loss \
+                            + unfairness_loss \
+                            + unfairness_quad \
+                            # + pricefair_loss
+            else:
+                loss_func = regret_loss \
+                            + regret_quad \
+                            - payment_loss \
+                            + unfairness_loss
 
             # update model
             optimizer.zero_grad()
@@ -341,11 +374,13 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
             if iter % args.rho_incr_iter == 0:
                 rho += args.rho_incr_amount
             # if epoch >= args.fair_start:
-            if iter % args.lagr_update_iter_fair == 0:
-                with torch.no_grad():
-                    fair_mults += rho_fair * unfairness.mean(dim=0)
-            if iter % args.rho_incr_iter_fair == 0:
-                rho_fair += args.rho_incr_amount_fair
+            
+            if not args.no_lagrange:
+                if iter % args.lagr_update_iter_fair == 0:
+                    with torch.no_grad():
+                        fair_mults += rho_fair * unfairness.mean(dim=0)
+                if iter % args.rho_incr_iter_fair == 0:
+                    rho_fair += args.rho_incr_amount_fair
                 # if local_optimum_model is None:
                 #     local_optimum_model = RegretNet(args.n_agents, args.n_items, activation='relu',
                 #                                     hidden_layer_size=args.hidden_layer_size,
@@ -386,11 +421,17 @@ def train_loop(model, train_loader, test_loader, args, writer, device="cpu"):
         for key, value in train_stats.items():
             writer.add_scalar(f'train/{key}', value, global_step=epoch)
 
-        mult_stats = {
-            "regret_mult": regret_mults.mean().item(),
-            "payment_mult": payment_mult,
-            "fair_mult": fair_mults.mean().item(),
-        }
+        if not args.no_lagrange:
+            mult_stats = {
+                "regret_mult": regret_mults.mean().item(),
+                "payment_mult": payment_mult,
+                "fair_mult": fair_mults.mean().item(),
+            }
+        else:
+            mult_stats = {
+                "regret_mult": regret_mults.mean().item(),
+                "payment_mult": payment_mult,
+            }
 
         pprint(mult_stats)
         

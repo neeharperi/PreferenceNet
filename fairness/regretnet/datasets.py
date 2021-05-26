@@ -102,3 +102,35 @@ def get_clamp_op(item_ranges: torch.Tensor):
                 upper = item_ranges[i, j, 1]
                 batch[:, i, j] = batch[:, i, j].clamp_min(lower).clamp_max(upper)
     return clamp_op
+
+def generate_random_allocations_payments(n_allocations, n_agents, n_items, unit_demand, item_ranges, args, type=None, preference=None):
+    """
+    Generates random allocations (uniform, unit-demand or not).
+    """
+    # randomly generate bids in ranges
+    random_bids = generate_dataset_nxk(n_agents, n_items, n_allocations, item_ranges)
+
+    # random allocations, before normalization
+    random_points = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+
+    if unit_demand:
+        agent_normalized = torch.softmax(random_points, dim=-1)
+        random_points_2 = torch.rand(n_allocations, n_agents + 1, n_items + 1)
+        item_normalized = torch.softmax(random_points_2, dim=-2)
+        allocs = torch.min(item_normalized, agent_normalized)[..., 0:-1, 0:-1]
+    else:
+        allocs = torch.softmax(random_points, dim=-2)[..., 0:-1, 0:-1]
+
+    # compute a random value [0,1] representing % util to charge as payment
+    random_frac_payments = torch.rand(n_allocations, n_agents)
+
+    # compute utils assuming bids were truthful
+    agent_utils = (random_bids * allocs).sum(dim=-1)
+
+    actual_payments = random_frac_payments * agent_utils
+
+    if type is None and preference is None:
+        return random_bids, allocs, actual_payments
+
+    labels = preference(random_bids, allocs, actual_payments, type, args)
+    return random_bids, allocs, actual_payments, labels

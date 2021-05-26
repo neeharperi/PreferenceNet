@@ -436,31 +436,38 @@ def test_loop(model, loader, args, preference_net=None, device='cpu'):
     plot_utils.save_plot(args)
 
     mean_regret = test_regrets.sum(dim=1).mean(dim=0).item()
+    std_regret = test_regrets.sum(dim=1).std(dim=0).item()
 
     result = {
         "payment_min": test_payments.sum(dim=1).min(dim=0)[0].item(),
         "payment_mean": test_payments.sum(dim=1).mean(dim=0).item(),
         "payment_max": test_payments.sum(dim=1).max(dim=0)[0].item(),
+        "payment_std": test_payments.sum(dim=1).std(dim=0).item(),
         
         "regret_min": test_regrets.sum(dim=1).min().item(),
         "regret_mean": mean_regret,
         "regret_max": test_regrets.sum(dim=1).max().item(),
+        "regret_std": std_regret,
         
         "preference_min": test_preference.min().item(),
         "preference_mean": test_preference.mean().item(),
         "preference_max": test_preference.max().item(),
+        "preference_std": test_preference.std().item(),
 
         "entropy_min": test_entropy.min().item(),
         "entropy_mean": test_entropy.mean().item(),
         "entropy_max": test_entropy.max().item(),
+        "entropy_std": test_entropy.std().item(),
 
         "unfairness_min": test_unfairness.min().item(),
         "unfairness_mean": test_unfairness.mean().item(),
         "unfairness_max": test_unfairness.max().item(),
+        "unfairness_std": test_unfairness.std().item(),
 
         "quota_min": test_quota.min().item(),
         "quota_mean": test_quota.mean().item(),
         "quota_max": test_quota.max().item(),
+        "quota_std": test_quota.std().item(),
     }
  
     return result
