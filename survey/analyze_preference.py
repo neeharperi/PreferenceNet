@@ -8,6 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import re
+import json
 import pdb
 
 parser = argparse.ArgumentParser()
@@ -60,7 +61,6 @@ for key in result.keys():
     data[alloc2]["No"] = data[alloc2]["No"] + case1 
 
 torch.save(data, "Results/preference_elicitation.pth")
-
 
 
 

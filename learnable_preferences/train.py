@@ -38,11 +38,11 @@ parser.add_argument('--rho-incr-iter', type=int, default=2500)
 parser.add_argument('--rho-incr-amount', type=float, default=1)
 parser.add_argument('--lagr-update-iter', type=int, default=25)
 parser.add_argument('--rgt-start', type=int, default=0)
-#parser.add_argument('--preference-start', type=int, default=0)  # Epoch to start minimizing fairness
-#parser.add_argument('--rho-preference', type=float, default=1.0)
-#parser.add_argument('--rho-incr-iter-preference', type=int, default=5)
-#parser.add_argument('--rho-incr-amount-preference', type=float, default=0.)
-#parser.add_argument('--lagr-update-iter-preference', type=int, default=10)
+parser.add_argument('--preference-start', type=int, default=0)  # Epoch to start minimizing fairness
+parser.add_argument('--rho-preference', type=float, default=1.0)
+parser.add_argument('--rho-incr-iter-preference', type=int, default=5)
+parser.add_argument('--rho-incr-amount-preference', type=float, default=0.)
+parser.add_argument('--lagr-update-iter-preference', type=int, default=10)
 # Preference
 parser.add_argument('--preference-num-examples', type=int, default=80000)
 parser.add_argument('--preference-num-self-examples', type=int, default=5000)
@@ -72,6 +72,7 @@ parser.add_argument('--name', default='testing_name')
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 
 parser.add_argument('--eval_only', action='store_true')  # not saved in arch but w/e
+parser.add_argument('--lagrange', action='store_true')  # not saved in arch but w/e
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -80,6 +81,9 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
+    if args.lagrange:
+        args.name = args.name + "_lagrange"
+        
     unique_id = hashlib.md5(json.dumps(vars(args)).encode("utf8")).hexdigest()
 
     model_name = "{0}/{1}/{2}".format("_".join(args.preference), args.name, unique_id)
