@@ -52,4 +52,4 @@ python evaluate.py --preference entropy_ranking {a} tvf_ranking {b} quota_quota 
 {--lagrange} - Train PreferenceNet with Lagrangian Multipliers
 
 # Acknowledgements
-We would like to thank the authors of ProportionNet for sharing their codebase. We would also like to thank Kevin Kuo and Uro Lyi for their feedback in writing this paper.
+This research was supported in part by NSF CAREER Award IIS-1846237, NSF D-ISN Award #2039862, NSF Award CCF-1852352, NIH R01 Award NLM-013039-01, NIST MSE Award #20126334, DARPA GARD #HR00112020007, DoD WHS Award #HQ003420F0035, and a Google Faculty Research Award. We thank the authors of ProportionNet for sharing their codebase and Kevin Kuo and Uro Lyi for their feedback in writing this paper.
