@@ -45,6 +45,8 @@ parser.add_argument('--random-seed', type=int, default=0)
 parser.add_argument('--n-agents', type=int, default=2)
 parser.add_argument('--n-items', type=int, default=2)
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
 
 parser.add_argument('--test-num-examples', type=int, default=20000)
 parser.add_argument('--test-batch-size', type=int, default=512)
@@ -106,7 +108,7 @@ for modelA_path in models:
         modelB.eval()
 
         # Valuation range setup
-        item_ranges = ds.preset_valuation_range(args.n_items, args.n_agents, args.dataset)
+        item_ranges = ds.preset_valuation_range(args, args.n_items, args.n_agents, args.dataset)
         clamp_op = ds.get_clamp_op(item_ranges)
 
         test_data = ds.generate_dataset_nxk(args.n_items, args.n_agents, args.test_num_examples, item_ranges).to(DEVICE)

@@ -162,6 +162,9 @@ parser.add_argument('--preference-quota', type=float, default=0.4)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
+
 # architectural arguments
 parser.add_argument('--hidden-layer-size', type=int, default=100)
 parser.add_argument('--n-hidden-layers', type=int, default=2)
@@ -194,7 +197,7 @@ model.to(DEVICE)
 model.eval()
 
 assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
-item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
 clamp_op = ds.get_clamp_op(item_ranges)
 
 preference_type = []

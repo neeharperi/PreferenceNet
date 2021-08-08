@@ -48,7 +48,7 @@ if __name__ == "__main__":
     args.name = train_args.name
     args.dataset = train_args.dataset
 
-    item_ranges = preset_valuation_range(args.n_agents, args.n_items, train_args.dataset)
+    item_ranges = preset_valuation_range(train_args, args.n_agents, args.n_items, train_args.dataset)
     clamp_op = get_clamp_op(item_ranges)
     if train_args.unit:
         model = RegretNetUnitDemand(**checkpoint['arch'], clamp_op=clamp_op).to(DEVICE)

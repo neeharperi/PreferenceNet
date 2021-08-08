@@ -10,7 +10,6 @@ import plot_utils
 
 from pprint import pprint
 
-
 class View(nn.Module):
     def __init__(self, shape):
         super(View, self).__init__()

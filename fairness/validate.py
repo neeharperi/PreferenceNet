@@ -190,7 +190,7 @@ def calculate_PCA(model_path, train_args):
     model.eval()
 
     assert model_ckpt["arch"]["n_agents"] == args.n_agents and  model_ckpt["arch"]["n_items"] == args.n_items, "model-ckpt does not match n_agents and n_items in args" 
-    item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+    item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
     clamp_op = ds.get_clamp_op(item_ranges)
 
     preference_type = []

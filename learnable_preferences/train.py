@@ -63,6 +63,8 @@ parser.add_argument('--preference-quota', type=float, default=0.80)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
 parser.add_argument('--resume', default="")
 # architectural arguments
 parser.add_argument('--hidden-layer-size', type=int, default=100)
@@ -95,7 +97,7 @@ if __name__ == "__main__":
 
     if not os.path.isfile("result/{0}/{1}_checkpoint.pt".format(model_name, args.num_epochs - 1)):
         # Valuation range setup
-        item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+        item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
         clamp_op = ds.get_clamp_op(item_ranges)
         if args.unit:
             model = RegretNetUnitDemand(args.n_agents, args.n_items, activation='relu', 

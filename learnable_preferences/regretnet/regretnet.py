@@ -526,7 +526,7 @@ def train_loop(model, train_loader, test_loader, args, writer, preference_net, d
     preference_train_bids, preference_train_allocs, preference_train_payments, preference_train_labels = [], [], [], []
     preference_test_bids, preference_test_allocs, preference_test_payments, preference_test_labels = [], [], [], []
 
-    preference_item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+    preference_item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
     preference_clamp_op = ds.get_clamp_op(preference_item_ranges)
 
     preference_type = []

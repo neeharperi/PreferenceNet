@@ -50,7 +50,7 @@ if __name__ == "__main__":
     if not args.fairness:
         args.fairness = train_args.fairness
 
-    item_ranges = preset_valuation_range(args.n_agents, args.n_items, train_args.dataset)
+    item_ranges = preset_valuation_range(args, args.n_agents, args.n_items, train_args.dataset)
     clamp_op = get_clamp_op(item_ranges)
     if train_args.unit:
         model = RegretNetUnitDemand(**checkpoint['arch'], clamp_op=clamp_op).to(DEVICE)

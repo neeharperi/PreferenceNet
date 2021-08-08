@@ -23,6 +23,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--result-file', required=True)
 parser.add_argument('--preference', default=[], nargs='+', required=True)
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
 parser.add_argument('--tvf-distance', type=float, default=0.0)
 
 args = parser.parse_args()

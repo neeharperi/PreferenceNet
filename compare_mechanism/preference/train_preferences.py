@@ -29,7 +29,9 @@ parser.add_argument('--model-lr', type=float, default=1e-3)
 
 # parser.add_argument('--min-payment-ratio', type=float, default=0.)  # Price of fairness; used with delayed fairness
 # dataset selection: specifies a configuration of agent/item/valuation
-parser.add_argument('--dataset', nargs='+', default=[])
+parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
 parser.add_argument('--resume', default="")
 # architectural arguments
 parser.add_argument('--name', default='testing_name')
@@ -143,7 +145,7 @@ if __name__ == "__main__":
     ds.dataset_override(args)
 
     # Valuation range setup
-    item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+    item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
     clamp_op = ds.get_clamp_op(item_ranges)
 
 
@@ -157,7 +159,7 @@ if __name__ == "__main__":
     optimizer = optim.Adam(model.parameters(), lr=args.model_lr, betas=(0.5, 0.999), weight_decay=0.005)
 
     if args.regretnet_ckpt == "none":
-        item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items)
+        item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items)
         clamp_op = ds.get_clamp_op(item_ranges)
 
         train_bids, train_allocs, train_payments, train_labels = ds.generate_random_allocations_payments(args.num_examples, args.n_agents, args.n_items, args.unit, item_ranges, args, preference)
@@ -180,7 +182,7 @@ if __name__ == "__main__":
         regretnet_model.to(DEVICE)
         regretnet_model.eval()
         
-        item_ranges = ds.preset_valuation_range(model_ckpt['arch']['n_agents'], model_ckpt['arch']['n_items'])
+        item_ranges = ds.preset_valuation_range(args, model_ckpt['arch']['n_agents'], model_ckpt['arch']['n_items'])
         clamp_op = ds.get_clamp_op(item_ranges)
 
         train_bids, train_allocs, train_payments, train_labels = ds.generate_regretnet_allocations(regretnet_model, args.n_agents, args.n_items, args.num_examples, item_ranges, args, preference)

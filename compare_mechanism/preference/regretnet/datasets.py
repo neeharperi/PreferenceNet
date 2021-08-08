@@ -57,7 +57,7 @@ def dataset_override(args):
 
 
 # TODO: Use valuation ranges in a preset file
-def preset_valuation_range(n_agents, n_items, dataset=None):
+def preset_valuation_range(args, n_agents, n_items, dataset=None):
     # defaults
     zeros = torch.zeros(n_agents, n_items)
     ones = torch.ones(n_agents, n_items)
@@ -70,15 +70,21 @@ def preset_valuation_range(n_agents, n_items, dataset=None):
                 a = [0, 1, 2, 3, 4]
                 item_ranges[:, a, 1] = item_ranges[:, a, 1] * multiplier
             else:
-                item_ranges[:, :, 1] = item_ranges[:, :, 1]*multiplier
+                item_ranges[:, :, 1] = item_ranges[:, :, 1] * multiplier
+
         elif 'pavlov' in dataset[0] or 'pv' in dataset[0]:
             item_ranges = item_ranges + 2
+
+        elif "asymmetric" in dataset[0] or "am" in dataset[0]:
+            assert n_agents == 2 and n_items == 2
+            item_ranges[0, :, :] *= args.multiplierA
+            item_ranges[1, :, :] *= args.multiplierB
+
         else:
             print(dataset[0], 'is not a valid dataset name. Defaulting to Manelli-Vincent auction.')
     # item_ranges is a n_agents x n_items x 2 tensor where item_ranges[agent_i][item_j] = [lower_bound, upper_bound].
     assert item_ranges.shape == (n_agents, n_items, 2)
     return item_ranges
-
 
 def generate_linspace_nxk(n_agents, n_items, item_ranges, s=100):
     # For 2-item auctions only.

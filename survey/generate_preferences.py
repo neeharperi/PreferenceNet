@@ -16,11 +16,13 @@ parser.add_argument('--tvf-distance', type=float, default=0.0)
 parser.add_argument('--tolerance', type=float, default=0.01)
 
 parser.add_argument('--dataset', nargs='+', default=[], required=True)
+parser.add_argument('--multiplierA', type=int, default=1)
+parser.add_argument('--multiplierB', type=int, default=1)
 parser.add_argument('--unit', action='store_true')  # not saved in arch but w/e
 args = parser.parse_args()
 
 ds.dataset_override(args)
-item_ranges = ds.preset_valuation_range(args.n_agents, args.n_items, args.dataset)
+item_ranges = ds.preset_valuation_range(args, args.n_agents, args.n_items, args.dataset)
 clamp_op = ds.get_clamp_op(item_ranges)
 
 random_bids, allocs, actual_payments = ds.generate_random_allocations_payments(args.num_examples, args.n_agents, args.n_items, True, item_ranges, args)
