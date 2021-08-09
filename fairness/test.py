@@ -46,6 +46,8 @@ if __name__ == "__main__":
     args.n_items = train_args.n_items
     args.name = train_args.name
     args.dataset = train_args.dataset
+    args.multiplierA = train_args.multiplierA
+    args.multiplierB = train_args.multiplierB
 
     if not args.fairness:
         args.fairness = train_args.fairness

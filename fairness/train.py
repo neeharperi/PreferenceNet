@@ -63,6 +63,9 @@ if __name__ == "__main__":
 
     # Replaces n_items, n_agents, name
     ds.dataset_override(args)
+    if args.multiplierB != 1:
+        args.name = args.name + "_" + str(args.multiplierB)
+
     if args.no_lagrange:
         args.name = args.name + "_no_lagrange"
 

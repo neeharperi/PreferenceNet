@@ -13,21 +13,21 @@ diversity/plots/*
 diversity/result/*
 diversity/run/*
 diversity/scripts/*
-diversity/T*.sh
+diversity/*.sh
 
 quota/__pycache__/*
 quota/plots/*
 quota/result/*
 quota/run/*
 quota/scripts/*
-quota/T*.sh
+quota/*.sh
 
 fairness/__pycache__/*
 fairness/plots/*
 fairness/result/*
 fairness/run/*
 fairness/scripts/*
-fairness/T*.sh
+fairness/*.sh
 
 learnable_preferences/__pycache__/*
 learnable_preferences/preference/result/*
@@ -36,7 +36,7 @@ learnable_preferences/plots/*
 learnable_preferences/result/*
 learnable_preferences/run/*
 learnable_preferences/scripts/*
-learnable_preferences/T*.sh
+learnable_preferences/*.sh
 
 survey/__pycache__/*
 survey/Survey/*
