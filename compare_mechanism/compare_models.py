@@ -187,7 +187,7 @@ for auc in auction:
 
             try:
                 print(model_path)
-                output = shell("python evaluate.py --model-path {} --preference {} --dataset {}".format(model_path, preference, dataset))
+                output = shell("python evaluate.py --model-path {} --preference {} --dataset {} --multiplierB {}".format(model_path, preference, dataset, multiplier))
                 pca = float(output.split("\n")[1].split(":")[1])
 
                 file = json.load(open(result_path))
@@ -239,7 +239,7 @@ for auc in auction:
 
                 try:
                     print(model_path)
-                    output = shell("python evaluate.py --model-path {} --preference {} --dataset {}".format(model_path, preference, dataset))
+                    output = shell("python evaluate.py --model-path {} --preference {} --dataset {} --multiplierB {}".format(model_path, preference, dataset, multiplier))
                     pca = float(output.split("\n")[1].split(":")[1])
 
                     file = json.load(open(result_path))
